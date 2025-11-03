@@ -2,7 +2,7 @@
 import { defineProps } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { computed } from 'vue'
-import NewArrivalProductCard from './NewArrivalProductCard.vue'
+import NewArrivalProductCard from './NewArrivalProductCard.vue' // Make sure this import is correct
 
 const props = defineProps({
   products: {
@@ -53,6 +53,7 @@ const navigateToPage = (page) => {
     </div>
 
     <div class="grid grid-cols-3 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-[5px]">
+      <!-- Make sure this is NewArrivalProductCard -->
       <NewArrivalProductCard v-for="product in products" :key="product.id" :product="product" />
     </div>
 
@@ -64,7 +65,7 @@ const navigateToPage = (page) => {
         :disabled="currentPage === 1"
         class="previous-btn px-4 py-2 mx-[10px] text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
       >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -97,7 +98,7 @@ const navigateToPage = (page) => {
         class="next-btn px-4 py-2 mx-[10px] text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
       >
         <span>Next</span>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
       </button>
@@ -120,10 +121,18 @@ const navigateToPage = (page) => {
   border-radius: 8px;
   height: 30px;
   width: 100px;
+  place-content: center;
+  font-weight: 400;
 }
 .page-btn {
   border-radius: 4px;
   height: 30px;
   margin: 0 4px;
+  place-content: center;
+}
+
+.icon {
+  width: 20px;
+  height: 30px;
 }
 </style>

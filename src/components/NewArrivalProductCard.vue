@@ -11,16 +11,16 @@ const props = defineProps({
 
 <template>
   <div
-    class="card bg-white rounded-lg shadow-md overflow-hidden transition-shadow hover:shadow-xl mb-8"
+    class="card bg-white rounded-lg shadow-md overflow-hidden transition-shadow hover:shadow-xl mb-8 relative"
   >
-    <div class="card-img w-full h-[65%] bg-gray-100 overflow-hidden relative">
+    <div class="card-img w-full h-[65%] bg-gray-100 overflow-hidden">
       <!-- Display the actual image -->
       <img :src="product.image" :alt="product.name" class="w-full h-full object-cover" />
 
-      <!-- NEW badge -->
+      <!-- NEW badge - positioned on card, not image container -->
       <span
         v-if="product.isNew"
-        class="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full"
+        class="badge absolute top-3 right-3 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full z-10 shadow-md"
       >
         NEW
       </span>
@@ -37,7 +37,7 @@ const props = defineProps({
           </span>
         </div>
 
-        <!-- Tag display (replaces rating for new arrivals) -->
+        <!-- Tag display -->
         <div class="flex items-center mb-3">
           <span
             v-if="product.tag"
@@ -100,5 +100,24 @@ button {
 
 .card:hover {
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.badge {
+  background: #ffb020;
+  color: #1f2937;
+  font-weight: 700;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  z-index: 20;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 </style>

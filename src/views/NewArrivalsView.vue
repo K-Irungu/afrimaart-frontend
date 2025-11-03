@@ -103,34 +103,6 @@ const newProducts = ref([
   },
 ])
 
-// --- Mock Editor's Picks Data ---
-const editorPicks = ref([
-  {
-    id: 19,
-    name: 'AeroRun SE',
-    price: 149,
-    brand: 'Acme',
-    tag: 'Handpicked',
-    image: vueKnitRunner, // Using existing image temporarily
-  },
-  {
-    id: 20,
-    name: 'Nomad Pack Pro',
-    price: 239,
-    brand: 'Nimbus',
-    tag: 'Handpicked',
-    image: nomadTote, // Using existing image temporarily
-  },
-  {
-    id: 21,
-    name: 'Pulse Max',
-    price: 189,
-    brand: 'Orbit',
-    tag: 'Handpicked',
-    image: pulseBudsX, // Using existing image temporarily
-  },
-])
-
 // --- Filter Logic ---
 const currentFilters = ref({})
 
@@ -141,6 +113,8 @@ const handleFilterUpdate = (newFilters) => {
 const filteredNewProducts = computed(() => {
   return newProducts.value
 })
+
+console.log('New Products:', newProducts.value)
 </script>
 
 <template>
@@ -171,16 +145,6 @@ const filteredNewProducts = computed(() => {
       <!-- Main content -->
       <main class="flex-1 py-8">
         <NewArrivalProductGrid :products="filteredNewProducts" :currentPage="1" :totalPages="2" />
-
-        <!-- Editor's Picks Section -->
-        <!-- <h2 class="text-2xl font-bold mb-6 mt-12">Editor's Picks</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-          <NewArrivalProductCard
-            v-for="product in editorPicks"
-            :key="product.id"
-            :product="product"
-          />
-        </div> -->
 
         <!-- Show message if no products -->
         <div v-if="filteredNewProducts.length === 0" class="text-center py-12">
