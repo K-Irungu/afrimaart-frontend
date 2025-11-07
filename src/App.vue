@@ -1,14 +1,9 @@
 <script setup>
-// import { RouterLink, RouterView } from 'vue-router'
-import HomeView from '@/views/HomeView.vue'
-import NewArrivaView from '@/views/NewArrivalsView.vue'
-import DealsView from '@/views/DealsView.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <!-- <HomeView /> -->
-  <!-- <NewArrivaView /> -->
-  <DealsView />
+  <RouterView />
 </template>
 
 <style scoped></style>

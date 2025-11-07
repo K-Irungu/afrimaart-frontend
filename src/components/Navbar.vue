@@ -1,6 +1,7 @@
 <script setup>
 import logo from '@/assets/images/Afrimart2.png'
 import { useRoute } from 'vue-router'
+import { RouterLink } from 'vue-router'
 
 // Call useRoute() to get the route object
 const route = useRoute()
