@@ -3,7 +3,6 @@ import logo from '@/assets/images/Afrimart2.png'
 import { useRoute } from 'vue-router'
 import { RouterLink } from 'vue-router'
 
-// Call useRoute() to get the route object
 const route = useRoute()
 
 const isActive = (path) => {
@@ -23,48 +22,42 @@ const isActive = (path) => {
         <img :src="logo" alt="Afrimart" class="logo" />
         <h2 class="text-2xl font-bold">Afrimart</h2>
       </div>
-      <input
-        type="text"
-        placeholder="Search for products, brands and more"
-        class="input w-1/2 px-4 my-[10px] border rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 hover:border-indigo-400 hover:shadow-md transition-all duration-200"
-      />
-      <div class="flex items-center gap-[10px] my-[10px]">
+
+      <div class="relative w-1/2">
+        <font-awesome-icon
+          :icon="['fas', 'search']"
+          class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"
+        />
+        <input
+          type="text"
+          placeholder="Search for products, brands and more"
+          class="input w-full pl-10 pr-4 my-[10px] border rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 hover:border-indigo-400 hover:shadow-md transition-all duration-200"
+        />
+      </div>
+
+      <div class="top-links flex items-center gap-[10px] my-[10px]">
         <!-- Account with Icon -->
-        <div
-          class="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors"
+        <RouterLink
+          to="/account"
+          class="link account flex items-center gap-[5px] no-underline space-x-2 cursor-pointer transition-colors outline-2 outline-offset-2 rounded-[5px]"
         >
-          <!-- User Icon -->
-          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            ></path>
-          </svg>
-          <span class="text-sm">Account</span>
-        </div>
+          <font-awesome-icon :icon="['fa', 'circle-user']" class="h-[20px] w-[20px]" />
+          <span class="text-lg font-[500]">Account</span>
+        </RouterLink>
 
         <!-- Shopping Cart with Icon -->
-        <div
-          class="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors relative"
+        <RouterLink
+          to="/cart"
+          class="link cart flex items-center gap-[5px] no-underline space-x-2 cursor-pointer transition-colors relative outline-2 outline-offset-2 rounded-[5px]"
         >
-          <!-- Shopping Cart Icon -->
-          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-            ></path>
-          </svg>
-          <span class="text-sm">Cart</span>
+          <font-awesome-icon :icon="['fas', 'shopping-cart']" class="h-[20px] w-[20px]" />
+          <span class="text-lg font-[500]">Cart</span>
           <div
             class="absolute -top-2 -right-2 bg-indigo-600 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs"
           >
             3
           </div>
-        </div>
+        </RouterLink>
       </div>
     </header>
 
@@ -74,38 +67,38 @@ const isActive = (path) => {
         <div class="flex justify-start space-x-6 text-sm">
           <RouterLink
             to="/"
-            class="link px-2 py-1 rounded no-underline w-[70px] mr-[30px]"
+            class="link px-2 py-1 rounded no-underline w-[70px] mr-[30px] flex items-center gap-1"
             :class="isActive('/')"
           >
-            Home
+            <span>Home</span>
           </RouterLink>
           <RouterLink
             to="/new-arrivals"
-            class="link px-2 py-1 rounded no-underline w-[110px] mr-[30px]"
+            class="link px-2 py-1 rounded no-underline w-[110px] mr-[30px] flex items-center gap-1"
             :class="isActive('/new-arrivals')"
           >
-            New Arrivals
+            <span>New Arrivals</span>
           </RouterLink>
           <RouterLink
             to="/deals"
-            class="link px-2 py-1 rounded no-underline w-[70px] mr-[30px]"
+            class="link px-2 py-1 rounded no-underline w-[70px] mr-[30px] flex items-center gap-1"
             :class="isActive('/deals')"
           >
-            Deals
+            <span>Deals</span>
           </RouterLink>
           <RouterLink
             to="/about"
-            class="link px-2 py-1 rounded no-underline w-[70px] mr-[30px]"
+            class="link px-2 py-1 rounded no-underline w-[70px] mr-[30px] flex items-center gap-1"
             :class="isActive('/about')"
           >
-            About
+            <span>About</span>
           </RouterLink>
           <RouterLink
             to="/contact"
-            class="link px-2 py-1 rounded no-underline w-[70px] mr-[0px]"
+            class="link px-2 py-1 rounded no-underline w-[70px] mr-[0px] flex items-center gap-1"
             :class="isActive('/contact')"
           >
-            Contact
+            <span>Contact</span>
           </RouterLink>
         </div>
       </div>
@@ -135,7 +128,6 @@ const isActive = (path) => {
   height: 36px;
   border: 1px solid #e6e9ee;
 }
-
 .link {
   height: 100%;
   font-weight: 500;
