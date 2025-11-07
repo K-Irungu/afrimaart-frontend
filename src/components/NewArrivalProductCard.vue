@@ -75,7 +75,7 @@ const props = defineProps({
   transition: box-shadow 0.3s ease;
 }
 
-button {
+.card-details button {
   background: #0066ff;
   border: none;
   border-radius: 10px;

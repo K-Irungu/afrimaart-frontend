@@ -163,6 +163,7 @@ updateFilters()
 .sidefilter {
   background: #ffffff;
   height: fit-content;
+  width: 20%;
 }
 
 .timeframe,
@@ -179,5 +180,7 @@ updateFilters()
   cursor: pointer;
   background: #0f1724;
   color: #ffffff;
+  border: none;
+  padding: 5px;
 }
 </style>
