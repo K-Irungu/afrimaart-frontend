@@ -93,15 +93,27 @@ const getAddressTypeDisplay = (type) => {
     <!-- Saved Addresses Section -->
     <section class="saved-addresses">
       <div class="bg-white rounded-lg shadow-sm p-6">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex justify-between items-center mb-[15px]">
           <h2 class="text-lg font-bold">Saved addresses</h2>
-          <div class="relative">
-            <input
-              type="text"
-              placeholder="Search address"
-              class="pl-10 p-2 border border-gray-300 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
+
+          <form class="search-form flex items-center max-w-lg mx-auto">
+            <label for="voice-search" class="sr-only">Search</label>
+            <div class="relative w-full">
+              <input
+                type="text"
+                id="voice-search"
+                class="search-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5"
+                placeholder="Search address"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              class="search-btn inline-flex items-center py-2.5 px-3 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg"
+            >
+              <font-awesome-icon :icon="['fas', 'search']" class="w-[20px] h-[20px] mr-[6px]" />
+            </button>
+          </form>
         </div>
 
         <!-- Loading State -->
@@ -156,21 +168,26 @@ const getAddressTypeDisplay = (type) => {
             <p class="text-sm text-gray-600">{{ address.street }}</p>
             <p class="text-sm text-gray-600">{{ address.cityStateZip }}</p>
             <p class="text-sm text-gray-600">{{ address.country }}</p>
-            <div class="mt-4 flex space-x-2">
-              <button class="text-xs text-gray-600 px-3 py-1 border rounded-lg hover:bg-gray-100">
+            <div class="address-buttons mt-[15px] flex space-x-2 gap-[10px]">
+              <button
+                class="edit-btn text-xs text-gray-600 px-3 py-1 border rounded-lg hover:bg-gray-100 flex items-center gap-1"
+              >
+                <font-awesome-icon :icon="['fas', 'pen-to-square']" class="w-3 h-3 mr-[6px]" />
                 Edit
               </button>
               <button
                 v-if="!address.isDefault"
                 @click="setAsDefault(address.type)"
-                class="text-xs text-indigo-600 px-3 py-1 border border-indigo-600 rounded-lg hover:bg-indigo-50"
+                class="default-btn text-xs text-indigo-600 px-3 py-1 border border-indigo-600 rounded-lg hover:bg-indigo-50 flex items-center gap-1"
               >
+                <font-awesome-icon :icon="['fas', 'star']" class="w-3 h-3 mr-[6px]" />
                 Set default {{ address.type === 'work' ? 'shipping' : '' }}
               </button>
               <button
                 @click="removeAddress(address.type)"
-                class="text-xs text-red-600 px-3 py-1 border border-red-300 rounded-lg hover:bg-red-50"
+                class="remove-btn text-xs text-red-600 px-3 py-1 border border-red-300 rounded-lg hover:bg-red-50 flex items-center gap-1"
               >
+                <font-awesome-icon :icon="['fas', 'trash']" class="w-3 h-3 mr-[6px]" />
                 Remove
               </button>
             </div>
@@ -178,24 +195,11 @@ const getAddressTypeDisplay = (type) => {
 
           <!-- Add New Address Card -->
           <div
-            class="p-4 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition"
+            class="add-card p-4 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition"
             @click="isAddingNewAddress = true"
           >
             <div class="text-center text-gray-500">
-              <svg
-                class="mx-auto w-6 h-6 mb-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4v16m8-8H4"
-                ></path>
-              </svg>
+              <font-awesome-icon :icon="['fas', 'plus']" class="mx-auto w-6 h-6 mb-1" />
               <span class="text-sm">Add address</span>
             </div>
           </div>
@@ -206,88 +210,143 @@ const getAddressTypeDisplay = (type) => {
     <!-- Add New Address Section -->
     <section class="new-addresses">
       <div v-if="isAddingNewAddress" class="bg-white rounded-lg shadow-sm p-6 space-y-6">
-        <h2 class="text-lg font-bold">Add a new address</h2>
+        <div class="flex justify-between items-center">
+          <h2 class="text-lg font-bold">Add a new address</h2>
+          <button
+            @click="cancelAddAddress"
+            class="close-btn text-gray-500 hover:text-gray-700 transition"
+          >
+            <font-awesome-icon :icon="['fas', 'xmark']" class="w-5 h-5" />
+          </button>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-          <div class="space-y-1">
-            <label class="text-sm font-medium text-gray-700">Full name</label>
+          <!-- Full Name -->
+          <div class="form-group space-y-1">
+            <label class="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <font-awesome-icon :icon="['fas', 'user']" class="w-3 h-3 text-gray-400" />
+              Full name
+            </label>
             <input
               v-model="newAddressForm.fullName"
               type="text"
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+              class="form-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="Enter your full name"
             />
           </div>
-          <div class="space-y-1">
-            <label class="text-sm font-medium text-gray-700">Phone number</label>
+
+          <!-- Phone Number -->
+          <div class="form-group space-y-1">
+            <label class="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <font-awesome-icon :icon="['fas', 'phone']" class="w-3 h-3 text-gray-400" />
+              Phone number
+            </label>
             <input
               v-model="newAddressForm.phoneNumber"
               type="tel"
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+              class="form-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="+1 (555) 000-0000"
             />
           </div>
 
-          <div class="space-y-1 md:col-span-2">
-            <label class="text-sm font-medium text-gray-700">Address line 1</label>
+          <!-- Address Line 1 -->
+          <div class="form-group space-y-1 md:col-span-2">
+            <label class="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <font-awesome-icon :icon="['fas', 'location-dot']" class="w-3 h-3 text-gray-400" />
+              Address line 1
+            </label>
             <input
               v-model="newAddressForm.addressLine1"
               type="text"
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+              class="form-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="Street address, P.O. box, company name"
             />
           </div>
-          <div class="space-y-1 md:col-span-2">
-            <label class="text-sm font-medium text-gray-700">Address line 2 (optional)</label>
+
+          <!-- Address Line 2 -->
+          <div class="form-group space-y-1 md:col-span-2">
+            <label class="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <font-awesome-icon :icon="['fas', 'location-dot']" class="w-3 h-3 text-gray-400" />
+              Address line 2 (optional)
+            </label>
             <input
               v-model="newAddressForm.addressLine2"
               type="text"
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+              class="form-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="Apartment, suite, unit, building, floor, etc."
             />
           </div>
 
-          <div class="space-y-1">
-            <label class="text-sm font-medium text-gray-700">City</label>
+          <!-- City -->
+          <div class="form-group space-y-1">
+            <label class="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <font-awesome-icon :icon="['fas', 'city']" class="w-3 h-3 text-gray-400" />
+              City
+            </label>
             <input
               v-model="newAddressForm.city"
               type="text"
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
-          <div class="space-y-1">
-            <label class="text-sm font-medium text-gray-700">State/Region</label>
-            <input
-              v-model="newAddressForm.stateRegion"
-              type="text"
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+              class="form-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="Enter city"
             />
           </div>
 
-          <div class="space-y-1">
-            <label class="text-sm font-medium text-gray-700">Postal code</label>
+          <!-- State/Region -->
+          <div class="form-group space-y-1">
+            <label class="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <font-awesome-icon :icon="['fas', 'map']" class="w-3 h-3 text-gray-400" />
+              State/Region
+            </label>
+            <input
+              v-model="newAddressForm.stateRegion"
+              type="text"
+              class="form-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="Enter state or region"
+            />
+          </div>
+
+          <!-- Postal Code -->
+          <div class="form-group space-y-1">
+            <label class="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <font-awesome-icon :icon="['fas', 'envelope']" class="w-3 h-3 text-gray-400" />
+              Postal code
+            </label>
             <input
               v-model="newAddressForm.postalCode"
               type="text"
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+              class="form-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="Enter postal code"
             />
           </div>
-          <div class="space-y-1">
-            <label class="text-sm font-medium text-gray-700">Country</label>
+
+          <!-- Country -->
+          <div class="form-group space-y-1">
+            <label class="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <font-awesome-icon :icon="['fas', 'globe']" class="w-3 h-3 text-gray-400" />
+              Country
+            </label>
             <input
               v-model="newAddressForm.country"
               type="text"
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+              class="form-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              placeholder="Enter country"
             />
           </div>
         </div>
 
-        <div class="flex justify-end space-x-3 pt-4">
+        <div class="flex justify-end space-x-3 pt-4 gap-[15px]">
           <button
             @click="cancelAddAddress"
-            class="px-5 py-3 text-sm font-medium rounded-lg text-gray-700 border border-gray-300 hover:bg-gray-100 transition"
+            class="cancel-btn px-5 py-3 text-sm font-medium rounded-lg text-gray-700 border border-gray-300 hover:bg-gray-100 transition flex items-center gap-2"
           >
+            <font-awesome-icon :icon="['fas', 'circle-xmark']" class="w-4 h-4 mr-[6px]" />
             Cancel
           </button>
           <button
             @click="addAddress"
-            class="px-5 py-3 text-sm font-medium rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
+            class="save-btn px-5 py-3 text-sm font-medium rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition flex items-center gap-2"
           >
+            <font-awesome-icon :icon="['fas', 'circle-check']" class="w-4 h-4 mr-[6px]" />
             Save address
           </button>
         </div>
@@ -304,8 +363,134 @@ const getAddressTypeDisplay = (type) => {
   background: #ffffff;
   border-radius: 20px;
 }
+
 .address-item {
   border-radius: 20px;
   border: 1px solid #e6e9ee;
+}
+
+.address-buttons button {
+  padding: 8px 12px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  background: #d3e9ff;
+  border-color: #d1d5db;
+}
+
+.default-btn {
+  background: #e0e7ff;
+  border-color: #6366f1;
+}
+
+.remove-btn {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.search-form {
+  padding: 2px;
+  width: 60%;
+  border: 1px solid #e6e9ee;
+  border-radius: 10px;
+  background: #f7f9fb;
+  transition: all 0.2s ease;
+}
+
+.search-input {
+  padding: 10px;
+  border: none;
+  background: #f7f9fb;
+}
+
+.search-input:focus {
+  border-color: #6366f1;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.search-btn {
+  margin-right: 5px;
+  padding: 10px;
+  border: none;
+  background: #f7f9fb;
+  color: black;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-input {
+  padding: 10px;
+  border: 1px solid #e6e9ee;
+  border-radius: 10px;
+  background: #f7f9fb;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: #6366f1;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #374151;
+}
+
+.add-card {
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.add-card:hover {
+  border-color: #6366f1;
+  background: #f0f9ff;
+}
+
+.close-btn {
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #f3f4f6;
+}
+
+.cancel-btn {
+  color: #ffffff;
+  background: #0f1724;
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 10px;
+  border: 1px solid #e6e9ee;
+  transition: all 0.2s ease;
+}
+
+.save-btn {
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 10px;
+  background: #0066ff;
+  border: none;
+  color: #ffffff;
+}
+
+.cancel-btn:hover,
+.save-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 36, 0.2);
 }
 </style>

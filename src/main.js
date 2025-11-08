@@ -23,6 +23,9 @@ import {
   faArrowRightFromBracket,
   faEnvelope,
   faPhone,
+  faXmark,
+  faStar,
+  faPlus,
 } from '@fortawesome/free-solid-svg-icons'
 
 // Add icons to the library
@@ -45,6 +48,9 @@ library.add(
   faArrowRightFromBracket,
   faEnvelope,
   faPhone,
+  faXmark,
+  faStar,
+  faPlus,
 )
 
 const app = createApp(App)
