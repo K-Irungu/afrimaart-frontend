@@ -2,8 +2,8 @@
 import { ref, computed } from 'vue'
 import '@/assets/base.css'
 import Navbar from '@/components/Navbar.vue'
-import DealsSidebar from '@/components/DealsSidebar.vue'
-import DealsProductGrid from '@/components/DealsProductGrid.vue'
+import DealsSidebar from '@/components/DealsComponets/DealsSidebar.vue'
+import DealsProductGrid from '@/components/DealsComponets/DealsProductGrid.vue'
 import Footer from '@/components/Footer.vue'
 
 // Import your images

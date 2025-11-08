@@ -1,8 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue'
-import NewArrivalSidebar from '@/components/NewArrivalSidebar.vue'
-import NewArrivalProductCard from '@/components/NewArrivalProductCard.vue'
-import NewArrivalProductGrid from '@/components/NewArrivalProductGrid.vue'
+import NewArrivalSidebar from '@/components/NewArrivalComponents/NewArrivalSidebar.vue'
+import NewArrivalProductCard from '@/components/NewArrivalComponents/NewArrivalProductCard.vue'
+import NewArrivalProductGrid from '@/components/NewArrivalComponents/NewArrivalProductGrid.vue'
 import '@/assets/base.css'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'

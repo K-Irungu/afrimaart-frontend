@@ -39,24 +39,19 @@ const isActive = (path) => {
         <!-- Account with Icon -->
         <RouterLink
           to="/account"
-          class="link account flex items-center gap-[5px] no-underline space-x-2 cursor-pointer transition-colors outline-2 outline-offset-2 rounded-[5px]"
+          class="link account flex items-center gap-[5px] no-underline space-x-2 cursor-pointer transition-colors outline outline-offset-2 rounded-[5px] p-[2px]"
         >
-          <font-awesome-icon :icon="['fa', 'circle-user']" class="h-[20px] w-[20px]" />
-          <span class="text-lg font-[500]">Account</span>
+          <font-awesome-icon :icon="['fa', 'user']" class="h-[20px] w-[20px]" />
+          <span class="text-lg font-[400]">Account</span>
         </RouterLink>
 
         <!-- Shopping Cart with Icon -->
         <RouterLink
           to="/cart"
-          class="link cart flex items-center gap-[5px] no-underline space-x-2 cursor-pointer transition-colors relative outline-2 outline-offset-2 rounded-[5px]"
+          class="link cart flex items-center gap-[5px] no-underline space-x-2 cursor-pointer transition-colors relative outline outline-offset-2 rounded-[5px] p-[2px]"
         >
           <font-awesome-icon :icon="['fas', 'shopping-cart']" class="h-[20px] w-[20px]" />
-          <span class="text-lg font-[500]">Cart</span>
-          <div
-            class="absolute -top-2 -right-2 bg-indigo-600 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs"
-          >
-            3
-          </div>
+          <span class="cart-span text-lg font-[400]">3</span>
         </RouterLink>
       </div>
     </header>
@@ -132,5 +127,14 @@ const isActive = (path) => {
   height: 100%;
   font-weight: 500;
   color: black;
+}
+.cart-span {
+  background: #0f1724;
+  width: 15px;
+  height: 16.5px;
+  color: white;
+  text-align: center;
+  border-radius: 10px;
+  font-size: 0.65rem;
 }
 </style>
