@@ -1,12 +1,12 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Navbar from '@/components/Navbar.vue'
 import AccountSidebar from '@/components/Account/AccountSidebar.vue'
 import ProfileDetails from '@/components/Account/ProfileDetails.vue'
 import OrderHistory from '@/components/Account/OrderHistory.vue'
-// import AddressSection from './AddressSection.vue'
 // import PreferencesSection from './PreferencesSection.vue'
 import Footer from '@/components/Footer.vue'
+import Addresses from '@/components/Account/Addresses.vue'
 
 // --- Mock User Data ---
 const user = ref({
@@ -26,17 +26,40 @@ const orders = ref([
 ])
 
 // --- Mock Addresses Data ---
-const addresses = ref({
-  home: {
-    street: '369 Market St, Apt 7C',
-    cityStateZip: 'San Francisco, CA 94103',
-    isDefault: true,
-  },
-  work: {
-    street: '240 Townsend St, Floor 4',
-    cityStateZip: 'San Francisco, CA 94107',
-    isDefault: false,
-  },
+const addresses = ref({})
+const addressesLoading = ref(true)
+
+// Simulate loading addresses
+onMounted(() => {
+  setTimeout(() => {
+    addresses.value = {
+      home: {
+        street: '369 Market St, Apt 7C',
+        cityStateZip: 'San Francisco, CA 94103',
+        country: 'United States',
+        isDefault: true,
+      },
+      work: {
+        street: '240 Townsend St, Floor 4',
+        cityStateZip: 'San Francisco, CA 94107',
+        country: 'United States',
+        isDefault: false,
+      },
+      parents: {
+        street: '123 Oak Street',
+        cityStateZip: 'Los Angeles, CA 90210',
+        country: 'United States',
+        isDefault: false,
+      },
+      vacation: {
+        street: '456 Beach Road',
+        cityStateZip: 'Miami, FL 33139',
+        country: 'United States',
+        isDefault: false,
+      },
+    }
+    addressesLoading.value = false
+  }, 2000) // 2 second loading simulation
 })
 
 // --- Mock Preferences Data ---
@@ -75,7 +98,7 @@ const getTabDisplayName = (tabId) => {
     <Navbar />
 
     <main class="main max-w-7xl mx-auto px-4 py-8">
-      <div class="text-sm text-gray-500 mb-6 pb-[10px]">
+      <div class="text-sm text-gray-500 mb-6 pb-[10px] my-[10px]">
         Home / <span class="font-medium text-gray-700">Account</span> /
         <span class="text-indigo-600">{{ getTabDisplayName(activeTab) }}</span>
       </div>
@@ -91,7 +114,7 @@ const getTabDisplayName = (tabId) => {
         <button
           class="signout-btn bg-indigo-600 text-white font-medium py-[8px] px-[10px] rounded-lg transition text-sm flex items-center gap-2"
         >
-          <font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" class="w-4 h-4" />
+          <font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" class="w-4 h-4 mr-[6px]" />
           Sign out
         </button>
       </div>
@@ -115,16 +138,12 @@ const getTabDisplayName = (tabId) => {
 
           <!-- Orders Tab - Only Order History -->
           <div v-else-if="activeTab === 'orders'">
-            <OrderHistory :orders="orders" />
+            <OrderHistory :orders="orders" :loading="addressesLoading" />
           </div>
 
           <!-- Addresses Tab - Only Address Section -->
           <div v-else-if="activeTab === 'addresses'" class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-2xl font-bold mb-6">Your Addresses</h2>
-            <!-- <AddressSection :addresses="addresses" /> -->
-            <div class="text-center py-12">
-              <p class="text-gray-500">Address management coming soon</p>
-            </div>
+            <Addresses :addresses="addresses" />
           </div>
 
           <!-- Payment Methods Tab -->
@@ -178,52 +197,6 @@ const getTabDisplayName = (tabId) => {
             </div>
           </div>
 
-          <!-- Security Tab -->
-          <div v-else-if="activeTab === 'security'" class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-2xl font-bold mb-6">Security Settings</h2>
-            <div class="space-y-4">
-              <div class="flex justify-between items-center p-4 border rounded-lg">
-                <div>
-                  <h3 class="font-semibold">Two-Step Verification</h3>
-                  <p class="text-sm text-gray-600">
-                    Add an extra layer of security to your account
-                  </p>
-                </div>
-                <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
-                  Enable
-                </button>
-              </div>
-              <div class="flex justify-between items-center p-4 border rounded-lg">
-                <div>
-                  <h3 class="font-semibold">Change Password</h3>
-                  <p class="text-sm text-gray-600">Update your password regularly</p>
-                </div>
-                <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
-                  Change
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Help & Support Tab -->
-          <div v-else-if="activeTab === 'help'" class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-2xl font-bold mb-6">Help & Support</h2>
-            <div class="space-y-4">
-              <div class="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                <h3 class="font-semibold">FAQ</h3>
-                <p class="text-sm text-gray-600">Frequently asked questions</p>
-              </div>
-              <div class="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                <h3 class="font-semibold">Contact Support</h3>
-                <p class="text-sm text-gray-600">Get help from our support team</p>
-              </div>
-              <div class="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                <h3 class="font-semibold">Returns & Refunds</h3>
-                <p class="text-sm text-gray-600">Learn about our return policy</p>
-              </div>
-            </div>
-          </div>
-
           <!-- Fallback for unknown tabs -->
           <div v-else class="bg-white rounded-lg shadow-sm p-6">
             <h2 class="text-2xl font-bold mb-4">{{ getTabDisplayName(activeTab) }}</h2>
@@ -234,7 +207,9 @@ const getTabDisplayName = (tabId) => {
     </main>
 
     <!-- Footer -->
-    <Footer />
+    <div class="mt-[30px]">
+      <Footer />
+    </div>
   </div>
 </template>
 
