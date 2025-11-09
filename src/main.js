@@ -33,6 +33,9 @@ import {
   faLock,
   faMobileScreen,
   faCreditCardAlt,
+  faFloppyDisk,
+  faHeart,
+  faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons'
 import { faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons'
 import { faPaypal } from '@fortawesome/free-brands-svg-icons'
@@ -69,6 +72,9 @@ library.add(
   faPaypal,
   faMobileScreen,
   faCreditCardAlt,
+  faFloppyDisk,
+  faHeart,
+  faArrowLeft,
 )
 
 const app = createApp(App)
