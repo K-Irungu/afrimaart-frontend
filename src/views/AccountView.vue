@@ -4,7 +4,8 @@ import Navbar from '@/components/Navbar.vue'
 import AccountSidebar from '@/components/Account/AccountSidebar.vue'
 import ProfileDetails from '@/components/Account/ProfileDetails.vue'
 import OrderHistory from '@/components/Account/OrderHistory.vue'
-// import PreferencesSection from './PreferencesSection.vue'
+import Notifications from '@/components/Account/Notifications.vue'
+import PaymentMethods from '@/components/Account/PaymentMethods.vue'
 import Footer from '@/components/Footer.vue'
 import Addresses from '@/components/Account/Addresses.vue'
 
@@ -19,18 +20,66 @@ const user = ref({
 })
 
 // --- Mock Orders Data ---
-const orders = ref([
-  { id: 58421, date: 'Aug 12, 2025', items: 2, total: 28.4, status: 'Shipped' },
-  { id: 57902, date: 'Jul 28, 2025', items: 3, total: 62.0, status: 'Preparing' },
-  { id: 57102, date: 'Jun 11, 2025', items: 5, total: 279.5, status: 'Returned' },
-])
+const orders = ref([])
+const ordersLoading = ref(true)
 
 // --- Mock Addresses Data ---
 const addresses = ref({})
 const addressesLoading = ref(true)
 
-// Simulate loading addresses
+// --- Mock Notifications Data ---
+const notifications = ref([
+  {
+    id: 1,
+    title: 'Your order has been shipped!',
+    subtitle: 'Order #58421 is on its way to you',
+    tagText: 'Order update',
+    tagColor: 'bg-blue-100 text-blue-800',
+    time: '2 hours ago',
+    isUnread: true,
+  },
+  {
+    id: 2,
+    title: 'New deals available',
+    subtitle: 'Check out our latest promotions',
+    tagText: 'New deals',
+    tagColor: 'bg-green-100 text-green-800',
+    time: '1 day ago',
+    isUnread: true,
+  },
+  {
+    id: 3,
+    title: 'Security alert',
+    subtitle: 'New login from San Francisco, CA',
+    tagText: 'Security',
+    tagColor: 'bg-yellow-100 text-yellow-800',
+    time: '2 days ago',
+    isUnread: false,
+  },
+  {
+    id: 4,
+    title: 'Payment method updated',
+    subtitle: 'Your credit card has been updated',
+    tagText: 'Payment',
+    tagColor: 'bg-purple-100 text-purple-800',
+    time: '3 days ago',
+    isUnread: false,
+  },
+])
+
+// Simulate loading data
 onMounted(() => {
+  // Simulate loading orders
+  setTimeout(() => {
+    orders.value = [
+      { id: 58421, date: 'Aug 12, 2025', items: 2, total: 28.4, status: 'Shipped' },
+      { id: 57902, date: 'Jul 28, 2025', items: 3, total: 62.0, status: 'Preparing' },
+      { id: 57102, date: 'Jun 11, 2025', items: 5, total: 279.5, status: 'Returned' },
+    ]
+    ordersLoading.value = false
+  }, 1500)
+
+  // Simulate loading addresses
   setTimeout(() => {
     addresses.value = {
       home: {
@@ -59,7 +108,7 @@ onMounted(() => {
       },
     }
     addressesLoading.value = false
-  }, 2000) // 2 second loading simulation
+  }, 2000)
 })
 
 // --- Mock Preferences Data ---
@@ -138,63 +187,22 @@ const getTabDisplayName = (tabId) => {
 
           <!-- Orders Tab - Only Order History -->
           <div v-else-if="activeTab === 'orders'">
-            <OrderHistory :orders="orders" :loading="addressesLoading" />
+            <OrderHistory :orders="orders" :loading="ordersLoading" />
           </div>
 
           <!-- Addresses Tab - Only Address Section -->
-          <div v-else-if="activeTab === 'addresses'" class="bg-white rounded-lg shadow-sm p-6">
-            <Addresses :addresses="addresses" />
+          <div v-else-if="activeTab === 'addresses'">
+            <Addresses :addresses="addresses" :loading="addressesLoading" />
           </div>
 
           <!-- Payment Methods Tab -->
           <div v-else-if="activeTab === 'payment'" class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-2xl font-bold mb-6">Payment Methods</h2>
-            <div class="text-center py-12">
-              <p class="text-gray-500">No payment methods saved yet.</p>
-              <button
-                class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
-              >
-                Add Payment Method
-              </button>
-            </div>
+            <PaymentMethods />
           </div>
 
           <!-- Notifications Tab -->
-          <div v-else-if="activeTab === 'notifications'" class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-2xl font-bold mb-6">Notification Preferences</h2>
-            <!-- <PreferencesSection :preferences="preferences" /> -->
-            <div class="space-y-4">
-              <div class="flex justify-between items-center p-4 border rounded-lg">
-                <div>
-                  <h3 class="font-semibold">Order Updates</h3>
-                  <p class="text-sm text-gray-600">Get notified about your order status</p>
-                </div>
-                <div class="flex items-center">
-                  <input type="checkbox" v-model="preferences.orderUpdates" class="mr-2" />
-                  <span class="text-sm">{{ preferences.orderUpdates ? 'On' : 'Off' }}</span>
-                </div>
-              </div>
-              <div class="flex justify-between items-center p-4 border rounded-lg">
-                <div>
-                  <h3 class="font-semibold">Product Reviews</h3>
-                  <p class="text-sm text-gray-600">Reminders to review purchased products</p>
-                </div>
-                <div class="flex items-center">
-                  <input type="checkbox" v-model="preferences.productReviews" class="mr-2" />
-                  <span class="text-sm">{{ preferences.productReviews ? 'On' : 'Off' }}</span>
-                </div>
-              </div>
-              <div class="flex justify-between items-center p-4 border rounded-lg">
-                <div>
-                  <h3 class="font-semibold">Deals & Promotions</h3>
-                  <p class="text-sm text-gray-600">Special offers and discount notifications</p>
-                </div>
-                <div class="flex items-center">
-                  <input type="checkbox" v-model="preferences.dealsPromos" class="mr-2" />
-                  <span class="text-sm">{{ preferences.dealsPromos ? 'On' : 'Off' }}</span>
-                </div>
-              </div>
-            </div>
+          <div v-else-if="activeTab === 'notifications'">
+            <Notifications :notifications="notifications" />
           </div>
 
           <!-- Fallback for unknown tabs -->

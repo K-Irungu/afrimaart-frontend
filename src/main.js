@@ -26,7 +26,16 @@ import {
   faXmark,
   faStar,
   faPlus,
+  faTag,
+  faGift,
+  faTruck,
+  faCalendar,
+  faLock,
+  faMobileScreen,
+  faCreditCardAlt,
 } from '@fortawesome/free-solid-svg-icons'
+import { faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons'
+import { faPaypal } from '@fortawesome/free-brands-svg-icons'
 
 // Add icons to the library
 library.add(
@@ -51,6 +60,15 @@ library.add(
   faXmark,
   faStar,
   faPlus,
+  faEnvelopeOpen,
+  faTag,
+  faGift,
+  faTruck,
+  faCalendar,
+  faLock,
+  faPaypal,
+  faMobileScreen,
+  faCreditCardAlt,
 )
 
 const app = createApp(App)
