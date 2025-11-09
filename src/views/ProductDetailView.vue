@@ -436,24 +436,10 @@ const selectImage = (index) => {
                 :alt="product.name"
                 class="main-img w-full h-96 object-cover transition-opacity duration-300"
               />
-              <!-- Badges -->
-              <div class="absolute top-4 left-4 flex flex-col gap-2">
-                <span
-                  class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg"
-                >
-                  🚚 Free Shipping
-                </span>
-                <span
-                  v-if="product.inStock !== false"
-                  class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg"
-                >
-                  ✅ In Stock
-                </span>
-              </div>
             </div>
 
             <!-- Thumbnail Gallery -->
-            <div class="grid grid-cols-4 gap-[5px]">
+            <div class="thumbnail-gallery grid grid-cols-4 gap-[5px]">
               <div
                 v-for="(image, index) in product.images"
                 :key="index"
@@ -461,7 +447,7 @@ const selectImage = (index) => {
                 :class="[
                   'thumbnail cursor-pointer rounded-xl transition-all duration-200 transform hover:scale-105',
                   selectedImage === index
-                    ? 'border-blue-500 ring-2 ring-blue-200'
+                    ? 'border-blue-500 ring-blue-200'
                     : 'border-gray-200 hover:border-gray-300',
                 ]"
               >
@@ -715,7 +701,7 @@ const selectImage = (index) => {
 .thumbnail-img {
   border: none;
   width: 100%;
-  height: 100px;
+  height: 120px;
   border-radius: 20px;
 }
 
@@ -724,9 +710,9 @@ const selectImage = (index) => {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.thumbnail:hover {
+/* .thumbnail:hover {
   transform: translateY(-2px);
-}
+} */
 
 .product-details {
   background: #ffffff;

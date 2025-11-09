@@ -5,16 +5,14 @@ import { RouterLink } from 'vue-router'
 
 const route = useRoute()
 
+// Apply active and default styles
 const isActive = (path) => {
-  return route.path === path
-    ? 'text-blue-600 font-medium bg-blue-50'
-    : 'text-gray-700 hover:text-blue-600'
+  return route.path === path ? 'active-link' : 'inactive-link'
 }
 </script>
 
 <template>
   <div class="navbar w-full grid grid-flow-col grid-rows-2 gap-0 place-items-center">
-    <!-- Header -->
     <header
       class="header shadow-sm bg-white p-5 flex justify-between items-center w-[90%] max-w-7xl"
     >
@@ -43,7 +41,6 @@ const isActive = (path) => {
       </form>
 
       <div class="top-links flex items-center gap-[10px] my-[10px]">
-        <!-- Account with Icon -->
         <RouterLink
           to="/account"
           class="link account flex items-center gap-[5px] no-underline space-x-2 cursor-pointer transition-colors outline outline-offset-2 rounded-[5px] p-[2px]"
@@ -52,7 +49,6 @@ const isActive = (path) => {
           <span class="text-lg font-[400]">Account</span>
         </RouterLink>
 
-        <!-- Shopping Cart with Icon -->
         <RouterLink
           to="/cart"
           class="link cart flex items-center gap-[5px] no-underline space-x-2 cursor-pointer transition-colors relative outline outline-offset-2 rounded-[5px] p-[2px]"
@@ -63,41 +59,44 @@ const isActive = (path) => {
       </div>
     </header>
 
-    <!-- Navigation links -->
     <nav class="bg-white border-gray-500 w-[90%]">
       <div class="max-w-7xl mx-auto px-4 py-3 place my-[5px] w-full">
         <div class="flex justify-start space-x-6 text-sm">
           <RouterLink
             to="/"
-            class="link px-2 py-1 rounded no-underline w-[70px] mr-[30px] flex items-center gap-1"
+            class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[70px] mr-[30px] flex items-center gap-1"
             :class="isActive('/')"
           >
             <span>Home</span>
           </RouterLink>
+
           <RouterLink
             to="/new-arrivals"
-            class="link px-2 py-1 rounded no-underline w-[110px] mr-[30px] flex items-center gap-1"
+            class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[110px] mr-[30px] flex items-center gap-1"
             :class="isActive('/new-arrivals')"
           >
             <span>New Arrivals</span>
           </RouterLink>
+
           <RouterLink
             to="/deals"
-            class="link px-2 py-1 rounded no-underline w-[70px] mr-[30px] flex items-center gap-1"
+            class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[70px] mr-[30px] flex items-center gap-1"
             :class="isActive('/deals')"
           >
             <span>Deals</span>
           </RouterLink>
+
           <RouterLink
             to="/about"
-            class="link px-2 py-1 rounded no-underline w-[70px] mr-[30px] flex items-center gap-1"
+            class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[70px] mr-[30px] flex items-center gap-1"
             :class="isActive('/about')"
           >
             <span>About</span>
           </RouterLink>
+
           <RouterLink
             to="/contact"
-            class="link px-2 py-1 rounded no-underline w-[70px] mr-[0px] flex items-center gap-1"
+            class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[70px] mr-[0px] flex items-center gap-1"
             :class="isActive('/contact')"
           >
             <span>Contact</span>
@@ -172,5 +171,26 @@ const isActive = (path) => {
   border: none;
   background: #f7f9fb;
   color: black;
+}
+
+.active-link {
+  padding: 6px;
+  background-color: #c0d9fd;
+  color: #0066ff !important;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.inactive-link {
+  padding: 6px;
+  color: #000000;
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.inactive-link:hover {
+  color: #0066ff;
+  background-color: rgba(123, 133, 147, 0.1);
 }
 </style>
