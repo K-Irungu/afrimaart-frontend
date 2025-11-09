@@ -161,9 +161,11 @@ updateFilters()
 
 <style scoped>
 .sidefilter {
+  padding: 10px;
   background: #ffffff;
   height: fit-content;
   width: 20%;
+  border-radius: 20px;
 }
 
 .timeframe,

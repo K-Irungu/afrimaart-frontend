@@ -23,17 +23,24 @@ const isActive = (path) => {
         <h2 class="text-2xl font-bold">Afrimart</h2>
       </div>
 
-      <div class="relative w-1/2">
-        <font-awesome-icon
-          :icon="['fas', 'search']"
-          class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"
-        />
-        <input
-          type="text"
-          placeholder="Search for products, brands and more"
-          class="input w-full pl-10 pr-4 my-[10px] border rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 hover:border-indigo-400 hover:shadow-md transition-all duration-200"
-        />
-      </div>
+      <form class="search-form flex items-center max-w-lg mx-auto">
+        <label for="voice-search" class="sr-only">Search</label>
+        <div class="relative w-full">
+          <input
+            type="text"
+            id="voice-search"
+            class="search-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5"
+            placeholder="Search address"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          class="search-btn inline-flex items-center py-2.5 px-3 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg"
+        >
+          <font-awesome-icon :icon="['fas', 'search']" class="w-[20px] h-[20px] mr-[6px]" />
+        </button>
+      </form>
 
       <div class="top-links flex items-center gap-[10px] my-[10px]">
         <!-- Account with Icon -->
@@ -136,5 +143,34 @@ const isActive = (path) => {
   text-align: center;
   border-radius: 10px;
   font-size: 0.65rem;
+}
+
+.search-form {
+  padding: 2px;
+  width: 60%;
+  border: 1px solid #e6e9ee;
+  border-radius: 10px;
+  background: #f7f9fb;
+  transition: all 0.2s ease;
+}
+
+.search-input {
+  padding: 10px;
+  border: none;
+  background: #f7f9fb;
+}
+
+.search-input:focus {
+  border-color: #6366f1;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.search-btn {
+  margin-right: 5px;
+  padding: 10px;
+  border: none;
+  background: #f7f9fb;
+  color: black;
 }
 </style>

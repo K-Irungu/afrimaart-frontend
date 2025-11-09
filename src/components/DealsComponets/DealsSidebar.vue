@@ -40,9 +40,7 @@ updateFilters()
 </script>
 
 <template>
-  <div
-    class="sidefilter lg:col-span-1 md:col-span-1 space-y-8 p-4 bg-white rounded-lg shadow-sm px-[5px]"
-  >
+  <div class="sidefilter lg:col-span-1 md:col-span-1 space-y-8 p-4 bg-white rounded-lg shadow-sm">
     <section class="mb-[20px]">
       <h3 class="dealframe font-bold mb-3 text-lg">Deal Type</h3>
       <div class="grid grid-cols-2 gap-[5px]">
@@ -126,9 +124,11 @@ updateFilters()
 
 <style scoped>
 .sidefilter {
+  padding: 10px;
   background: #ffffff;
   height: fit-content;
   width: 20%;
+  border-radius: 20px;
 }
 
 .dealframe,

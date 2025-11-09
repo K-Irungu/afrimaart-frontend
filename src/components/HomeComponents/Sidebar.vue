@@ -128,8 +128,10 @@ updateFilters()
 
 <style scoped>
 .sidefilter {
+  padding: 10px;
   background: #ffffff;
   height: fit-content;
+  border-radius: 20px;
 }
 .categories,
 .price-rage,
@@ -140,6 +142,8 @@ updateFilters()
 }
 
 .s-btn {
+  padding: 5px;
+  border: none;
   width: auto;
   cursor: pointer;
   background: #0f1724;
