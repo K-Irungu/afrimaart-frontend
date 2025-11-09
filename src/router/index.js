@@ -5,6 +5,7 @@ import NewArrivalsView from '@/views/NewArrivalsView.vue'
 import DealsView from '@/views/DealsView.vue'
 import AccountProfileView from '@/views/AccountView.vue'
 import CartView from '@/views/CartView.vue'
+import ProductDetailView from '@/views/ProductDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,6 +42,11 @@ const router = createRouter({
       path: '/cart',
       name: 'cart',
       component: CartView,
+    },
+    {
+      path: '/product/:id',
+      name: 'product',
+      component: ProductDetailView,
     },
     {
       // Redirect any unmatched routes to home

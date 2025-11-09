@@ -36,6 +36,7 @@ import {
   faFloppyDisk,
   faHeart,
   faArrowLeft,
+  faClockRotateLeft,
 } from '@fortawesome/free-solid-svg-icons'
 import { faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons'
 import { faPaypal } from '@fortawesome/free-brands-svg-icons'
@@ -75,6 +76,7 @@ library.add(
   faFloppyDisk,
   faHeart,
   faArrowLeft,
+  faClockRotateLeft,
 )
 
 const app = createApp(App)
