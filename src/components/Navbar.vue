@@ -86,20 +86,20 @@ const isActive = (path) => {
             <span>Deals</span>
           </RouterLink>
 
-          <RouterLink
+          <!-- <RouterLink
             to="/about"
             class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[70px] mr-[30px] flex items-center gap-1"
             :class="isActive('/about')"
           >
             <span>About</span>
-          </RouterLink>
+          </RouterLink> -->
 
           <RouterLink
             to="/contact"
-            class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[70px] mr-[0px] flex items-center gap-1"
+            class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[90px] mr-[0px] flex items-center gap-1"
             :class="isActive('/contact')"
           >
-            <span>Contact</span>
+            <span>Contact us</span>
           </RouterLink>
         </div>
       </div>
