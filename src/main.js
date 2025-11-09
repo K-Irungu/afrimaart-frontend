@@ -37,7 +37,6 @@ import {
   faHeart,
   faArrowLeft,
   faClockRotateLeft,
-  faPaperPlane,
 } from '@fortawesome/free-solid-svg-icons'
 import { faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons'
 import { faPaypal } from '@fortawesome/free-brands-svg-icons'
