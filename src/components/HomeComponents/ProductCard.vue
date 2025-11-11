@@ -11,19 +11,19 @@ const { product } = defineProps({
 
 const router = useRouter()
 
-const navigateToProduct = () => {
-  router.push(`/product/${product.id}`)
-}
-
-// Simple auth check
+// Proper authentication check
 const isAuthenticated = () => {
   return !!localStorage.getItem('user')
+}
+
+const navigateToProduct = () => {
+  router.push(`/product/${product.id}`)
 }
 
 const addToCart = async (event) => {
   event.stopPropagation()
 
-  // Check if user is authenticated using simple localStorage check
+  // Check if user is authenticated
   if (!isAuthenticated()) {
     // Redirect to auth page with return URL
     router.push(`/auth?redirect=/product/${product.id}`)
@@ -32,6 +32,7 @@ const addToCart = async (event) => {
 
   // User is authenticated, add to cart
   console.log('Added to cart:', product.name)
+
   // Show success feedback
   showAddToCartFeedback(event.target)
 }
@@ -39,11 +40,11 @@ const addToCart = async (event) => {
 const showAddToCartFeedback = (button) => {
   const originalText = button.innerHTML
   button.innerHTML = '✅ Added!'
-  button.classList.add('bg-[#5D3471]')
+  button.classList.add('bg-green-600')
 
   setTimeout(() => {
     button.innerHTML = originalText
-    button.classList.remove('bg-[#5D3471]')
+    button.classList.remove('bg-green-600')
   }, 1500)
 }
 </script>

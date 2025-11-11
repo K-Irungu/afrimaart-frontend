@@ -108,14 +108,14 @@ const props = defineProps({
   background: #ffffff;
   padding: 25px;
   border-radius: 20px;
-  border: 1px solid #e6e9ee;
+  border: 1px solid #e8b6d5; /* Soft Pink border */
 }
 
 .item-details:hover {
-  border-color: rgb(99, 102, 241);
+  border-color: #5d3471; /* Deep Purple hover border */
   box-shadow:
-    0 10px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    0 10px 25px -5px rgba(93, 52, 113, 0.2),
+    0 10px 10px -5px rgba(128, 77, 145, 0.1);
   transform: translateY(-2px);
 }
 
@@ -123,12 +123,16 @@ const props = defineProps({
   border: none;
   border-radius: 8px;
   padding: 6px;
+  font-weight: 500;
 }
+
+/* Description badges */
 .item-desc {
-  color: #a8a8a8;
+  color: #804d91; /* Royal Purple */
 }
+/* Quantity selector */
 .qty-selector {
-  border: 1px solid #e6e9ee;
+  border: 1px solid #ce7f57; /* Warm Brownish Orange */
   padding: 3px;
   border-radius: 10px;
 }
@@ -137,65 +141,47 @@ const props = defineProps({
   cursor: pointer;
   font-size: 12px;
   font-weight: 500;
+  color: #5d3471; /* Deep Purple */
+}
+
+/* Price tag */
+.price-tag {
+  background: #5d3471; /* Deep Purple */
+  padding-inline: 4px;
+  border-radius: 5px;
+  color: white;
+}
+
+/* Action buttons */
+.remove-btn {
+  background: #fee8e8; /* Soft Pink variant */
+  color: #ce7f57; /* Warm Brownish Orange */
+}
+.save-btn {
+  background: #e8b6d5; /* Soft Pink */
+  color: #804d91; /* Royal Purple text */
+}
+.wishlist-btn {
+  background: #aa69af; /* Medium Orchid */
+  color: #ffffff;
 }
 
 /* Button hover effects */
-button {
-  transition: all 0.2s ease-in-out;
+.save-btn:hover {
+  background: #804d91; /* Royal Purple hover */
+  color: #ffffff;
 }
-
-button:hover {
-  transform: translateY(-1px);
+.wishlist-btn:hover {
+  background: #5d3471; /* Deep Purple hover */
+}
+.remove-btn:hover {
+  background: #ce7f57; /* Warm Brownish Orange hover */
+  color: white;
 }
 
 /* Image container styling */
 img {
   border-radius: 15px;
   object-fit: cover;
-}
-
-.price-tag {
-  background: #1e293b;
-  padding-inline: 4px;
-  border-radius: 5px;
-  color: white;
-}
-
-.remove-btn {
-  background: #fef2f2;
-}
-.save-btn {
-  background: #e0e7ff;
-}
-.wishlist-btn {
-  background: #fdd1d8;
-}
-/* Responsive design */
-@media (max-width: 768px) {
-  .item-details {
-    padding: 16px;
-    flex-direction: column;
-  }
-
-  .item-details > div:first-child {
-    margin-right: 0;
-    margin-bottom: 16px;
-  }
-
-  .flex.justify-between {
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .flex.items-center.justify-between {
-    flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
-  }
-
-  .flex.items-center.gap-4 {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
 }
 </style>

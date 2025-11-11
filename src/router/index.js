@@ -7,6 +7,7 @@ import AccountProfileView from '@/views/AccountView.vue'
 import CartView from '@/views/CartView.vue'
 import ProductDetailView from '@/views/ProductDetailView.vue'
 import ContactView from '@/views/ContactView.vue'
+import AuthView from '@/views/AuthView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,9 +20,6 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: AboutView,
     },
     {
@@ -55,11 +53,34 @@ const router = createRouter({
       component: ContactView,
     },
     {
+      path: '/auth',
+      name: 'auth',
+      component: AuthView,
+    },
+    {
       // Redirect any unmatched routes to home
       path: '/:pathMatch(.*)*',
       redirect: '/',
     },
   ],
+})
+
+// Simple auth check function (you can enhance this later)
+const isAuthenticated = () => {
+  return !!localStorage.getItem('user')
+}
+
+// Navigation guard
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth && !isAuthenticated()) {
+    // Redirect to auth page with return URL
+    next({
+      path: '/auth',
+      query: { redirect: to.fullPath },
+    })
+  } else {
+    next()
+  }
 })
 
 export default router

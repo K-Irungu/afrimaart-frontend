@@ -1,9 +1,65 @@
 <script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import logo from '@/assets/images/Afrimart2.png'
-import { useRoute } from 'vue-router'
-import { RouterLink } from 'vue-router'
 
+const router = useRouter()
 const route = useRoute()
+
+// Authentication state
+const isAuthenticated = ref(false)
+const user = ref(null)
+const showDropdown = ref(false)
+
+// Check authentication status
+const checkAuthStatus = () => {
+  const userData = localStorage.getItem('user')
+  if (userData) {
+    isAuthenticated.value = true
+    user.value = JSON.parse(userData)
+  } else {
+    isAuthenticated.value = false
+    user.value = null
+  }
+}
+
+// Initialize auth status on component mount
+onMounted(() => {
+  checkAuthStatus()
+
+  // Listen for storage changes (in case of logout from other tabs)
+  window.addEventListener('storage', checkAuthStatus)
+})
+
+// Logout function
+const handleLogout = () => {
+  localStorage.removeItem('user')
+  localStorage.removeItem('cart') // Clear cart on logout
+  isAuthenticated.value = false
+  user.value = null
+  showDropdown.value = false
+  router.push('/')
+}
+
+// Navigate to account
+const navigateToAccount = () => {
+  if (!isAuthenticated.value) {
+    router.push('/auth')
+  } else {
+    router.push('/account')
+  }
+  showDropdown.value = false
+}
+
+// Toggle dropdown
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value
+}
+
+// Close dropdown when clicking outside
+const closeDropdown = () => {
+  showDropdown.value = false
+}
 
 // Apply active and default styles
 const isActive = (path) => {
@@ -21,14 +77,13 @@ const isActive = (path) => {
         <h2 class="text-2xl font-bold">Afrimart</h2>
       </div>
 
-      <form class="search-form flex items-center max-w-lg mx-auto">
-        <label for="voice-search" class="sr-only">Search</label>
-        <div class="relative w-full">
+      <form class="search-form flex items-center gap-[5px] max-w-lg mx-auto">
+        <div class="w-full">
           <input
             type="text"
             id="voice-search"
             class="search-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5"
-            placeholder="Search address"
+            placeholder="Search products..."
             required
           />
         </div>
@@ -41,19 +96,63 @@ const isActive = (path) => {
       </form>
 
       <div class="top-links flex items-center gap-[10px] my-[10px]">
+        <!-- User Account Dropdown -->
+        <div class="relative" v-if="isAuthenticated">
+          <button
+            @click="toggleDropdown"
+            class="user-dropdown-btn flex items-center gap-2 no-underline space-x-2 cursor-pointer transition-colors outline outline-offset-2 rounded-[5px] p-2 hover:bg-gray-100"
+          >
+            <font-awesome-icon :icon="['fa', 'user']" class="h-[20px] w-[20px]" />
+            <span class="text-lg font-[400]">{{ user?.name || 'Account' }}</span>
+            <font-awesome-icon
+              :icon="['fas', 'chevron-down']"
+              class="h-[12px] w-[12px] transition-transform duration-200"
+              :class="{ 'rotate-180': showDropdown }"
+            />
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div
+            v-if="showDropdown"
+            @click="closeDropdown"
+            class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50 py-1"
+          >
+            <button
+              @click="navigateToAccount"
+              class="dropdown-item w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-2"
+            >
+              <font-awesome-icon :icon="['fas', 'user-circle']" class="w-4 h-4" />
+              My Account
+            </button>
+
+            <div class="border-t border-gray-200 my-1"></div>
+
+            <button
+              @click="handleLogout"
+              class="dropdown-item w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+            >
+              <font-awesome-icon :icon="['fas', 'sign-out-alt']" class="w-4 h-4" />
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+        <!-- Login/Signup Button (when not authenticated) -->
         <RouterLink
-          to="/account"
-          class="link account flex items-center gap-[5px] no-underline space-x-2 cursor-pointer transition-colors outline outline-offset-2 rounded-[5px] p-[2px]"
+          v-else
+          to="/auth"
+          class="link account flex items-center gap-[5px] no-underline cursor-pointer transition-colors rounded-[5px] p-[2px]"
         >
-          <font-awesome-icon :icon="['fa', 'user']" class="h-[20px] w-[20px]" />
-          <span class="text-lg font-[400]">Account</span>
+          <font-awesome-icon :icon="['fa', 'user']" class="icon h-[16px] w-[15px]" />
+          <span class="text-lg font-[400]">Sign In</span>
         </RouterLink>
 
+        <!-- Cart -->
         <RouterLink
           to="/cart"
-          class="link cart flex items-center gap-[5px] no-underline space-x-2 cursor-pointer transition-colors relative outline outline-offset-2 rounded-[5px] p-[2px]"
+          class="link cart px[8px] flex items-center gap-[5px] no-underline ursor-pointer transition-colors rounded-[5px] p-[2px]"
         >
-          <font-awesome-icon :icon="['fas', 'shopping-cart']" class="h-[20px] w-[20px]" />
+          <font-awesome-icon :icon="['fas', 'shopping-cart']" class="icon h-[20px] w-[20px]" />
           <span class="cart-span text-lg font-[400]">3</span>
         </RouterLink>
       </div>
@@ -86,14 +185,6 @@ const isActive = (path) => {
             <span>Deals</span>
           </RouterLink>
 
-          <!-- <RouterLink
-            to="/about"
-            class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[70px] mr-[30px] flex items-center gap-1"
-            :class="isActive('/about')"
-          >
-            <span>About</span>
-          </RouterLink> -->
-
           <RouterLink
             to="/contact"
             class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[90px] mr-[0px] flex items-center gap-1"
@@ -123,7 +214,9 @@ const isActive = (path) => {
   border-radius: 20px;
 }
 .logo h2 {
+  color: #5d3471;
   font-weight: 600;
+  font-size: 2rem;
 }
 .input {
   height: 36px;
@@ -148,49 +241,88 @@ const isActive = (path) => {
   padding: 2px;
   width: 60%;
   border: 1px solid #e6e9ee;
-  border-radius: 10px;
-  background: #f7f9fb;
+  border-radius: 15px;
+  background: #eebefe;
   transition: all 0.2s ease;
 }
 
 .search-input {
-  padding: 10px;
+  padding: 8px;
   border: none;
-  background: #f7f9fb;
-}
-
-.search-input:focus {
-  border-color: #6366f1;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-radius: 15px;
+  background: transparent;
 }
 
 .search-btn {
   margin-right: 5px;
-  padding: 10px;
+  padding: 6px;
   border: none;
-  background: #f7f9fb;
+  background: #eebefe;
   color: black;
+}
+.account,
+.cart {
+  background: #5d3471;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #ffffff;
 }
 
 .active-link {
   padding: 6px;
-  background-color: #c0d9fd;
-  color: #0066ff !important;
+  background-color: #eebefe;
+  color: #804d91 !important;
   border-radius: 6px;
   font-weight: 600;
 }
 
 .inactive-link {
   padding: 6px;
-  color: #000000;
+  color: #5d3471;
   transition:
     color 0.3s ease,
     background-color 0.3s ease;
 }
 
 .inactive-link:hover {
-  color: #0066ff;
-  background-color: rgba(123, 133, 147, 0.1);
+  color: #804d91;
+  background-color: #eebefe;
+  border-radius: 6px;
+}
+
+/* Dropdown Styles */
+.user-dropdown-btn {
+  font-size: 1rem;
+}
+.user-dropdown-btn {
+  transition: all 0.2s ease;
+}
+
+.user-dropdown-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.dropdown-menu {
+  animation: dropdownFade 0.2s ease-out;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  transition: all 0.2s ease;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
 }
 </style>

@@ -145,24 +145,36 @@ const clearCart = () => {
   background: #ffffff;
   border-radius: 20px;
 }
+
 .banner {
   margin-top: 10px;
-  background: #0f1724;
+  background: #5d3471; /* Deep Purple */
   border-radius: 20px;
   color: white;
 }
+
 .banner-ttl {
   font-weight: 600;
 }
+
 .clear-cart {
   border-radius: 10px;
   border: none;
+  color: #5d3471; /* Deep Purple text */
+  background: #e8b6d5; /* Soft Pink button bg */
 }
+.clear-cart:hover {
+  color: #ce7f57; /* Warm Brownish Orange hover text */
+  background: #f3d0df; /* lighter soft pink hover */
+  border-color: #ce7f57;
+}
+
 h2 {
-  color: black;
+  color: #5d3471; /* Deep Purple headings */
 }
+
 .order-summary {
-  color: black;
+  color: #5d3471; /* Deep Purple text */
   border-radius: 20px;
 }
 
@@ -170,25 +182,36 @@ h2 {
   padding: 8px;
   border: none;
   border-radius: 10px;
-  background: #6366f1;
+  background: linear-gradient(90deg, #5d3471 0%, #804d91 100%); /* Deep → Royal Purple gradient */
   font-size: medium;
+  color: white;
 }
+.proceed-btn:hover {
+  background: linear-gradient(90deg, #804d91 0%, #aa69af 100%); /* Royal → Medium Orchid gradient */
+}
+
 .summary-details {
-  border: 1px solid #e6e9ee;
+  border: 1px solid #ce7f57; /* Warm Brownish Orange border */
   border-radius: 20px;
 }
+
 .total dt,
 .total dd {
   font-weight: 600;
   font-size: medium;
+  color: #5d3471; /* Deep Purple total */
 }
+
 .continue-link {
   text-decoration: none;
-  background: #0f1724;
+  background: #804d91; /* Royal Purple */
   width: 100%;
   padding: 8px;
   border-radius: 10px;
   text-align: center;
   color: white;
+}
+.continue-link:hover {
+  background: #aa69af; /* Medium Orchid hover */
 }
 </style>
