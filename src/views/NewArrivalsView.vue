@@ -1,13 +1,12 @@
 <script setup>
 import { ref, computed } from 'vue'
 import NewArrivalSidebar from '@/components/NewArrivalComponents/NewArrivalSidebar.vue'
-import NewArrivalProductCard from '@/components/NewArrivalComponents/NewArrivalProductCard.vue'
 import NewArrivalProductGrid from '@/components/NewArrivalComponents/NewArrivalProductGrid.vue'
 import '@/assets/base.css'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 
-// Import your images
+// Import product images
 import vueKnitRunner from '@/assets/images/convers.jpg'
 import orionWatch from '@/assets/images/orion-watch.png'
 import nomadTote from '@/assets/images/nomad-tot.jpg'
@@ -103,50 +102,44 @@ const newProducts = ref([
   },
 ])
 
-// --- Filter Logic ---
+// --- Filters ---
 const currentFilters = ref({})
+const handleFilterUpdate = (newFilters) => (currentFilters.value = newFilters)
 
-const handleFilterUpdate = (newFilters) => {
-  currentFilters.value = newFilters
-}
-
-const filteredNewProducts = computed(() => {
-  return newProducts.value
-})
-
-console.log('New Products:', newProducts.value)
+// --- Filtered Products (for now all) ---
+const filteredNewProducts = computed(() => newProducts.value)
 </script>
 
 <template>
-  <div class="home min-h-screen bg-gray-50 place-items-center">
+  <div class="home min-h-screen bg-[#FFF7FC]">
     <!-- Navbar -->
     <Navbar />
 
-    <!-- Banner (Retained from your original) -->
-    <div class="banner bg-gray-800 text-white py-[5px] px-4 my-[10px]">
-      <div class="max-w-7xl mx-auto flex justify-between items-center px-[20px] py-[10px]">
-        <div class="">
-          <h1 class="banner-ttl text-3xl font-bold mb-1">Fresh drops for the season</h1>
-          <p class="text-gray-400">Curated products added this week. | Limited quantities.</p>
-        </div>
-        <button
-          class="bg-indigo-600 hover:bg-indigo-700 font-medium py-2 px-4 rounded-lg px-[20px]"
-        >
-          Update daily
-        </button>
+    <!-- Banner -->
+    <div
+      class="banner my-[20px] mx-auto flex items-center justify-between max-w-7xl px-[20px] py-[15px] rounded-2xl shadow-md"
+    >
+      <div>
+        <h1 class="banner-ttl text-3xl font-bold text-white mb-1">Fresh drops for the season</h1>
+        <p class="text-[#E8B6D5] font-medium">Curated new arrivals | Limited quantities.</p>
       </div>
+      <button
+        class="bg-[#5d3471] hover:bg-[#AA69AF] text-[#ffff] font-medium py-[5px] px-[8px] rounded-lg transition-all duration-200"
+      >
+        Update Daily
+      </button>
     </div>
 
-    <!-- Main Content Area (Matches HomeView layout) -->
+    <!-- Main Content -->
     <div class="main-content flex gap-[20px] w-full max-w-7xl mx-auto px-4 mt-[20px]">
-      <!-- Sidebar Filters -->
+      <!-- Sidebar -->
       <NewArrivalSidebar @update:filters="handleFilterUpdate" />
 
-      <!-- Main content -->
+      <!-- Product Grid -->
       <main class="flex-1 py-8">
         <NewArrivalProductGrid :products="filteredNewProducts" :currentPage="1" :totalPages="2" />
 
-        <!-- Show message if no products -->
+        <!-- Empty State -->
         <div v-if="filteredNewProducts.length === 0" class="text-center py-12">
           <p class="text-gray-500 text-lg">No products match your filters.</p>
         </div>
@@ -159,25 +152,47 @@ console.log('New Products:', newProducts.value)
 </template>
 
 <style scoped>
-.main-content {
-  width: 90%;
-  color: #000000;
+.home {
+  background: #fff7fc;
+  color: #1f2937;
 }
 
+/* Banner */
 .banner {
-  background: #0f1724;
+  background: linear-gradient(135deg, #5d3471, #804d91, #aa69af);
   width: 90%;
+  color: white;
   border-radius: 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+.banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(93, 52, 113, 0.3);
 }
 
 .banner-ttl {
-  font-weight: 600;
-  color: #ffffff;
+  letter-spacing: 0.5px;
 }
 
 .banner button {
-  height: 36px;
-  border-radius: 15px;
   border: none;
+  border-radius: 10px;
+}
+
+.main-content {
+  width: 90%;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    width: 95%;
+  }
+  .banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
 }
 </style>

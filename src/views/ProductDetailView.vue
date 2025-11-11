@@ -675,17 +675,17 @@ const selectImage = (index) => {
 .detail-container {
   width: 90%;
   padding-top: 20px;
-  color: black;
+  color: #5d3471;
 }
 
 .breadcrumbs ol {
   list-style-type: none;
-  color: black;
+  color: #804d91;
 }
 
 .breadcrumbs a {
   text-decoration: none;
-  color: black;
+  color: #804d91;
 }
 
 .image-gallery {
@@ -722,7 +722,7 @@ const selectImage = (index) => {
 }
 
 .rating {
-  background: #0f1724;
+  background: #aa69af;
   width: fit-content;
   padding: 8px;
   margin-bottom: 10px;
@@ -731,11 +731,11 @@ const selectImage = (index) => {
 }
 
 .product-desc {
-  color: #919191;
+  color: #5d3471;
 }
 
 .color-selection p {
-  color: #868585;
+  color: #804d91;
   font-size: 1.2rem;
   font-weight: 500;
 }
@@ -744,14 +744,14 @@ const selectImage = (index) => {
   border: none;
 }
 .warranty p {
-  color: #868585;
+  color: #804d91;
 }
 .warranty-details button {
   width: 60px;
 }
 
 .qty-btns {
-  border: 1.2px solid #efefef;
+  border: 1.2px solid #ce7f57;
   padding: 2px;
 }
 
@@ -762,7 +762,7 @@ const selectImage = (index) => {
 
 .add-btn {
   color: white;
-  background: #0066ff;
+  background: linear-gradient(90deg, #5d3471 0%, #804d91 100%);
 }
 
 .whishlist-btn {

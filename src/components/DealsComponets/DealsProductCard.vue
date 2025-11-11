@@ -34,7 +34,7 @@ const addToCart = (event) => {
       -{{ product.discount }}%
     </span>
 
-    <div class="w-full h-48 bg-gray-100 overflow-hidden relative h-[65%]">
+    <div class="card-img w-full h-48 bg-gray-100 overflow-hidden relative h-[65%]">
       <img :src="product.image" :alt="product.name" class="w-full h-full object-cover" />
     </div>
 
@@ -71,7 +71,7 @@ const addToCart = (event) => {
       <div class="flex justify-center">
         <button
           @click="addToCart"
-          class="w-[95%] h-[40px] w-full py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition duration-150"
+          class="w-[95%] h-[40px] w-full py-2 bg-[#804D91] text-white font-medium rounded-lg hover:bg-[#AA69AF] transition duration-150"
         >
           Add to Cart
         </button>
@@ -82,33 +82,44 @@ const addToCart = (event) => {
 
 <style scoped>
 .card {
-  background: #ffffff;
+  background: #e8b6d5; /* Soft Pink background */
   width: 90%;
   height: 400px;
-  border: 1px solid #e6e9ee;
+  border: 1px solid #aa69af; /* Medium Orchid border */
   border-radius: 20px;
   margin-bottom: 2rem;
-  color: black;
+  color: #5d3471; /* Deep Purple text */
   transition: all 0.3s ease;
 }
 
 .card:hover {
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 25px rgba(93, 52, 113, 0.3); /* Deep Purple glow */
   transform: translateY(-4px);
 }
 
+.card-img img {
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
 .card-content button {
-  background: #0066ff;
+  background: #804d91; /* Royal Purple button */
   border: none;
   border-radius: 10px;
   margin-top: 5px;
+  color: #ffffff;
+  transition: background-color 0.3s ease;
+}
+
+.card-content button:hover {
+  background: #aa69af; /* Medium Orchid hover */
 }
 
 .card-name,
 .card-price {
   font-size: 1rem;
   font-weight: 700;
-  color: #333333;
+  color: #5d3471; /* Deep Purple */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -117,7 +128,7 @@ const addToCart = (event) => {
 .card-orprice {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #636363;
+  color: #804d91; /* Royal Purple for contrast */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -125,7 +136,7 @@ const addToCart = (event) => {
 
 .card-brand {
   font-size: 0.75rem;
-  color: #7b8593;
+  color: #5d3471;
   font-weight: 600;
 }
 
@@ -133,10 +144,10 @@ const addToCart = (event) => {
   margin-top: 12px;
   margin-left: 5px;
   border-radius: 10px;
-  background: #e02424;
-  color: #1f2937;
+  background: #ce7f57; /* Warm Brownish Orange badge */
+  color: #ffffff;
   font-weight: 700;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   z-index: 20;
   animation: pulse 2s infinite;
 }
@@ -144,10 +155,11 @@ const addToCart = (event) => {
 .tag {
   height: 25px;
   width: auto;
-  background: #ffb020;
-  color: #1f2937;
+  background: #804d91; /* Royal Purple tag */
+  color: #ffffff;
   font-weight: 700;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   z-index: 20;
 }
 

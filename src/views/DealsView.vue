@@ -121,15 +121,15 @@ const filteredDealProducts = computed(() => {
     <!-- Navbar -->
     <Navbar />
 
-    <!-- Banner (Retained from your original) -->
-    <div class="banner bg-gray-800 text-white py-[5px] px-4 my-[10px]">
+    <!-- Banner  -->
+    <div class="banner bg-gray-800 text-white py-[5px] px-4 my-[20px]">
       <div class="max-w-7xl mx-auto flex justify-between items-center px-[20px] py-[10px]">
         <div class="">
           <h1 class="banner-ttl text-3xl font-bold mb-1">Save big on top products</h1>
           <p class="text-gray-400">Curated products added this week. | Limited quantities.</p>
         </div>
         <button
-          class="bg-indigo-600 hover:bg-indigo-700 font-medium py-2 px-4 rounded-lg px-[20px]"
+          class="bg-[#5d3471] hover:bg-[#AA69AF] text-[#ffff] font-medium py-[5px] px-[8px] rounded-lg transition-all duration-200"
         >
           Update daily
         </button>
@@ -158,20 +158,31 @@ const filteredDealProducts = computed(() => {
 </template>
 
 <style scoped>
+.home {
+  background: #fff7fc;
+  color: #1f2937;
+}
+
 .main-content {
   width: 90%;
   color: #000000;
 }
 
 .banner {
-  background: #0f1724;
+  background: linear-gradient(135deg, #5d3471, #804d91, #aa69af);
   width: 90%;
+  color: white;
   border-radius: 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+.banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(93, 52, 113, 0.3);
 }
 
 .banner-ttl {
-  font-weight: 600;
-  color: #ffffff;
+  letter-spacing: 0.5px;
 }
 
 .banner button {

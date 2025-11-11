@@ -101,15 +101,22 @@ const showAddToCartFeedback = (button) => {
   cursor: pointer;
 }
 
+.card-img img {
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
 button {
-  background: #804d91;
+  background: #804d91; /* Royal Purple button */
   border: none;
   border-radius: 10px;
+  margin-top: 5px;
+  color: #ffffff;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
   background: #aa69af;
-  transition-property: inherit;
 }
 
 .card-name,
@@ -129,7 +136,7 @@ button:hover {
 }
 
 .card:hover {
-  box-shadow: 0 8px 25px rgba(93, 52, 113, 0.3);
+  box-shadow: 0 8px 25px #5d34714d;
   transform: translateY(-4px);
 }
 </style>

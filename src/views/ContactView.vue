@@ -8,7 +8,7 @@ const submitForm = () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-[#f9fafb] text-black">
+  <div class="min-h-screen flex flex-col text-black rounded-[20px]">
     <Navbar />
 
     <main class="flex-grow py-12 flex justify-center">
@@ -23,16 +23,16 @@ const submitForm = () => {
         </div>
 
         <!-- Header Section -->
-        <div class="banner bg-[#0f172a] text-white p-8 rounded-2xl mb-[10px]">
+        <div class="banner w-full text-white p-[10px] rounded-2xl mb-[10px]">
           <h1 class="text-2xl sm:text-3xl font-semibold mb-2">Send us a message</h1>
-          <p class="text-gray-400 text-sm">Our team typically replies within 24 hours.</p>
+          <p class="text-[#E8B6D5] text-sm">Our team typically replies within 24 hours.</p>
         </div>
 
         <!-- Contact Form -->
-        <div class="contact-form bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
+        <div class="contact-form bg-white p-8 rounded-2xl shadow-sm border border-[#E8B6D5]">
           <form @submit.prevent="submitForm" class="form space-y-6 text-black">
             <div class="input-group">
-              <label for="email" class="block text-sm font-medium mb-2 text-black">
+              <label for="email" class="block text-sm font-medium mb-2 text-[#5D3471]">
                 Your email
               </label>
               <input
@@ -47,7 +47,7 @@ const submitForm = () => {
             </div>
 
             <div class="input-group">
-              <label for="subject" class="block text-sm font-medium mb-2 text-black">
+              <label for="subject" class="block text-sm font-medium mb-2 text-[#5D3471]">
                 Subject
               </label>
               <input
@@ -61,7 +61,7 @@ const submitForm = () => {
             </div>
 
             <div class="input-group">
-              <label for="message" class="block text-sm font-medium mb-2 text-black">
+              <label for="message" class="block text-sm font-medium mb-2 text-[#5D3471]">
                 Message
               </label>
               <textarea
@@ -77,7 +77,7 @@ const submitForm = () => {
             <!-- Submit Button -->
             <button
               type="submit"
-              class="submit-btn w-full flex justify-center items-center gap-2 py-3 px-4 text-base font-medium text-white rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              class="submit-btn w-full flex justify-center items-center gap-2 py-3 px-4 text-base font-medium text-white rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#804D91]"
             >
               <font-awesome-icon :icon="['fas', 'paper-plane']" class="w-4 h-4" />
               Send message
@@ -94,32 +94,39 @@ const submitForm = () => {
 <style scoped>
 /* --- Breadcrumb --- */
 .breadcrumps {
-  color: #000000;
+  color: #5d3471;
 }
 .breadcrumps ul {
   list-style-type: none;
 }
 .breadcrumps ul li a {
   text-decoration: none;
-  color: #000000;
+  color: #5d3471;
   margin-right: 10px;
 }
 
 /* --- Banner --- */
 .banner {
-  background: #0f172a;
+  background: linear-gradient(135deg, #5d3471, #804d91, #aa69af);
+  color: white;
   border-radius: 20px;
-  padding: 10px;
+  transition: all 0.3s ease-in-out;
+}
+
+.banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(93, 52, 113, 0.3);
 }
 
 /* --- Contact Form --- */
 .contact-form {
-  background: white;
+  background: #fff;
   padding: 15px;
   transition: all 0.3s ease;
+  border-color: #e8b6d5;
 }
 .contact-form:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 6px 20px rgba(170, 105, 175, 0.2);
 }
 
 /* --- Input Fields --- */
@@ -128,7 +135,7 @@ const submitForm = () => {
 }
 
 .input-group label {
-  color: #000000;
+  color: #5d3471;
   font-size: 1rem;
   font-weight: 500;
 }
@@ -141,7 +148,7 @@ const submitForm = () => {
   padding: 14px 16px;
   font-size: 0.95rem;
   transition: all 0.3s ease;
-  background-color: #f9fafb;
+  background-color: #f9f5f8;
   color: #111827;
 }
 
@@ -153,8 +160,8 @@ const submitForm = () => {
 .input-field:focus,
 .textarea-field:focus {
   background-color: #ffffff;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  border-color: #aa69af;
+  box-shadow: 0 0 0 3px rgba(170, 105, 175, 0.3);
   outline: none;
 }
 
@@ -163,20 +170,20 @@ const submitForm = () => {
   padding: 12px;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(90deg, #2563eb, #1d4ed8);
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+  background: linear-gradient(90deg, #804d91, #aa69af);
+  box-shadow: 0 4px 10px rgba(128, 77, 145, 0.3);
   transition: all 0.3s ease;
 }
 
 .submit-btn:hover {
-  background: linear-gradient(90deg, #1d4ed8, #2563eb);
+  background: linear-gradient(90deg, #aa69af, #804d91);
   transform: translateY(-1px);
-  box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 6px 15px rgba(93, 52, 113, 0.4);
 }
 
 .submit-btn:active {
   transform: translateY(1px);
-  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 3px 8px rgba(93, 52, 113, 0.3);
 }
 
 /* --- Responsive --- */

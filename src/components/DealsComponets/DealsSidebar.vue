@@ -51,8 +51,8 @@ updateFilters()
           :class="[
             's-btn px-3 py-1 text-sm rounded-full transition duration-150',
             selectedFilters.dealType === type
-              ? 'bg-black text-white font-medium'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+              ? 'bg-[#5D3471] text-white'
+              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF]',
           ]"
         >
           {{ type }}
@@ -70,8 +70,8 @@ updateFilters()
           :class="[
             's-btn px-3 py-1 text-sm rounded-full transition duration-150',
             selectedFilters.category === cat
-              ? 'bg-black text-white font-medium'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+              ? 'bg-[#5D3471] text-white'
+              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF]',
           ]"
         >
           {{ cat }}
@@ -89,8 +89,8 @@ updateFilters()
           :class="[
             's-btn px-3 py-1 text-sm rounded transition duration-150',
             selectedFilters.discount === discount
-              ? 'bg-black text-white font-medium'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+              ? 'bg-[#5D3471] text-white'
+              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF]',
           ]"
         >
           {{ discount }}
@@ -115,8 +115,8 @@ updateFilters()
         ></div>
       </div>
       <div class="flex justify-between text-sm mt-2">
-        <span class="p-1 border rounded">${{ selectedFilters.priceRange[0] }}</span>
-        <span class="p-1 border rounded">${{ selectedFilters.priceRange[1] }}</span>
+        <span class="p-1 border rounded bg-[#804D91]">${{ selectedFilters.priceRange[0] }}</span>
+        <span class="p-1 border rounded bg-[#804D91]">${{ selectedFilters.priceRange[1] }}</span>
       </div>
     </section>
   </div>
@@ -127,7 +127,7 @@ updateFilters()
   padding: 10px;
   background: #ffffff;
   height: fit-content;
-  width: 20%;
+  width: 25%;
   border-radius: 20px;
 }
 
@@ -135,7 +135,7 @@ updateFilters()
 .categories,
 .discount,
 .price-range {
-  color: #000000;
+  color: #5d3471;
   font-weight: 600;
   margin-bottom: 10px;
 }
@@ -143,8 +143,6 @@ updateFilters()
 .s-btn {
   width: auto;
   cursor: pointer;
-  background: #0f1724;
-  color: #ffffff;
   border: none;
   padding: 5px;
 }
