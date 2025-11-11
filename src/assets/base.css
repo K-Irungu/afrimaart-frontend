@@ -8,17 +8,19 @@
   --vt-c-black-soft: #222222;
   --vt-c-black-mute: #282828;
 
-  --vt-c-indigo: #2c3e50;
+  /* Your color palette */
+  --color-deep-purple: #5d3471;
+  --color-medium-orchid: #aa69af;
+  --color-royal-purple: #804d91;
+  --color-warm-orange: #ce7f57;
+  --color-soft-pink: #e8b6d5;
 
-  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
-  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
-  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
-  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
-
-  --vt-c-text-light-1: var(--vt-c-indigo);
-  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
-  --vt-c-text-dark-1: var(--vt-c-white);
-  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+  /* Additional shades */
+  --color-deep-purple-light: #6d3f83;
+  --color-medium-orchid-light: #b87bbd;
+  --color-royal-purple-light: #8f5a9f;
+  --color-warm-orange-light: #d8916b;
+  --color-soft-pink-light: #ecc6df;
 }
 
 /* semantic color variables for this project */

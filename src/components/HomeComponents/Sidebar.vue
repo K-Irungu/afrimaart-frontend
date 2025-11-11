@@ -48,7 +48,7 @@ updateFilters()
 
 <template>
   <aside class="sidefilter w-64 bg-white p-6 rounded-lg shadow-md space-y-8 px-[5px]">
-    <h2 class="text-xl font-bold text-gray-800 border-b pb-2">Filter Products</h2>
+    <h2 class="text-xl font-bold text-[#5D3471] border-b pb-2">Filter Products</h2>
 
     <!-- Categories -->
     <section class="my-[20px]">
@@ -61,8 +61,8 @@ updateFilters()
           :class="[
             's-btn px-3 py-1 text-sm rounded-full transition',
             selectedFilters.category === cat
-              ? 'bg-gray-900 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+              ? 'bg-[#5D3471] text-white'
+              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF]',
           ]"
         >
           {{ cat }}
@@ -73,14 +73,18 @@ updateFilters()
     <!-- Price Range -->
     <section class="mb-[20px]">
       <h3 class="price-rage text-lg mb-3">Price</h3>
-      <div class="relative h-1 bg-gray-200 rounded-full my-4">
-        <div class="absolute h-1 bg-indigo-500 rounded-full" style="left: 0%; width: 100%"></div>
-        <div class="absolute h-4 w-4 bg-indigo-500 rounded-full -top-1.5" style="left: 0%"></div>
-        <div class="absolute h-4 w-4 bg-indigo-500 rounded-full -top-1.5" style="right: 0%"></div>
+      <div class="relative h-1 bg-[#E8B6D5] rounded-full my-4">
+        <div class="absolute h-1 bg-[#AA69AF] rounded-full" style="left: 0%; width: 100%"></div>
+        <div class="absolute h-4 w-4 bg-[#804D91] rounded-full -top-1.5" style="left: 0%"></div>
+        <div class="absolute h-4 w-4 bg-[#804D91] rounded-full -top-1.5" style="right: 0%"></div>
       </div>
-      <div class="flex justify-between text-sm text-gray-600">
-        <span class="px-2 py-1 border rounded">${{ selectedFilters.priceRange[0] }}</span>
-        <span class="px-2 py-1 border rounded">${{ selectedFilters.priceRange[1] }}</span>
+      <div class="flex justify-between text-sm text-[#5D3471]">
+        <span class="px-2 py-1 border rounded border-[#E8B6D5]"
+          >${{ selectedFilters.priceRange[0] }}</span
+        >
+        <span class="px-2 py-1 border rounded border-[#E8B6D5]"
+          >${{ selectedFilters.priceRange[1] }}</span
+        >
       </div>
     </section>
 
@@ -91,13 +95,13 @@ updateFilters()
         <label
           v-for="brand in brands"
           :key="brand"
-          class="flex gap-[10px] items-center space-x-2 text-sm text-gray-700"
+          class="flex gap-[10px] items-center space-x-2 text-sm text-[#5D3471]"
         >
           <input
             type="checkbox"
             :checked="selectedFilters.brands.includes(brand)"
             @change="toggleBrand(brand)"
-            class="accent-indigo-600"
+            class="accent-[#AA69AF]"
           />
           <span>{{ brand }}</span>
         </label>
@@ -115,8 +119,8 @@ updateFilters()
           :class="[
             's-btn px-3 py-1 text-sm rounded-full transition',
             selectedFilters.rating === rate
-              ? 'bg-indigo-600 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+              ? 'bg-[#804D91] text-white'
+              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF]',
           ]"
         >
           {{ rate }}
@@ -137,7 +141,7 @@ updateFilters()
 .price-rage,
 .rating,
 .brand {
-  color: #000000;
+  color: #5d3471;
   font-weight: 600;
 }
 
@@ -146,7 +150,5 @@ updateFilters()
   border: none;
   width: auto;
   cursor: pointer;
-  background: #0f1724;
-  color: #ffffff;
 }
 </style>

@@ -15,16 +15,42 @@ const navigateToProduct = () => {
   router.push(`/product/${product.id}`)
 }
 
-const addToCart = (event) => {
-  event.stopPropagation() // Prevent navigating when clicking "Add to Cart"
+// Simple auth check
+const isAuthenticated = () => {
+  return !!localStorage.getItem('user')
+}
+
+const addToCart = async (event) => {
+  event.stopPropagation()
+
+  // Check if user is authenticated using simple localStorage check
+  if (!isAuthenticated()) {
+    // Redirect to auth page with return URL
+    router.push(`/auth?redirect=/product/${product.id}`)
+    return
+  }
+
+  // User is authenticated, add to cart
   console.log('Added to cart:', product.name)
-  // Add your cart logic here
+  // Show success feedback
+  showAddToCartFeedback(event.target)
+}
+
+const showAddToCartFeedback = (button) => {
+  const originalText = button.innerHTML
+  button.innerHTML = '✅ Added!'
+  button.classList.add('bg-[#5D3471]')
+
+  setTimeout(() => {
+    button.innerHTML = originalText
+    button.classList.remove('bg-[#5D3471]')
+  }, 1500)
 }
 </script>
 
 <template>
   <div
-    class="card bg-white rounded-lg shadow-md overflow-hidden transition-shadow hover:shadow-xl mb-8 cursor-pointer"
+    class="card bg-[#E8B6D5] rounded-lg shadow-md overflow-hidden transition-shadow hover:shadow-xl mb-8 cursor-pointer"
     @click="navigateToProduct"
   >
     <div class="card-img w-full h-[65%] bg-gray-100 overflow-hidden">
@@ -38,21 +64,21 @@ const addToCart = (event) => {
         <h4 class="card-name">{{ product.name }}</h4>
         <div class="flex justify-between items-center mt-1 mb-3">
           <span class="card-price text-lg">${{ product.price }}</span>
-          <span class="card-brand text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+          <span class="card-brand text-xs text-[#5D3471] bg-[#E8B6D5] px-2 py-0.5 rounded-full">
             {{ product.brand }}
           </span>
         </div>
 
         <!-- Add rating display -->
         <div class="flex items-center mb-3">
-          <span class="text-sm text-yellow-500">★</span>
+          <span class="text-sm text-[#CE7F57]">★</span>
           <span class="text-sm text-gray-600 ml-1">{{ product.rating }}</span>
         </div>
 
         <div class="flex justify-center">
           <button
             @click="addToCart"
-            class="w-[95%] h-[40px] py-2 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition duration-150"
+            class="w-[95%] h-[40px] py-2 bg-[#804D91] text-white font-medium rounded-xl hover:bg-[#AA69AF] transition duration-150"
           >
             Add to Cart
           </button>
@@ -64,28 +90,33 @@ const addToCart = (event) => {
 
 <style scoped>
 .card {
-  background: #ffffff;
+  background: #e8b6d5;
   width: 90%;
   height: 400px;
-  border: 1px solid #e6e9ee;
+  border: 1px solid #aa69af;
   border-radius: 20px;
   margin-bottom: 2rem;
-  color: black;
+  color: #5d3471;
   transition: all 0.3s ease;
   cursor: pointer;
 }
 
 button {
-  background: #0066ff;
+  background: #804d91;
   border: none;
   border-radius: 10px;
+}
+
+button:hover {
+  background: #aa69af;
+  transition-property: inherit;
 }
 
 .card-name,
 .card-price {
   font-size: 1rem;
   font-weight: 700;
-  color: #333333;
+  color: #5d3471;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -93,12 +124,12 @@ button {
 
 .card-brand {
   font-size: 0.75rem;
-  color: #7b8593;
+  color: #5d3471;
   font-weight: 600;
 }
 
 .card:hover {
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 25px rgba(93, 52, 113, 0.3);
   transform: translateY(-4px);
 }
 </style>
