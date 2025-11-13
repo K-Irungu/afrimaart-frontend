@@ -1,8 +1,13 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import CartItemCard from '@/components/CartItemCard.vue'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
+import OrderSummary from '@/components/OrderSummary.vue'
+
+// Get router instance
+const router = useRouter()
 
 // Mock Cart Data
 const cartItems = ref([
@@ -40,6 +45,34 @@ const clearCart = () => {
     cartItems.value = []
   }
 }
+
+// Calculate cart totals
+const subtotal = computed(() => {
+  return cartItems.value.reduce((sum, item) => sum + item.price * item.qty, 0)
+})
+
+const shipping = computed(() => {
+  return subtotal.value > 0 ? 12.0 : 0
+})
+
+// Checkout handler
+const handleCheckout = () => {
+  try {
+    const isAuthenticated = !!localStorage.getItem('user')
+    if (!isAuthenticated) {
+      router.push('/auth?redirect=/checkout')
+      return
+    }
+    router.push('/checkout')
+  } catch (error) {
+    console.error('Error during checkout:', error)
+  }
+}
+
+// Continue shopping handler
+const handleContinueShopping = () => {
+  router.push('/')
+}
 </script>
 
 <template>
@@ -51,8 +84,8 @@ const clearCart = () => {
       <!-- banner -->
       <div class="banner mb-8 p-[20px] flex justify-between items-center">
         <div>
-          <h1 class="banner-tt1 text-3xl font-bold text-gray-900 mb-2">Your Cart</h1>
-          <p class="text-gray-600 text-lg">Review items before checkout</p>
+          <h1 class="banner-tt1 text-3xl font-bold text-white mb-2">Your Cart</h1>
+          <p class="text-gray-200 text-lg">Review items before checkout</p>
         </div>
 
         <!-- Clear Cart Button -->
@@ -67,71 +100,26 @@ const clearCart = () => {
         </div>
       </div>
 
-      <div class="items grid grid-cols-2 gap-4 my-[20px] p-[10px]">
+      <div class="items grid grid-cols-2 lg:grid-cols-2 gap-8 my-[20px] p-[10px]">
         <!-- Cart Items -->
-        <main class="lg:w-2/3 space-y-6">
+        <main class="space-y-6">
           <div class="item-list flex flex-col">
-            <h2 class="text-x1 font-[500]">Items</h2>
+            <h2 class="text-xl font-[500] mb-4">Items</h2>
             <CartItemCard v-for="item in cartItems" :key="item.id" :item="item" />
           </div>
         </main>
 
         <!-- Order Summary -->
-        <aside class="order-summary lg:w-1/3 p-[10px]">
-          <h2 class="text-2xl font-[500] text-gray-900 mb-6">Order Summary</h2>
-          <div
-            class="summary-details bg-white p-[10px] rounded-2xl shadow-sm border border-gray-200 sticky top-8 content-center"
-          >
-            <dl class="space-y-4">
-              <div class="mb-[20px]">
-                <div class="flex justify-between items-center mb-[10px]">
-                  <dt class="text-gray-600 text-[1rem]">Subtotal</dt>
-                  <dd class="font-semibold text-gray-900 text-[1rem]">$586.00</dd>
-                </div>
-
-                <div class="flex justify-between items-center mb-[10px]">
-                  <dt class="text-gray-600 text-[1rem]">Shipping</dt>
-                  <dd class="font-semibold text-gray-900 text-[1rem]">$12.00</dd>
-                </div>
-              </div>
-
-              <div class="text-right mb-[10px]">
-                <p class="text-sm text-gray-500">Estimated delivery: 3-5 business days</p>
-              </div>
-
-              <hr />
-
-              <div class="total border-gray-300 pt-4 my-[10px]">
-                <div class="flex justify-between items-center">
-                  <dt class="text-xl font-bold text-gray-900">Total</dt>
-                  <dd class="text-xl font-bold text-gray-900">$598.00</dd>
-                </div>
-              </div>
-            </dl>
-
-            <!-- Checkout Button -->
-            <div class="mt-8">
-              <button
-                class="proceed-btn w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-              >
-                Proceed to Checkout
-              </button>
-            </div>
-
-            <!-- Continue Shopping -->
-            <div class="my-[10px] text-center">
-              <a
-                href="#"
-                class="continue-link block w-full font-medium transition-colors duration-200 text-center"
-              >
-                <span class="inline-block mr-2">
-                  <font-awesome-icon :icon="['fas', 'arrow-left']" class="w-4 h-4" />
-                </span>
-                Continue Shopping
-              </a>
-            </div>
-          </div>
-        </aside>
+        <OrderSummary
+          :subtotal="subtotal"
+          :shipping="shipping"
+          :tax="0"
+          :discount="0"
+          :show-checkout-button="true"
+          :show-continue-shopping="true"
+          @checkout="handleCheckout"
+          @continue-shopping="handleContinueShopping"
+        />
       </div>
     </div>
 
@@ -171,47 +159,5 @@ const clearCart = () => {
 
 h2 {
   color: #5d3471; /* Deep Purple headings */
-}
-
-.order-summary {
-  color: #5d3471; /* Deep Purple text */
-  border-radius: 20px;
-}
-
-.proceed-btn {
-  padding: 8px;
-  border: none;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #5d3471 0%, #804d91 100%); /* Deep → Royal Purple gradient */
-  font-size: medium;
-  color: white;
-}
-.proceed-btn:hover {
-  background: linear-gradient(90deg, #804d91 0%, #aa69af 100%); /* Royal → Medium Orchid gradient */
-}
-
-.summary-details {
-  border: 1px solid #ce7f57; /* Warm Brownish Orange border */
-  border-radius: 20px;
-}
-
-.total dt,
-.total dd {
-  font-weight: 600;
-  font-size: medium;
-  color: #5d3471; /* Deep Purple total */
-}
-
-.continue-link {
-  text-decoration: none;
-  background: #804d91; /* Royal Purple */
-  width: 100%;
-  padding: 8px;
-  border-radius: 10px;
-  text-align: center;
-  color: white;
-}
-.continue-link:hover {
-  background: #aa69af; /* Medium Orchid hover */
 }
 </style>

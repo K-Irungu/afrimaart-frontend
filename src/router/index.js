@@ -8,6 +8,7 @@ import CartView from '@/views/CartView.vue'
 import ProductDetailView from '@/views/ProductDetailView.vue'
 import ContactView from '@/views/ContactView.vue'
 import AuthView from '@/views/AuthView.vue'
+import CheckoutView from '@/views/CheckoutView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -56,6 +57,12 @@ const router = createRouter({
       path: '/auth',
       name: 'auth',
       component: AuthView,
+    },
+    {
+      path: '/checkout',
+      name: 'checkout',
+      component: CheckoutView,
+      meta: { requiresAuth: true },
     },
     {
       // Redirect any unmatched routes to home
