@@ -115,7 +115,7 @@ const isActive = (path) => {
           <div
             v-if="showDropdown"
             @click="closeDropdown"
-            class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50 py-1"
+            class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border-gray-200 z-50 py-1"
           >
             <button
               @click="navigateToAccount"
@@ -287,20 +287,23 @@ const isActive = (path) => {
 
 .inactive-link:hover {
   color: #804d91;
-  background-color: #eebefe;
+  background-color: #5d3471;
   border-radius: 6px;
 }
 
 /* Dropdown Styles */
 .user-dropdown-btn {
-  font-size: 1rem;
-}
-.user-dropdown-btn {
+  font-size: 0.8rem;
+  background-color: #5d3471;
+  color: #ffffff;
+  outline: none;
+  border: none;
+  padding: 5px 10px;
   transition: all 0.2s ease;
 }
 
 .user-dropdown-btn:hover {
-  background-color: #f3f4f6;
+  background-color: #804d91;
 }
 
 .dropdown-menu {

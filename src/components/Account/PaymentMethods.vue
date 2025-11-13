@@ -520,7 +520,7 @@ const handlePaymentTypeChange = (event) => {
   background: #ffffff;
   padding: 25px;
   border-radius: 20px;
-  border: 1px solid #e6e9ee;
+  border: 1px solid #e8b6d5;
 }
 
 .payment-methods-grid {
@@ -533,21 +533,21 @@ const handlePaymentTypeChange = (event) => {
   padding: 10px;
   border-radius: 16px;
   transition: all 0.3s ease;
-  border: 2px solid #f1f5f9;
+  border: 2px solid #e8b6d5;
 }
 
 .add-payment-btn {
   border: none;
   color: #ffffff;
   border-radius: 12px;
-  background: #0f1724;
+  background: #5d3471;
   padding: 12px 24px;
 }
 
 .add-payment-btn:hover {
-  background: #1e293b;
+  background: #804d91;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(15, 23, 36, 0.2);
+  box-shadow: 0 4px 12px rgba(128, 77, 145, 0.3);
 }
 
 .set-default-btn,
@@ -559,15 +559,15 @@ const handlePaymentTypeChange = (event) => {
 }
 
 .set-default-btn:hover {
-  background: #e0e7ff;
+  background: #e8b6d5;
   transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 2px 8px rgba(170, 105, 175, 0.3);
 }
 
 .remove-btn:hover {
   background: #fef2f2;
   transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 2px 8px rgba(206, 127, 87, 0.3);
 }
 
 .payment-dropdown {
@@ -578,22 +578,22 @@ const handlePaymentTypeChange = (event) => {
 }
 
 .payment-dropdown:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: #aa69af;
+  box-shadow: 0 0 0 3px rgba(170, 105, 175, 0.2);
 }
 
 .form-input {
-  border: 2px solid #e6e9ee;
+  border: 2px solid #e8b6d5;
   border-radius: 12px;
-  background: #f7f9fb;
+  background: #fdf7fb;
   transition: all 0.2s ease;
   font-size: 16px;
 }
 
 .form-input:focus {
-  border-color: #6366f1;
+  border-color: #5d3471;
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(93, 52, 113, 0.15);
   transform: translateY(-2px);
 }
 
@@ -602,7 +602,7 @@ const handlePaymentTypeChange = (event) => {
 }
 
 .cancel-btn {
-  background: #0f1724;
+  background: #5d3471;
   color: #ffffff;
   border-radius: 12px;
   border: none;
@@ -612,9 +612,19 @@ const handlePaymentTypeChange = (event) => {
 .save-btn {
   color: #ffffff;
   border-radius: 12px;
-  background: #0066ff;
+  background: #804d91;
   border: none;
   padding: 12px 24px;
+}
+
+.save-btn:hover {
+  background: #aa69af;
+  box-shadow: 0 4px 12px rgba(170, 105, 175, 0.3);
+}
+
+.cancel-btn:hover {
+  background: #aa69af;
+  box-shadow: 0 4px 12px rgba(170, 105, 175, 0.3);
 }
 
 .payment-icon {
@@ -625,21 +635,25 @@ const handlePaymentTypeChange = (event) => {
 
 .add-payment-form {
   border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  border: 2px solid #f1f5f9;
+  box-shadow: 0 8px 25px rgba(128, 77, 145, 0.1);
+  border: 2px solid #e8b6d5;
 }
 
 .empty-state {
   padding: 60px 40px;
+  background: #fdf7fb;
+  border-color: #e8b6d5;
 }
 
 .close-btn {
   border-radius: 8px;
   transition: all 0.2s ease;
+  color: #5d3471;
 }
 
 .close-btn:hover {
-  background: #f3f4f6;
+  background: #e8b6d5;
+  color: #804d91;
   transform: rotate(90deg);
 }
 

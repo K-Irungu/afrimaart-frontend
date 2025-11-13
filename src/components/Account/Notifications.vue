@@ -77,8 +77,8 @@ const readNotifications = props.notifications.filter((notification) => !notifica
   background: #ffffff;
   padding: 32px;
   border-radius: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e6e9ee;
+  box-shadow: 0 2px 8px rgba(128, 77, 145, 0.15);
+  border: 1px solid #e8b6d5;
 }
 
 .notification-grid {
@@ -90,25 +90,25 @@ const readNotifications = props.notifications.filter((notification) => !notifica
 h2 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1f2937;
+  color: #5d3471;
 }
 
 h3 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #374151;
+  color: #804d91;
   padding-bottom: 8px;
-  border-bottom: 2px solid #f3f4f6;
+  border-bottom: 2px solid #e8b6d5;
 }
 
 .header span {
   border-radius: 5px;
-  background: #0f1724;
+  background: #5d3471;
   color: white;
 }
 
 button {
-  background: #0066ff;
+  background: #804d91;
   border-radius: 8px;
   border: none;
   padding: 8px 16px;
@@ -118,9 +118,10 @@ button {
 }
 
 button:hover {
-  color: black;
+  background: #aa69af;
+  color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 4px 12px rgba(170, 105, 175, 0.3);
 }
 
 /* Section spacing */
@@ -129,7 +130,7 @@ section {
 }
 
 section:not(:last-child) {
-  border-bottom: 2px solid #f8fafc;
+  border-bottom: 2px solid #e8b6d5;
   margin-bottom: 24px;
 }
 
@@ -141,6 +142,11 @@ section:not(:last-child) {
 .text-center h3 {
   border-bottom: none;
   margin-bottom: 12px;
+  color: #5d3471;
+}
+
+.text-center p {
+  color: #804d91;
 }
 
 /* Responsive design */
@@ -157,10 +163,12 @@ section:not(:last-child) {
 
   h2 {
     font-size: 1.5rem;
+    color: #5d3471;
   }
 
   h3 {
     font-size: 1.125rem;
+    color: #804d91;
   }
 }
 </style>

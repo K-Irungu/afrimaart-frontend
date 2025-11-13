@@ -366,7 +366,8 @@ const getAddressTypeDisplay = (type) => {
 
 .address-item {
   border-radius: 20px;
-  border: 1px solid #e6e9ee;
+  border: 1px solid #aa69af;
+  background: #ffffff;
 }
 
 .address-buttons button {
@@ -378,47 +379,50 @@ const getAddressTypeDisplay = (type) => {
 }
 
 .edit-btn {
-  background: #d3e9ff;
-  border-color: #d1d5db;
+  background: #e8b6d5;
+  border-color: #aa69af;
+  color: #5d3471;
 }
 
 .default-btn {
-  background: #e0e7ff;
-  border-color: #6366f1;
+  background: #e8b6d5;
+  border-color: #804d91;
+  color: #804d91;
 }
 
 .remove-btn {
   background: #fef2f2;
-  border-color: #fca5a5;
+  border-color: #ce7f57;
+  color: #ce7f57;
 }
 
 .search-form {
   padding: 2px;
   width: 60%;
-  border: 1px solid #e6e9ee;
+  border: 1px solid #aa69af;
   border-radius: 10px;
-  background: #f7f9fb;
+  background: #e8b6d5;
   transition: all 0.2s ease;
 }
 
 .search-input {
   padding: 10px;
   border: none;
-  background: #f7f9fb;
+  background: #e8b6d5;
 }
 
 .search-input:focus {
-  border-color: #6366f1;
+  border-color: #5d3471;
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(93, 52, 113, 0.1);
 }
 
 .search-btn {
   margin-right: 5px;
   padding: 10px;
   border: none;
-  background: #f7f9fb;
-  color: black;
+  background: transparent;
+  color: #5d3471;
 }
 
 .form-group {
@@ -427,16 +431,16 @@ const getAddressTypeDisplay = (type) => {
 
 .form-input {
   padding: 10px;
-  border: 1px solid #e6e9ee;
+  border: 1px solid #aa69af;
   border-radius: 10px;
-  background: #f7f9fb;
+  background: #e8b6d5;
   transition: all 0.2s ease;
 }
 
 .form-input:focus {
-  border-color: #6366f1;
+  border-color: #5d3471;
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(93, 52, 113, 0.1);
   transform: translateY(-1px);
 }
 
@@ -446,36 +450,40 @@ const getAddressTypeDisplay = (type) => {
 
 .form-group label {
   font-weight: 500;
-  color: #374151;
+  color: #5d3471;
 }
 
 .add-card {
   border-radius: 20px;
+  border-color: #aa69af;
   transition: all 0.3s ease;
 }
 
 .add-card:hover {
-  border-color: #6366f1;
-  background: #f0f9ff;
+  border-color: #804d91;
+  background: #e8b6d5;
 }
 
 .close-btn {
   padding: 8px;
   border-radius: 8px;
-  transition: all 0.2s ease;
+  background: #5d3471;
+  transition: all 0.4s ease-in-out;
 }
 
 .close-btn:hover {
-  background: #f3f4f6;
+  background: #aa69af;
+  color: #ffffff;
+  transform: rotate(90deg);
 }
 
 .cancel-btn {
   color: #ffffff;
-  background: #0f1724;
+  background: #5d3471;
   padding: 10px;
   margin-top: 20px;
   border-radius: 10px;
-  border: 1px solid #e6e9ee;
+  border: 1px solid #aa69af;
   transition: all 0.2s ease;
 }
 
@@ -483,14 +491,19 @@ const getAddressTypeDisplay = (type) => {
   padding: 10px;
   margin-top: 20px;
   border-radius: 10px;
-  background: #0066ff;
+  background: #804d91;
   border: none;
   color: #ffffff;
 }
 
-.cancel-btn:hover,
+.cancel-btn:hover {
+  background: #aa69af;
+  box-shadow: 0 4px 12px rgba(170, 105, 175, 0.3);
+}
+
 .save-btn:hover {
+  background: #ce7f57;
+  box-shadow: 0 4px 12px rgba(206, 127, 87, 0.3);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(15, 23, 36, 0.2);
 }
 </style>

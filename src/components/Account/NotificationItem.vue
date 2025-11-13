@@ -177,20 +177,4 @@ const getButtonStyle = (tagText) => {
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
-
-/* Specific tag colors with your brand colors */
-.tag.bg-\[\#ffb020\] {
-  background-color: #ffb020 !important;
-  border-color: #ffb020 !important;
-}
-
-.tag.bg-\[\#16a34a\] {
-  background-color: #16a34a !important;
-  border-color: #16a34a !important;
-}
-
-.tag.bg-\[\#0f1724\] {
-  background-color: #0f1724 !important;
-  border-color: #0f1724 !important;
-}
 </style>

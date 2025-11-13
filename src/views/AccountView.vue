@@ -34,7 +34,7 @@ const notifications = ref([
     title: 'Your order has been shipped!',
     subtitle: 'Order #58421 is on its way to you',
     tagText: 'Order update',
-    tagColor: 'bg-blue-100 text-blue-800',
+    tagColor: 'bg-[#E8B6D5] text-[#5D3471]',
     time: '2 hours ago',
     isUnread: true,
   },
@@ -43,7 +43,7 @@ const notifications = ref([
     title: 'New deals available',
     subtitle: 'Check out our latest promotions',
     tagText: 'New deals',
-    tagColor: 'bg-green-100 text-green-800',
+    tagColor: 'bg-[#CE7F57] text-white',
     time: '1 day ago',
     isUnread: true,
   },
@@ -52,7 +52,7 @@ const notifications = ref([
     title: 'Security alert',
     subtitle: 'New login from San Francisco, CA',
     tagText: 'Security',
-    tagColor: 'bg-yellow-100 text-yellow-800',
+    tagColor: 'bg-[#AA69AF] text-white',
     time: '2 days ago',
     isUnread: false,
   },
@@ -61,7 +61,7 @@ const notifications = ref([
     title: 'Payment method updated',
     subtitle: 'Your credit card has been updated',
     tagText: 'Payment',
-    tagColor: 'bg-purple-100 text-purple-800',
+    tagColor: 'bg-[#804D91] text-white',
     time: '3 days ago',
     isUnread: false,
   },
@@ -142,26 +142,26 @@ const getTabDisplayName = (tabId) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen">
     <!-- Navbar -->
     <Navbar />
 
     <main class="main max-w-7xl mx-auto px-4 py-8">
-      <div class="text-sm text-gray-500 mb-6 pb-[10px] my-[10px]">
-        Home / <span class="font-medium text-gray-700">Account</span> /
-        <span class="text-indigo-600">{{ getTabDisplayName(activeTab) }}</span>
+      <div class="text-sm text-[#804D91] mb-6 pb-[10px] my-[10px]">
+        Home / <span class="font-medium text-[#5D3471]">Account</span> /
+        <span class="text-[#AA69AF]">{{ getTabDisplayName(activeTab) }}</span>
       </div>
 
       <!-- Banner -->
-      <div
-        class="banner bg-gray-800 text-white p-[20px] rounded-lg flex justify-between items-center mb-6"
-      >
+      <div class="banner text-white p-[20px] rounded-lg flex justify-between items-center mb-6">
         <div>
           <h1 class="banner-ttl text-xl font-semibold mb-1">Your account</h1>
-          <p class="text-sm text-gray-400">Manage your profile, addresses, orders, and security.</p>
+          <p class="text-sm text-[#E8B6D5]">
+            Manage your profile, addresses, orders, and security.
+          </p>
         </div>
         <button
-          class="signout-btn bg-indigo-600 text-white font-medium py-[8px] px-[10px] rounded-lg transition text-sm flex items-center gap-2"
+          class="signout-btn bg-[#5d3471] text-[#ffff] font-medium py-[8px] px-[10px] rounded-lg transition text-sm flex items-center gap-2 hover:bg-[#AA69AF]"
         >
           <font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" class="w-4 h-4 mr-[6px]" />
           Sign out
@@ -177,7 +177,6 @@ const getTabDisplayName = (tabId) => {
 
         <!-- Content - Flexible width -->
         <div class="flex-1">
-          <!-- Profile Tab - Only Profile Details -->
           <div v-if="activeTab === 'profile'">
             <ProfileDetails
               :user="user"
@@ -185,36 +184,36 @@ const getTabDisplayName = (tabId) => {
             />
           </div>
 
-          <!-- Orders Tab - Only Order History -->
+          <!-- Order History tab -->
           <div v-else-if="activeTab === 'orders'">
             <OrderHistory :orders="orders" :loading="ordersLoading" />
           </div>
 
-          <!-- Addresses Tab - Only Address Section -->
+          <!-- Addresses tab -->
           <div v-else-if="activeTab === 'addresses'">
             <Addresses :addresses="addresses" :loading="addressesLoading" />
           </div>
 
-          <!-- Payment Methods Tab -->
+          <!-- Payment Methods tab -->
           <div v-else-if="activeTab === 'payment'" class="bg-white rounded-lg shadow-sm p-6">
             <PaymentMethods />
           </div>
 
-          <!-- Notifications Tab -->
+          <!-- Notifications tab -->
           <div v-else-if="activeTab === 'notifications'">
             <Notifications :notifications="notifications" />
           </div>
 
-          <!-- Fallback for unknown tabs -->
           <div v-else class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-2xl font-bold mb-4">{{ getTabDisplayName(activeTab) }}</h2>
-            <p class="text-gray-600">Content for this section is coming soon.</p>
+            <h2 class="text-2xl font-bold mb-4 text-[#5D3471]">
+              {{ getTabDisplayName(activeTab) }}
+            </h2>
+            <p class="text-[#804D91]">Content for this section is coming soon.</p>
           </div>
         </div>
       </div>
     </main>
 
-    <!-- Footer -->
     <div class="mt-[30px]">
       <Footer />
     </div>
@@ -227,15 +226,23 @@ const getTabDisplayName = (tabId) => {
   color: #000000;
 }
 .banner {
-  background: #0f1724;
-  border-radius: 20px;
+  background: linear-gradient(135deg, #5d3471, #804d91, #aa69af);
+  width: 90%;
   color: white;
+  border-radius: 20px;
+  transition: all 0.3s ease-in-out;
 }
 .banner-ttl {
   font-weight: 600;
 }
+.banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(93, 52, 113, 0.3);
+}
+
 .signout-btn {
   border-radius: 10px;
   border: none;
+  transition: all 0.3s ease-in-out;
 }
 </style>

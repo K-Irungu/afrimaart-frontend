@@ -11,15 +11,15 @@ const props = defineProps({
 const getStatusClass = (status) => {
   switch (status) {
     case 'Shipped':
-      return 'bg-[#ffb020] text-white border-[#ffb020]'
+      return 'bg-[#CE7F57] text-white border-[#CE7F57]'
     case 'Preparing':
-      return 'bg-[#f97316] text-white border-[#f97316]'
+      return 'bg-[#AA69AF] text-white border-[#AA69AF]'
     case 'Delivered':
-      return 'bg-[#16a34a] text-white border-[#16a34a]'
+      return 'bg-[#804D91] text-white border-[#804D91]'
     case 'Returned':
-      return 'bg-[#e02424] text-white border-[#e02424]'
+      return 'bg-[#5D3471] text-white border-[#5D3471]'
     default:
-      return 'bg-gray-100 text-gray-700 border-gray-300'
+      return 'bg-[#E8B6D5] text-[#5D3471] border-[#E8B6D5]'
   }
 }
 </script>
@@ -33,11 +33,11 @@ const getStatusClass = (status) => {
         <input
           type="text"
           placeholder="Search orders, # or item"
-          class="filter-input p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+          class="filter-input p-2 border border-gray-300 rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]"
         />
 
         <select
-          class="filter-select p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+          class="filter-select p-2 border border-gray-300 rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]"
         >
           <option>Status: All</option>
           <option>Shipped</option>
@@ -47,7 +47,7 @@ const getStatusClass = (status) => {
         </select>
 
         <select
-          class="filter-select p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+          class="filter-select p-2 border border-gray-300 rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]"
         >
           <option>Placed: Last 12 months</option>
           <option>Last 6 months</option>
@@ -80,7 +80,7 @@ const getStatusClass = (status) => {
             <tr
               v-for="order in orders"
               :key="order.id"
-              class="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+              class="border-b border-gray-100 hover:bg-[#E8B6D5] transition-colors"
             >
               <!-- Order Number -->
               <td class="py-4 px-4">
@@ -118,13 +118,13 @@ const getStatusClass = (status) => {
               <td class="actions-btns py-4 px-4">
                 <div class="flex items-center space-x-2 gap-[5px]">
                   <button
-                    class="text-sm font-medium text-gray-700 px-3 py-1 rounded-lg border hover:bg-gray-50 transition-colors"
+                    class="text-sm font-medium text-gray-700 px-3 py-1 rounded-lg border hover:bg-[#E8B6D5] transition-colors"
                   >
                     {{ order.status === 'Delivered' ? 'Invoice' : 'View details' }}
                   </button>
 
                   <button
-                    class="text-sm font-medium text-indigo-600 px-3 py-1 rounded-lg border border-indigo-600 hover:bg-indigo-50 transition-colors"
+                    class="text-sm font-medium text-white px-3 py-1 rounded-lg border border-[#804D91] bg-[#804D91] hover:bg-[#AA69AF] transition-colors"
                   >
                     {{ order.status === 'Returned' ? 'Support' : 'Track' }}
                   </button>
@@ -138,12 +138,12 @@ const getStatusClass = (status) => {
       <!-- Pagination -->
       <div class="pagintion flex justify-center pt-6 space-x-3 gap-[5px] mt-[10px]">
         <button
-          class="text-sm font-medium text-gray-700 px-4 py-2 rounded-lg border hover:bg-gray-100 transition-colors p-[6px]"
+          class="text-sm font-medium text-white px-4 py-2 rounded-lg border bg-[#5D3471] hover:bg-[#AA69AF] transition-colors p-[6px]"
         >
           &laquo; Previous
         </button>
         <button
-          class="text-sm font-medium text-gray-700 px-4 py-2 rounded-lg border hover:bg-gray-100 transition-colors p-[6px]"
+          class="text-sm font-medium text-white px-4 py-2 rounded-lg border bg-[#5D3471] hover:bg-[#AA69AF] transition-colors p-[6px]"
         >
           Next &raquo;
         </button>
@@ -177,7 +177,7 @@ const getStatusClass = (status) => {
 }
 
 .order-history th {
-  background: #f8fafc;
+  background: #fcecff;
   font-weight: 600;
   text-transform: uppercase;
   font-size: 1rem;
@@ -192,8 +192,6 @@ const getStatusClass = (status) => {
 .actions-btns button {
   padding: 6px;
   border-radius: 10px;
-  background: #0066ff;
-  color: #ffffff;
 }
 
 .status-badge {
@@ -206,29 +204,28 @@ const getStatusClass = (status) => {
 
 .pagintion button {
   border-radius: 10px;
-  background: #0f1724;
   color: #ffffff;
 }
 
-/* Specific status colors */
-.status-badge.bg-\[\#ffb020\] {
-  background-color: #ffb020 !important;
-  border-color: #ffb020 !important;
+/* Status colors */
+.status-badge.bg-\[\#CE7F57\] {
+  background-color: #ce7f57 !important;
+  border-color: #ce7f57 !important;
 }
 
-.status-badge.bg-\[\#f97316\] {
-  background-color: #f97316 !important;
-  border-color: #f97316 !important;
+.status-badge.bg-\[\#AA69AF\] {
+  background-color: #aa69af !important;
+  border-color: #aa69af !important;
 }
 
-.status-badge.bg-\[\#16a34a\] {
-  background-color: #16a34a !important;
-  border-color: #16a34a !important;
+.status-badge.bg-\[\#804D91\] {
+  background-color: #804d91 !important;
+  border-color: #804d91 !important;
 }
 
-.status-badge.bg-\[\#e02424\] {
-  background-color: #e02424 !important;
-  border-color: #e02424 !important;
+.status-badge.bg-\[\#5D3471\] {
+  background-color: #5d3471 !important;
+  border-color: #5d3471 !important;
 }
 
 .order-history tr:last-child td {

@@ -56,25 +56,26 @@ const tabs = [
   padding: 10px;
   border-radius: 20px;
 }
+
 .nav-btn {
   padding: 15px;
-  border: 1px solid #e6e9ee;
+  border: 1px solid #aa69af; /* Medium Orchid for borders */
   border-radius: 10px;
   transition: all 0.3s ease;
 }
 
 .nav-btn.active {
-  background-color: #0f1724;
+  background-color: #5d3471; /* Deep Purple */
   color: white;
-  border-color: #0f1724;
+  border-color: #5d3471; /* Deep Purple */
 }
 
 .nav-btn.inactive {
-  color: #374151; /* gray-700 */
-  border-color: #e6e9ee;
+  color: #804d91; /* Royal Purple */
+  border-color: #aa69af; /* Medium Orchid */
 }
 
 .nav-btn.inactive:hover {
-  background-color: #f9fafb; /* gray-50 */
+  background-color: #ce7f57; /* Warm Brownish Orange */
 }
 </style>

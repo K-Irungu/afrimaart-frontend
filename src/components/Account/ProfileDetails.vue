@@ -63,7 +63,7 @@ const handleDelete = () => {
       <button
         v-if="!isEditing"
         @click="enableEditing"
-        class="edit-btn px-[5px] py-[5px] text-sm rounded-lg hover:bg-indigo-700 transition flex items-center gap-2"
+        class="edit-btn px-[5px] py-[5px] text-sm rounded-lg hover:bg-[#AA69AF] transition flex items-center gap-2"
       >
         <font-awesome-icon :icon="['fas', 'pen-to-square']" class="w-4 h-4 mr-[5px]" />
         Edit Profile
@@ -83,14 +83,14 @@ const handleDelete = () => {
         <div class="upload-btns flex space-x-3 gap-[5px] px-[6px]">
           <button
             v-if="isEditing"
-            class="upload-btn px-4 py-2 text-sm font-medium rounded-lg text-gray-700 border border-gray-300 hover:bg-gray-100 transition flex items-center gap-2"
+            class="upload-btn px-4 py-2 text-sm font-medium rounded-lg text-[#5D3471] border border-gray-300 hover:bg-[#E8B6D5] transition flex items-center gap-2"
           >
             <font-awesome-icon :icon="['fas', 'upload']" class="w-4 h-4 mr-[5px]" />
             Upload new
           </button>
           <button
             v-if="isEditing"
-            class="remove-btn px-4 py-2 text-sm font-medium rounded-lg text-red-600 border border-red-300 hover:bg-red-50 transition flex items-center gap-2"
+            class="remove-btn px-4 py-2 text-sm font-medium rounded-lg text-[#CE7F57] border border-[#CE7F57] hover:bg-[#E8B6D5] transition flex items-center gap-2"
           >
             <font-awesome-icon :icon="['fas', 'trash']" class="w-4 h-4 mr-[5px]" />
             Remove
@@ -106,7 +106,7 @@ const handleDelete = () => {
             <input
               v-if="isEditing"
               v-model="editingUser.firstName"
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]"
             />
             <div v-else class="name-display p-3 rounded-lg text-gray-700">
               {{ editingUser.firstName }}
@@ -119,9 +119,9 @@ const handleDelete = () => {
             <input
               v-if="isEditing"
               v-model="editingUser.lastName"
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]"
             />
-            <div v-else class="name-display p-3 bg-gray-50 rounded-lg text-gray-700">
+            <div v-else class="name-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
               {{ editingUser.lastName }}
             </div>
           </div>
@@ -133,9 +133,9 @@ const handleDelete = () => {
           <input
             v-if="isEditing"
             v-model="editingUser.username"
-            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]"
           />
-          <div v-else class="username-display p-3 bg-gray-50 rounded-lg text-gray-700">
+          <div v-else class="username-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
             {{ editingUser.username }}
           </div>
           <p v-if="isEditing" class="text-xs text-gray-500 mt-1">
@@ -149,9 +149,9 @@ const handleDelete = () => {
           <input
             v-if="isEditing"
             v-model="editingUser.displayName"
-            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]"
           />
-          <div v-else class="show-name p-3 bg-gray-50 rounded-lg text-gray-700">
+          <div v-else class="show-name p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
             {{ editingUser.displayName }}
           </div>
         </div>
@@ -177,9 +177,9 @@ const handleDelete = () => {
           <input
             v-if="isEditing"
             v-model="editingUser.email"
-            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]"
           />
-          <div v-else class="email-display p-3 bg-gray-50 rounded-lg text-gray-700">
+          <div v-else class="email-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
             {{ editingUser.email }}
           </div>
           <p class="text-xs text-gray-500 mt-1">Primary email for order updates and receipts.</p>
@@ -194,9 +194,9 @@ const handleDelete = () => {
           <input
             v-if="isEditing"
             v-model="editingUser.phone"
-            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]"
           />
-          <div v-else class="phone-display p-3 bg-gray-50 rounded-lg text-gray-700">
+          <div v-else class="phone-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
             {{ editingUser.phone }}
           </div>
           <p class="text-xs text-gray-500 mt-1">Used for delivery and account security.</p>
@@ -211,14 +211,16 @@ const handleDelete = () => {
       <div class="actions-btns flex justify-end space-x-3 gap-[10px]">
         <button
           @click="cancelChanges"
-          class="cancel-btn px-5 py-3 text-sm font-medium rounded-lg text-gray-700 border border-gray-300 hover:bg-gray-100 transition flex items-center gap-2"
+          class="cancel-btn px-5 py-3 text-sm font-medium rounded-lg text-white border border-gray-300 hover:bg-[#AA69AF] transition flex items-center gap-2"
+          style="background: #804d91"
         >
           <font-awesome-icon :icon="['fas', 'circle-xmark']" class="w-4 h-4 mr-[5px]" />
           Cancel
         </button>
         <button
           @click="saveChanges"
-          class="save-btn px-5 py-3 text-sm font-medium rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition flex items-center gap-2"
+          class="save-btn px-5 py-3 text-sm font-medium rounded-lg text-white hover:bg-[#AA69AF] transition flex items-center gap-2"
+          style="background: #5d3471"
         >
           <font-awesome-icon :icon="['fas', 'circle-check']" class="w-4 h-4 mr-[5px]" />
           Save changes
@@ -235,7 +237,7 @@ const handleDelete = () => {
           <h2 class="font-medium text-gray-800 flex items-center gap-2">
             <font-awesome-icon
               :icon="['fas', 'triangle-exclamation']"
-              class="w-4 h-4 text-red-500"
+              class="w-4 h-4 text-[#CE7F57]"
             />
             Delete account
           </h2>
@@ -245,7 +247,8 @@ const handleDelete = () => {
         </div>
         <button
           @click="handleDelete"
-          class="px-5 py-3 text-sm font-medium rounded-lg bg-red-600 text-white hover:bg-red-700 transition flex items-center gap-2"
+          class="px-5 py-3 text-sm font-medium rounded-lg text-white hover:bg-[#AA69AF] transition flex items-center gap-2"
+          style="background: #ce7f57"
         >
           <font-awesome-icon :icon="['fas', 'trash-can']" class="w-4 h-4" />
           Delete
@@ -291,33 +294,36 @@ label {
   padding: 6px;
   border: 1px solid #e7eaef;
   border-radius: 10px;
-  background: #f7f9fb;
+  background: #e8b6d5;
   margin-bottom: 10px;
 }
 
 input {
   padding: 10px;
-  background: #f7f9fb;
+  background: #e8b6d5;
   border-radius: 10px;
   border: 1px solid #e7eaef;
   margin-bottom: 10px;
 }
 
 .edit-btn {
-  background: #0066ff;
+  background: #804d91;
   border: none;
   color: #ffffff;
   border-radius: 8px;
   font-size: medium;
+  transition: 0.3s ease;
 }
+
 .delete-section button {
-  background: #e02424;
+  background: #ce7f57;
   padding: 10px;
   border: 1px solid #e6e9ee;
   border-radius: 6px;
   font-weight: 400;
   font-size: medium;
   color: #ffffff;
+  transition: 0.3s ease;
 }
 
 .upload-btns button {
@@ -325,19 +331,45 @@ input {
   border: none;
   border-radius: 10px;
   color: #ffffff;
+  transition: 0.3s ease;
 }
 .actions-btns button {
   padding: 8px;
   border: none;
   border-radius: 10px;
   color: #ffffff;
+  transition: 0.3s ease;
 }
 .upload-btn,
 .save-btn {
-  background: #0066ff;
+  background: #5d3471;
 }
 .remove-btn,
 .cancel-btn {
-  background: #0f1724;
+  background: #804d91;
+  transition: 0.3s ease;
+}
+
+.edit-btn:hover {
+  background: #aa69af;
+}
+
+.upload-btn:hover {
+  background: #aa69af;
+  color: #fff;
+}
+.remove-btn:hover {
+  background: #aa69af;
+  color: #fff;
+}
+.save-btn:hover {
+  background: #aa69af !important;
+}
+.cancel-btn:hover {
+  background: #aa69af !important;
+}
+.delete-section button:hover {
+  background: #aa69af !important;
+  color: #fff;
 }
 </style>
