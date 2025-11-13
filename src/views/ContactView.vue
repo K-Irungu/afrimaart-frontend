@@ -14,7 +14,7 @@ const submitForm = () => {
     <main class="flex-grow py-12 flex justify-center">
       <div class="main-content w-[90%] py-[20px] max-w-5xl">
         <!-- Breadcrumb -->
-        <div class="breadcrumps text-sm mb-[10px]">
+        <div class="breadcrumb text-sm mb-[10px]">
           <ul class="flex items-center space-x-2">
             <li><a href="#" class="hover:underline">Home</a></li>
             <li class="mr-[10px]">/</li>
@@ -93,13 +93,13 @@ const submitForm = () => {
 
 <style scoped>
 /* --- Breadcrumb --- */
-.breadcrumps {
+.breadcrumb {
   color: #5d3471;
 }
-.breadcrumps ul {
+.breadcrumb ul {
   list-style-type: none;
 }
-.breadcrumps ul li a {
+.breadcrumb ul li a {
   text-decoration: none;
   color: #5d3471;
   margin-right: 10px;

@@ -237,10 +237,12 @@ const returnToCart = () => {
     <main class="main flex-grow py-8 w-[90%]">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Breadcrumb -->
-        <div class="text-sm breadcrumbs mb-8 text-gray-500">
-          <ul>
+        <div class="breadcrumb text-sm breadcrumbs mt-[10px] text-gray-500">
+          <ul class="flex items-center space-x-2">
             <li><a href="/" class="hover:underline text-deep-purple">Home</a></li>
+            <li class="mr-[10px]">/</li>
             <li><a href="/cart" class="hover:underline text-deep-purple">Cart</a></li>
+            <li class="mr-[10px]">/</li>
             <li class="text-royal-purple font-medium">Checkout</li>
           </ul>
         </div>
@@ -264,8 +266,8 @@ const returnToCart = () => {
               class="w-10 h-10 flex items-center justify-center rounded-full"
               :class="
                 checkoutState.currentStep >= 1
-                  ? 'bg-deep-purple text-white shadow-lg'
-                  : 'border-2 border-gray-300 text-gray-400'
+                  ? 'bg-deep-purple text-white shadow-lg p-[8px]'
+                  : 'border-2 border-gray-300 text-gray-400 p-[8px]'
               "
             >
               1
@@ -292,8 +294,8 @@ const returnToCart = () => {
               class="w-10 h-10 flex items-center justify-center rounded-full"
               :class="
                 checkoutState.currentStep >= 2
-                  ? 'bg-deep-purple text-white shadow-lg'
-                  : 'border-2 border-gray-300 text-gray-400'
+                  ? 'bg-deep-purple text-white shadow-lg p-[8px]'
+                  : 'border-2 border-gray-300 text-gray-400 p-[8px]'
               "
             >
               2
@@ -320,8 +322,8 @@ const returnToCart = () => {
               class="w-10 h-10 flex items-center justify-center rounded-full"
               :class="
                 checkoutState.currentStep >= 3
-                  ? 'bg-deep-purple text-white shadow-lg'
-                  : 'border-2 border-gray-300 text-gray-400'
+                  ? 'bg-deep-purple text-white shadow-lg p-[8px]'
+                  : 'border-2 border-gray-300 text-gray-400 p-[8px]'
               "
             >
               3
@@ -335,7 +337,7 @@ const returnToCart = () => {
           </div>
         </div>
 
-        <form @submit="handleSubmit" class="flex lg:flex-row gap-8">
+        <form @submit="handleSubmit" class="checkout-main w-full flex lg:flex-row gap-8">
           <!-- Left Column - Checkout Steps -->
           <div class="w-2/3 lg:w-2/3 space-y-8">
             <!-- Step 1: Contact Information -->
@@ -707,7 +709,7 @@ const returnToCart = () => {
           </div>
 
           <!-- Right Column - Order Summary -->
-          <div class="lg:w-1/3">
+          <div class="w-1/3 lg:w-1/3">
             <OrderSummary
               :subtotal="orderData.subtotal"
               :shipping="orderData.shipping"
@@ -727,15 +729,30 @@ const returnToCart = () => {
 </template>
 
 <style scoped>
-.main {
-  background: #f8fafc;
+.breadcrumb {
+  color: #5d3471;
 }
-
+.breadcrumb ul {
+  list-style-type: none;
+}
+.breadcrumb ul li a {
+  text-decoration: none;
+  color: #5d3471;
+  margin-right: 10px;
+}
 .progress-steps {
   background: #ffffff;
   padding: 20px;
   border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px #0000001a;
+}
+
+.checkout-main {
+  background: #ffffff;
+  margin: 18px 0;
+  padding: 8px 6px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px #0000001a;
 }
 
 .contact_info-form,
