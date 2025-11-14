@@ -15,8 +15,6 @@ const props = defineProps({
 const isAddingNewAddress = ref(false)
 
 const newAddressForm = ref({
-  fullName: '',
-  phoneNumber: '',
   addressLine1: '',
   addressLine2: '',
   city: '',
@@ -55,8 +53,6 @@ const cancelAddAddress = () => {
 
 const resetNewAddressForm = () => {
   newAddressForm.value = {
-    fullName: '',
-    phoneNumber: '',
     addressLine1: '',
     addressLine2: '',
     city: '',
@@ -221,33 +217,6 @@ const getAddressTypeDisplay = (type) => {
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-          <!-- Full Name -->
-          <div class="form-group space-y-1">
-            <label class="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <font-awesome-icon :icon="['fas', 'user']" class="w-3 h-3 text-gray-400" />
-              Full name
-            </label>
-            <input
-              v-model="newAddressForm.fullName"
-              type="text"
-              class="form-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              placeholder="Enter your full name"
-            />
-          </div>
-
-          <!-- Phone Number -->
-          <div class="form-group space-y-1">
-            <label class="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <font-awesome-icon :icon="['fas', 'phone']" class="w-3 h-3 text-gray-400" />
-              Phone number
-            </label>
-            <input
-              v-model="newAddressForm.phoneNumber"
-              type="tel"
-              class="form-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              placeholder="+1 (555) 000-0000"
-            />
-          </div>
 
           <!-- Address Line 1 -->
           <div class="form-group space-y-1 md:col-span-2">

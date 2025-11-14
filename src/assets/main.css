@@ -11,3 +11,7 @@
   background-color: blue; */
   background-color: #fef7ff;
 }
+
+button {
+  cursor: pointer;
+}

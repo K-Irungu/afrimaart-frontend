@@ -115,20 +115,14 @@ const getStatusClass = (status) => {
               </td>
 
               <!-- Actions -->
-              <td class="actions-btns py-4 px-4">
-                <div class="flex items-center space-x-2 gap-[5px]">
+              <td class="actions-btn py-4 px-4">
+
                   <button
                     class="text-sm font-medium text-gray-700 px-3 py-1 rounded-lg border hover:bg-[#E8B6D5] transition-colors"
                   >
-                    {{ order.status === 'Delivered' ? 'Invoice' : 'View details' }}
+                    View details
                   </button>
 
-                  <button
-                    class="text-sm font-medium text-white px-3 py-1 rounded-lg border border-[#804D91] bg-[#804D91] hover:bg-[#AA69AF] transition-colors"
-                  >
-                    {{ order.status === 'Returned' ? 'Support' : 'Track' }}
-                  </button>
-                </div>
               </td>
             </tr>
           </tbody>
@@ -189,9 +183,16 @@ const getStatusClass = (status) => {
   padding: 10px;
 }
 
-.actions-btns button {
-  padding: 6px;
+.actions-btn button {
+  padding: 8px;
+  border: 1.5px solid #ce7f57;
   border-radius: 10px;
+  background: #fbcaff;
+  transition: all 0.3s ease-in-out;
+}
+
+.actions-btn button:hover{
+  transform: translateY(5px);
 }
 
 .status-badge {

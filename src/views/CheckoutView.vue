@@ -28,12 +28,9 @@ const checkoutState = ref({
 
 // Form data for new address/payment
 const newAddressForm = ref({
-  fullName: '',
-  phoneNumber: '',
   addressLine1: '',
   addressLine2: '',
   city: '',
-  stateRegion: '',
   postalCode: '',
   country: 'Kenya',
   type: 'Home',
@@ -168,12 +165,9 @@ const saveNewPayment = () => {
 // Form reset functions
 const resetNewAddressForm = () => {
   newAddressForm.value = {
-    fullName: '',
-    phoneNumber: '',
     addressLine1: '',
     addressLine2: '',
     city: '',
-    stateRegion: '',
     postalCode: '',
     country: 'Kenya',
     type: 'Home',
@@ -440,26 +434,7 @@ const returnToCart = () => {
                 </h3>
 
                 <div class="form grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                    <input
-                      v-model="newAddressForm.fullName"
-                      type="text"
-                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-purple focus:border-deep-purple"
-                      placeholder="Enter your full name"
-                      required
-                    />
-                  </div>
-                  <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                    <input
-                      v-model="newAddressForm.phoneNumber"
-                      type="tel"
-                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-purple focus:border-deep-purple"
-                      placeholder="+254 712 345 678"
-                      required
-                    />
-                  </div>
+
                   <div class="form-group md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-2"
                       >Address Line 1</label
@@ -472,6 +447,7 @@ const returnToCart = () => {
                       required
                     />
                   </div>
+
                   <div class="form-group md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-2"
                       >Address Line 2 (Optional)</label
@@ -483,6 +459,7 @@ const returnToCart = () => {
                       placeholder="Apartment, suite, unit, building, floor, etc."
                     />
                   </div>
+
                   <div class="form-group">
                     <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
                     <input
@@ -493,6 +470,7 @@ const returnToCart = () => {
                       required
                     />
                   </div>
+                  
                   <div class="form-group">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
                     <input

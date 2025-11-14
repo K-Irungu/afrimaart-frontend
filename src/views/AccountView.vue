@@ -227,7 +227,6 @@ const getTabDisplayName = (tabId) => {
 }
 .banner {
   background: linear-gradient(135deg, #5d3471, #804d91, #aa69af);
-  width: 90%;
   color: white;
   border-radius: 20px;
   transition: all 0.3s ease-in-out;

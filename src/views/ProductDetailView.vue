@@ -50,12 +50,6 @@ const productsDatabase = {
       { name: 'Standard', price: 0, duration: '6 months' },
       { name: 'Extended', price: 25, duration: '2 years' },
     ],
-    images: [
-      sneakersImage,
-      'https://via.placeholder.com/600x400/E5E7EB/6B7280?text=Side+View',
-      'https://via.placeholder.com/600x400/D1D5DB/4B5563?text=Top+View',
-      'https://via.placeholder.com/600x400/9CA3AF/374151?text=Back+View',
-    ],
   },
   2: {
     id: 2,
@@ -87,11 +81,6 @@ const productsDatabase = {
       { name: 'Rose Gold', available: false, popular: false },
     ],
     warranties: [{ name: 'Standard', price: 0, duration: '2 years' }],
-    images: [
-      slateWatchImage,
-      'https://via.placeholder.com/600x400/E5E7EB/6B7280?text=Side+View',
-      'https://via.placeholder.com/600x400/D1D5DB/4B5563?text=Close+Up',
-    ],
   },
   3: {
     id: 3,
@@ -126,12 +115,6 @@ const productsDatabase = {
       { name: 'Standard', price: 0, duration: '1 year' },
       { name: 'Extended', price: 29, duration: '3 years' },
     ],
-    images: [
-      headphonesImage,
-      'https://via.placeholder.com/600x400/E5E7EB/6B7280?text=Side+View',
-      'https://via.placeholder.com/600x400/D1D5DB/4B5563?text=Folded+View',
-      'https://via.placeholder.com/600x400/9CA3AF/374151?text=Case+Included',
-    ],
   },
   4: {
     id: 4,
@@ -163,11 +146,6 @@ const productsDatabase = {
       { name: 'Navy', available: true, popular: false },
     ],
     warranties: [{ name: 'Standard', price: 0, duration: '1 year' }],
-    images: [
-      cozyHoodieImage,
-      'https://via.placeholder.com/600x400/E5E7EB/6B7280?text=Back+View',
-      'https://via.placeholder.com/600x400/D1D5DB/4B5563?text=Detail+View',
-    ],
   },
   5: {
     id: 5,
@@ -202,11 +180,6 @@ const productsDatabase = {
       { name: 'Standard', price: 0, duration: '2 years' },
       { name: 'Lifetime', price: 49, duration: 'Lifetime' },
     ],
-    images: [
-      nomadBackpackImage,
-      'https://via.placeholder.com/600x400/E5E7EB/6B7280?text=Front+View',
-      'https://via.placeholder.com/600x400/D1D5DB/4B5563?text=Inside+View',
-    ],
   },
   6: {
     id: 6,
@@ -238,11 +211,6 @@ const productsDatabase = {
       { name: 'Blue', available: true, popular: false },
     ],
     warranties: [{ name: 'Standard', price: 0, duration: '6 months' }],
-    images: [
-      brewMugImage,
-      'https://via.placeholder.com/600x400/E5E7EB/6B7280?text=Side+View',
-      'https://via.placeholder.com/600x400/D1D5DB/4B5563?text=Top+View',
-    ],
   },
   7: {
     id: 7,
@@ -274,11 +242,6 @@ const productsDatabase = {
       { name: 'Red', available: true, popular: false },
     ],
     warranties: [{ name: 'Standard', price: 0, duration: '1 year' }],
-    images: [
-      sprintShortsImage,
-      'https://via.placeholder.com/600x400/E5E7EB/6B7280?text=Back+View',
-      'https://via.placeholder.com/600x400/D1D5DB/4B5563?text=Detail+View',
-    ],
   },
   8: {
     id: 8,
@@ -310,11 +273,6 @@ const productsDatabase = {
       { name: 'Tortoise', available: false, popular: false },
     ],
     warranties: [{ name: 'Standard', price: 0, duration: '1 year' }],
-    images: [
-      haloSunglassesImage,
-      'https://via.placeholder.com/600x400/E5E7EB/6B7280?text=Case+Included',
-      'https://via.placeholder.com/600x400/D1D5DB/4B5563?text=Side+View',
-    ],
   },
   9: {
     id: 9,
@@ -349,11 +307,6 @@ const productsDatabase = {
       { name: 'Standard', price: 0, duration: '1 year' },
       { name: 'Extended', price: 19, duration: '2 years' },
     ],
-    images: [
-      beatGoSpeakerImage,
-      'https://via.placeholder.com/600x400/E5E7EB/6B7280?text=Side+View',
-      'https://via.placeholder.com/600x400/D1D5DB/4B5563?text=Back+View',
-    ],
   },
 }
 
@@ -362,7 +315,6 @@ const product = ref({})
 const selectedColor = ref('')
 const selectedWarranty = ref('')
 const quantity = ref(1)
-const selectedImage = ref(0)
 
 // Fetch product when component mounts or route changes
 const fetchProduct = () => {
@@ -372,7 +324,6 @@ const fetchProduct = () => {
   // Set default selections
   selectedColor.value = product.value.colors?.[0]?.name || ''
   selectedWarranty.value = product.value.warranties?.[0]?.name || ''
-  selectedImage.value = 0
 }
 
 onMounted(() => {
@@ -399,10 +350,6 @@ const addToWishlist = () => {
   console.log('Added to wishlist:', product.value.name)
   // Add wishlist logic here
 }
-
-const selectImage = (index) => {
-  selectedImage.value = index
-}
 </script>
 
 <template>
@@ -426,44 +373,23 @@ const selectImage = (index) => {
         </ol>
       </nav>
 
-      <div class="bg-white rounded-3xl hadow-2xl overflow-hidden">
-        <div class="grid grid-cols-2 gap-[10px] lg:flex lg:gap-8 p-8">
-          <!-- Image Gallery -->
-          <div class="image-gallery lg:w-1/2">
-            <div class="relative rounded-2xl overflow-hidden mb-6 bg-gray-100">
+      <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div class="grid grid-cols-2 lg:grid-cols-2 gap-[10px] p-8">
+          <!-- Image Gallery - Simplified -->
+          <div class="image-gallery">
+            <div class="relative rounded-2xl overflow-hidden bg-gray-100">
               <img
-                :src="product.images?.[selectedImage]"
+                :src="product.image"
                 :alt="product.name"
-                class="main-img w-full h-96 object-cover transition-opacity duration-300"
+                class="main-img w-full h-[600px] h-96 lg:h-[500px] object-cover"
               />
-            </div>
-
-            <!-- Thumbnail Gallery -->
-            <div class="thumbnail-gallery grid grid-cols-4 gap-[5px]">
-              <div
-                v-for="(image, index) in product.images"
-                :key="index"
-                @click="selectImage(index)"
-                :class="[
-                  'thumbnail cursor-pointer rounded-xl transition-all duration-200 transform hover:scale-105',
-                  selectedImage === index
-                    ? 'border-blue-500 ring-blue-200'
-                    : 'border-gray-200 hover:border-gray-300',
-                ]"
-              >
-                <img
-                  :src="image"
-                  :alt="`Thumbnail ${index + 1}`"
-                  class="thumbnail-img w-full h-20 object-cover rounded-lg"
-                />
-              </div>
             </div>
           </div>
 
           <!-- Product Details -->
-          <div class="product-details lg:w-1/2 mt-8 lg:mt-0">
+          <div class="product-details">
             <!-- Header with Price -->
-            <div class="flex justify-between items-start mb-[10px]">
+            <div class="flex justify-between items-center mb-[10px]">
               <h1 class="text-4xl font-[600] text-gray-900 leading-tight">{{ product.name }}</h1>
               <div class="text-right">
                 <p class="text-4xl font-[600] text-blue-700">Ksh{{ product.price?.toFixed(2) }}</p>
@@ -471,7 +397,7 @@ const selectImage = (index) => {
             </div>
 
             <!-- Rating and Stock -->
-            <div class="rating flex items-center gap-[8px] mb-6">
+            <div class="rating flex items-center gap-[8px] mb-[10px]">
               <div class="flex items-center">
                 <div class="flex text-yellow-400 mr-2">
                   <span v-for="star in 5" :key="star" class="text-xl">
@@ -488,22 +414,22 @@ const selectImage = (index) => {
             </div>
 
             <!-- Description -->
-            <p class="product-desc text-[1rem] leading-relaxed mb-[8px] bg-blue-50 p-4 rounded-xl">
+            <p class="product-desc text-[1rem] leading-relaxed mb-[20px] bg-blue-50 p-4 rounded-xl">
               {{ product.description }}
             </p>
 
             <!-- Color Selection -->
-            <div class="color-selection mb-8" v-if="product.colors && product.colors.length > 0">
-              <p class="text-lg font-semibold text-gray-900 mb-4">Color</p>
+            <div class="color-selection mb-[20px]" v-if="product.colors && product.colors.length > 0">
+              <p class="text-lg font-semibold text-gray-900 mb-[8px]">Color</p>
               <div class="flex gap-[5px]">
                 <button
                   v-for="color in product.colors"
                   :key="color.name"
                   @click="selectedColor = color.name"
                   :class="[
-                    'px-[8px] py-[5px] rounded-[10px] text-sm font-semibold transition-all duration-200 transform hover:scale-105',
+                    'px-4 py-2 rounded-[10px] text-sm font-semibold transition-all duration-200 transform hover:scale-105 border-2',
                     selectedColor === color.name
-                      ? 'text-white shadow-lg'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-lg'
                       : color.available
                         ? 'border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
                         : 'border-gray-200 text-gray-400 cursor-not-allowed opacity-50',
@@ -518,17 +444,17 @@ const selectImage = (index) => {
 
             <!-- Warranty Selection -->
             <div
-              class="warranty my-[10px]"
+              class="warranty mb-[20px]"
               v-if="product.warranties && product.warranties.length > 0"
             >
-              <p class="text-[1.2rem] font-[500] text-gray-900 mb-[4px]">Warranty Protection</p>
-              <div class="warranty-details flex gap-[15px]">
-                <button
+              <p class="text-[1.2rem] font-[500] text-gray-900 mb-[6px]">Warranty Protection</p>
+              <div class="warranty-details flex gap-[10px]">
+                <div
                   v-for="warranty in product.warranties"
                   :key="warranty.name"
                   @click="selectedWarranty = warranty.name"
                   :class="[
-                    'flex-1 px-4 py-4 rounded-xl text-center transition-all duration-200 transform',
+                    'flex-1 px-4 py-4 text-center transition-all duration-200 transform border-[1.5px] border-[#e1e0e0] rounded-[20px]',
                     selectedWarranty === warranty.name
                       ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
                       : 'border-gray-300 text-gray-700 hover:bg-gray-50',
@@ -540,17 +466,17 @@ const selectImage = (index) => {
                     +${{ warranty.price }}
                   </div>
                   <div v-else class="text-sm text-green-600 mt-1">FREE</div>
-                </button>
+                </div>
               </div>
             </div>
 
             <!-- Quantity and Actions -->
-            <div class="qty-actions bg-gray-50 rounded-2xl p-6 mb-[10px] mt-[20px]">
+            <div class="qty-actions bg-gray-50 rounded-2xl p-6 mb-[40px]">
               <div class="flex items-center justify-between">
                 <!-- Quantity Selector -->
-                <div class="dty-selector flex items-center gap-4">
-                  <p class="text-lg font-semibold text-gray-900 mr-[10px]">Quantity</p>
-                  <div class="qty-btns flex items-cente gap-[8px] rounded-xl bg-white">
+                <div class="quantity-selector flex items-center gap-[6px]">
+                  <p class="text-lg font-semibold text-gray-900">Quantity</p>
+                  <div class="qty-btns flex items-center gap-[5px] rounded-xl bg-white">
                     <button
                       @click="decrementQuantity"
                       class="px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-l-xl transition-colors"
@@ -571,44 +497,43 @@ const selectImage = (index) => {
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="action-btns flex gap-[10px]">
+                <div class="action-btns flex gap-[8px]">
                   <button
                     @click="addToCart"
-                    class="add-btn flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-[6px] px-[8px] rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+                    class="add-btn flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 flex items-center gap-[6px] transform hover:scale-105"
                   >
                     <font-awesome-icon :icon="['fas', 'shopping-cart']" class="w-4 h-4" />
                     Add to Cart
                   </button>
                   <button
                     @click="addToWishlist"
-                    class="whishlist-btn px-[ppx] py-[4px] border-2 border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 transform hover:scale-105"
+                    class="wishlist-btn px-4 py-3 border-2 border-gray-300 rounded-xl transition-all duration-200 transform hover:scale-105"
                   >
-                    <span class="text-xl">
-                      <font-awesome-icon :icon="['fas', 'heart']" class="w-4 h-4 text-red-300" />
-                    </span>
+                    <font-awesome-icon :icon="['fas', 'heart']" class="w-4 h-4 text-red-400" />
                   </button>
                 </div>
               </div>
             </div>
 
             <!-- Trust Badges -->
-            <div class="trust-badges grid grid-cols-3 gap-[20px] text-center mb-8 w-full">
+            <div class="trust-badges grid grid-cols-2 gap-[6px] text-center">
               <div
-                class="badge-1 bg-white flex item-center p-[5px] rounded-xl border border-gray-200 shadow-sm"
+                class="badge bg-white flex flex-col items-center p-4 rounded-xl border border-gray-200 shadow-sm"
               >
-                <div class="text-2xl mb-2">
-                  <font-awesome-icon :icon="['fas', 'truck']" class="w-4 h-4" />
+                <div class="text-2xl mb-2 text-blue-600">
+                  <font-awesome-icon :icon="['fas', 'truck']" />
                 </div>
                 <p class="text-sm font-semibold text-gray-900">Free Shipping</p>
                 <p class="text-xs text-gray-500">Over $100</p>
               </div>
               <div
-                class="badge-2 bg-white flex item-center p-[5px] rounded-xl border border-gray-200 shadow-sm w-"
+                class="badge bg-white flex flex-col items-center p-4 rounded-xl border border-gray-200 shadow-sm"
               >
-                <div class="text-2xl mb-2">
-                  <font-awesome-icon :icon="['fas', 'clock-rotate-left']" class="w-4 h-4" />
+                <div class="text-2xl mb-2 text-green-600">
+                  <font-awesome-icon :icon="['fas', 'clock-rotate-left']" />
                 </div>
                 <p class="text-sm font-semibold text-gray-900">30-Day Returns</p>
+                <p class="text-xs text-gray-500">Easy returns</p>
               </div>
             </div>
           </div>
@@ -616,25 +541,23 @@ const selectImage = (index) => {
 
         <!-- Features & Specifications -->
         <div
-          class="features-specifications mt-[20px]"
+          class="features-specifications mt-[10px] p-[18px]"
           v-if="product.features || product.specifications"
         >
-          <div class="grid lg:grid-cols-2 gap-[10px] p-[10px]">
+          <div class="grid lg:grid-cols-2 gap-8 p-8">
             <!-- Features -->
             <div
-              class="features bg-gradient-to-br from-blue-50 to-indigo-50 p-[8px] rounded-2xl"
+              class="features bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl"
               v-if="product.features"
             >
-              <h2 class="text-2xl font-[500] text-gray-900 mb-6 flex items-center gap-3">
-                Key Features
-              </h2>
+              <h2 class="text-2xl font-[500] text-gray-900 mb-6">Key Features</h2>
               <ul class="space-y-3">
                 <li
                   v-for="(feature, index) in product.features"
                   :key="index"
                   class="flex items-center gap-3 text-gray-700"
                 >
-                  <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
                   {{ feature }}
                 </li>
               </ul>
@@ -642,12 +565,10 @@ const selectImage = (index) => {
 
             <!-- Specifications -->
             <div
-              class="specifications bg-gradient-to-br from-gray-50 to-blue-50 p-[8px] rounded-2xl"
+              class="specifications bg-gradient-to-br from-gray-50 to-blue-50 p-6 rounded-2xl"
               v-if="product.specifications"
             >
-              <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                Specifications
-              </h2>
+              <h2 class="text-2xl font-bold text-gray-900 mb-6">Specifications</h2>
               <div class="space-y-4">
                 <div
                   v-for="(value, key) in product.specifications"
@@ -665,7 +586,7 @@ const selectImage = (index) => {
     </div>
 
     <!-- Footer CTA -->
-    <div class="mt-[10px]">
+    <div class="mt-8">
       <Footer />
     </div>
   </div>
@@ -694,25 +615,8 @@ const selectImage = (index) => {
 
 .main-img {
   width: 100%;
-  height: 500px;
   border-radius: 20px;
 }
-
-.thumbnail-img {
-  border: none;
-  width: 100%;
-  height: 120px;
-  border-radius: 20px;
-}
-
-.thumbnail {
-  border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* .thumbnail:hover {
-  transform: translateY(-2px);
-} */
 
 .product-details {
   background: #ffffff;
@@ -727,7 +631,7 @@ const selectImage = (index) => {
   padding: 8px;
   margin-bottom: 10px;
   color: white;
-  border-radius: 10px;
+  border-radius: 15px;
 }
 
 .product-desc {
@@ -740,22 +644,21 @@ const selectImage = (index) => {
   font-weight: 500;
 }
 
-.color-selection button {
-  border: none;
-}
 .warranty p {
   color: #804d91;
 }
-.warranty-details button {
-  width: 60px;
-}
 
+.quantity-selector {
+  border: 1px solid #5d3471;
+  border-radius: 10px;
+  padding: 2px 6px;
+}
 .qty-btns {
-  border: 1.2px solid #ce7f57;
   padding: 2px;
 }
 
 .action-btns button {
+  padding: 8px;
   border: none;
   border-radius: 5px;
 }
@@ -765,12 +668,11 @@ const selectImage = (index) => {
   background: linear-gradient(90deg, #5d3471 0%, #804d91 100%);
 }
 
-.whishlist-btn {
+.wishlist-btn {
   background: #feb5b5;
 }
 
-.badge-1,
-.badge-2 {
+.badge {
   border-radius: 10px;
   border: 1.5px solid #e1e0e0;
   color: #5e5e5e;
@@ -783,8 +685,10 @@ const selectImage = (index) => {
 
 .features,
 .specifications {
+  padding: 20px;
   border: 1.5px solid #919191;
   border-radius: 20px;
+  margin-bottom: 20px;
 }
 
 /* Smooth scrolling for the page */
@@ -801,6 +705,20 @@ html {
 
   .bg-white.rounded-3xl {
     border-radius: 1rem;
+  }
+
+  .grid.grid-cols-1.lg\:grid-cols-2 {
+    gap: 2rem;
+  }
+
+  .action-btns {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .trust-badges {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 </style>

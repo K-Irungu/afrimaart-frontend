@@ -11,14 +11,41 @@ const { product } = defineProps({
 
 const router = useRouter()
 
+// Proper authentication check
+const isAuthenticated = () => {
+  return !!localStorage.getItem('user')
+}
+
 const navigateToProduct = () => {
   router.push(`/product/${product.id}`)
 }
 
-const addToCart = (event) => {
-  event.stopPropagation() // Prevent navigating when clicking "Add to Cart"
+const addToCart = async (event) => {
+  event.stopPropagation()
+
+  // Check if user is authenticated
+  if (!isAuthenticated()) {
+    // Redirect to auth page with return URL
+    router.push(`/auth?redirect=/product/${product.id}`)
+    return
+  }
+
+  // User is authenticated, add to cart
   console.log('Added to cart:', product.name)
-  // Add cart logic here
+
+  // Show success feedback
+  showAddToCartFeedback(event.target)
+}
+
+const showAddToCartFeedback = (button) => {
+  const originalText = button.innerHTML
+  button.innerHTML = '✅ Added!'
+  button.classList.add('bg-green-600')
+
+  setTimeout(() => {
+    button.innerHTML = originalText
+    button.classList.remove('bg-green-600')
+  }, 1500)
 }
 </script>
 
