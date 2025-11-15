@@ -1,10 +1,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useCart } from '@/composables/useCart'
 import logo from '@/assets/images/Afrimart2.png'
 
 const router = useRouter()
 const route = useRoute()
+const { cartCount } = useCart()
 
 // Authentication state
 const isAuthenticated = ref(false)
@@ -153,7 +155,9 @@ const isActive = (path) => {
           class="link cart px[8px] flex items-center gap-[5px] no-underline ursor-pointer transition-colors rounded-[5px] p-[2px]"
         >
           <font-awesome-icon :icon="['fas', 'shopping-cart']" class="icon h-[20px] w-[20px]" />
-          <span class="cart-span text-lg font-[400]">3</span>
+          <span class="cart-span text-lg font-[400]">
+            {{ cartCount }}
+          </span>
         </RouterLink>
       </div>
     </header>

@@ -1,9 +1,28 @@
 <script setup>
-import { defineProps } from 'vue'
+import { defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
   item: Object,
 })
+
+const emit = defineEmits(['remove', 'update-quantity', 'move-to-wishlist', 'save-for-later'])
+
+const handleQuantityChange = (event) => {
+  const newQuantity = parseInt(event.target.value)
+  emit('update-quantity', props.item.id, newQuantity)
+}
+
+const handleRemove = () => {
+  emit('remove', props.item.id)
+}
+
+const handleMoveToWishlist = () => {
+  emit('move-to-wishlist', props.item.id)
+}
+
+const handleSaveForLater = () => {
+  emit('save-for-later', props.item.id)
+}
 </script>
 
 <template>
@@ -11,14 +30,25 @@ const props = defineProps({
     class="item-details group flex p-4 mb-[10px] border-2 rounded-2xl bg-white shadow-sm hover:shadow-lg transition-all duration-300"
   >
     <!-- Product Image -->
-    <div class="w-30 h-28 flex-shrink-0 mr-[5px]">
+    <div class="w-[100px] h-[120px] flex-shrink-0 mr-[5px]">
       <div
-        class="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 border border-blue-100"
+        class="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 overflow-hidden"
       >
+        <!-- Display actual product image if available -->
+        <img
+          v-if="item.image"
+          :src="item.image"
+          :alt="item.name"
+          class="w-full h-full object-cover rounded-xl"
+        />
+        <!-- Fallback placeholder if no image -->
         <div
-          class="w-16 h-16 bg-gradient-to-br from-blue-200 to-indigo-300 rounded-lg flex items-center justify-center"
+          v-else
+          class="w-full h-full bg-gradient-to-br from-blue-200 to-indigo-300 rounded-lg flex items-center justify-center"
         >
-          <span class="text-xs font-semibold text-blue-800 uppercase">Product</span>
+          <span class="text-xs font-semibold text-blue-800 uppercase text-center px-2">
+            {{ item.name.substring(0, 15) }}{{ item.name.length > 15 ? '...' : '' }}
+          </span>
         </div>
       </div>
     </div>
@@ -28,71 +58,91 @@ const props = defineProps({
       <div class="flex justify-between items-start mb-[5px]">
         <div class="flex-1">
           <h3
-            class="text-xl font-[500] text-gray-900 group-hover:text-blue-700 transition-colors duration-200 mb-2"
+            class="text-xl font-[500] text-[#5d3471] group-hover:text-blue-700 transition-colors duration-200 mb-2"
           >
             {{ item.name }}
           </h3>
-          <div class="item-desc flex items-center gap-4 text-sm">
-            <span class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+          <div class="item-desc flex items-center gap-4 text-sm flex-wrap">
+            <!-- Color -->
+            <span 
+              v-if="item.color && item.color !== ''" 
+              class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full"
+            >
               <span class="w-2 h-2 bg-gray-500 rounded-full"></span>
               <span class="text-gray-700 font-medium">color: {{ item.color }}</span>
             </span>
-            <span class="flex items-center gap-[8px] bg-gray-100 px-3 py-1 rounded-full">
+            
+            <!-- Warranty -->
+            <span 
+              v-if="item.warranty && item.warranty !== ''" 
+              class="flex items-center gap-[8px] bg-gray-100 px-3 py-1 rounded-full"
+            >
               <span class="w-2 h-2 bg-gray-500 rounded-full"></span>
-              <span class="text-gray-700 font-medium">size: {{ item.size }}</span>
+              <span class="text-gray-700 font-medium">warranty: {{ item.warranty }}</span>
+            </span>
+            
+            <!-- Brand -->
+            <span 
+              v-if="item.brand" 
+              class="flex items-center gap-[8px] bg-gray-100 px-3 py-1 rounded-full"
+            >
+              <span class="w-2 h-2 bg-gray-500 rounded-full"></span>
+              <span class="text-gray-700 font-medium">brand: {{ item.brand }}</span>
+            </span>
+            
+            <!-- Category -->
+            <span 
+              v-if="item.category" 
+              class="flex items-center gap-[8px] bg-gray-100 px-3 py-1 rounded-full"
+            >
+              <span class="w-2 h-2 bg-gray-500 rounded-full"></span>
+              <span class="text-gray-700 font-medium">{{ item.category }}</span>
             </span>
           </div>
         </div>
-        <p class="price-tag text-2xl font-bold text-blue-700 ml-4">${{ item.price.toFixed(2) }}</p>
+        <div class="text-right">
+          <p class="price-tag text-2xl font-bold text-blue-700 ml-4">
+            Ksh{{ (item.price * item.quantity).toFixed(2) }}
+          </p>
+          <p v-if="item.quantity > 1" class="text-sm text-gray-500 mt-1">
+            Ksh{{ item.price.toFixed(2) }} each
+          </p>
+        </div>
       </div>
 
       <!-- Actions -->
-      <hr />
-      <div class="flex items-center justify-between pt-4 border-gray-200 mt-[5px]">
+      <hr class="my-[10px]" />
+      <div class="flex items-center justify-between pt-4 border-gray-200">
         <!-- Quantity Selector -->
         <div class="qty-selector flex items-center gap-[10px]">
-          <label for="quantity" class="text-sm font-semibold text-gray-700">Quantity</label>
+          <label :for="`qty-${item.id}`" class="text-sm font-semibold text-gray-700">Quantity</label>
           <div class="flex items-center gap-2 bg-white border-gray-300 rounded-lg px-3 py-1">
             <select
               :id="`qty-${item.id}`"
-              :value="item.qty"
+              :value="item.quantity"
+              @change="handleQuantityChange"
               class="qty-dropdown p-[5px] bg-transparent border-none focus:outline-none focus:ring-0 text-sm font-medium text-gray-900 cursor-pointer"
             >
-              <option v-for="n in 10" :key="n" :value="n" class="flex items-center gap-2">
+              <option v-for="n in 10" :key="n" :value="n">
                 {{ n }}
               </option>
             </select>
           </div>
+          <span class="text-sm text-gray-500">
+            {{ item.quantity }} item{{ item.quantity !== 1 ? 's' : '' }}
+          </span>
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex items-center gap-[10px] mt-[5px]">
-          <button
-            v-if="item.id === 2"
-            class="wishlist-btn flex items-center gap-2 text-sm font-semibold text-purple-600 hover:text-purple-700 hover:bg-purple-50 px-4 py-2 rounded-lg transition-all duration-200 group/wishlist"
-          >
-            <span class="text-lg group-hover/wishlist:scale-110 transition-transform duration-200">
-              <font-awesome-icon :icon="['fas', 'heart']" class="w-4 h-4" />
-            </span>
-            Move to Wishlist
-          </button>
-
-          <button
-            v-else
-            class="save-btn flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-4 py-2 rounded-lg transition-all duration-200 group/save"
-          >
-            <span class="text-lg group-hover/save:scale-110 transition-transform duration-200">
-              <font-awesome-icon :icon="['fas', 'floppy-disk']" class="w-4 h-4" />
-            </span>
-            Save for Later
-          </button>
+        <div class="flex items-center gap-[10px]">
 
           <!-- Remove Button -->
           <button
+            @click="handleRemove"
             class="remove-btn flex items-center gap-2 text-sm font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 px-4 py-2 rounded-lg transition-all duration-200 group/remove"
           >
             <span class="text-lg group-hover/remove:scale-110 transition-transform duration-200">
-              <font-awesome-icon :icon="['fas', 'trash']" class="w-4 h-4" />
+              🗑️
             </span>
             Remove
           </button>
@@ -130,6 +180,7 @@ const props = defineProps({
 .item-desc {
   color: #804d91; /* Royal Purple */
 }
+
 /* Quantity selector */
 .qty-selector {
   border: 1px solid #ce7f57; /* Warm Brownish Orange */
@@ -147,41 +198,85 @@ const props = defineProps({
 /* Price tag */
 .price-tag {
   background: #5d3471; /* Deep Purple */
-  padding-inline: 4px;
-  border-radius: 5px;
+  padding: 8px 12px;
+  border-radius: 8px;
   color: white;
+  display: inline-block;
 }
 
 /* Action buttons */
 .remove-btn {
   background: #fee8e8; /* Soft Pink variant */
   color: #ce7f57; /* Warm Brownish Orange */
+  border: 1px solid #fee8e8;
 }
+
 .save-btn {
   background: #e8b6d5; /* Soft Pink */
   color: #804d91; /* Royal Purple text */
+  border: 1px solid #e8b6d5;
 }
+
 .wishlist-btn {
   background: #aa69af; /* Medium Orchid */
   color: #ffffff;
+  border: 1px solid #aa69af;
 }
 
 /* Button hover effects */
 .save-btn:hover {
   background: #804d91; /* Royal Purple hover */
   color: #ffffff;
+  border-color: #804d91;
 }
+
 .wishlist-btn:hover {
   background: #5d3471; /* Deep Purple hover */
+  border-color: #5d3471;
 }
+
 .remove-btn:hover {
   background: #ce7f57; /* Warm Brownish Orange hover */
   color: white;
+  border-color: #ce7f57;
 }
 
 /* Image container styling */
 img {
   border-radius: 15px;
   object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .item-details {
+    flex-direction: column;
+    padding: 15px;
+  }
+  
+  .item-desc {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .qty-selector {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .flex.items-center.justify-between {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .flex.items-center.gap-\[10px\] {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 }
 </style>

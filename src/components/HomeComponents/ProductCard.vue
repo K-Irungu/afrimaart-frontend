@@ -1,6 +1,7 @@
 <script setup>
 import { defineProps } from 'vue'
 import { useRouter } from 'vue-router'
+import { useCart } from '@/composables/useCart.js';
 
 const { product } = defineProps({
   product: {
@@ -10,6 +11,7 @@ const { product } = defineProps({
 })
 
 const router = useRouter()
+const { addToCart, showSuccessMessage, successMessage } = useCart()
 
 // Proper authentication check
 const isAuthenticated = () => {
@@ -17,24 +19,21 @@ const isAuthenticated = () => {
 }
 
 const navigateToProduct = () => {
-  router.push(`/product/${product._id}`) // Changed from product.id to product._id
+  router.push(`/product/${product._id}`)
 }
 
-const addToCart = async (event) => {
+const addToCartHandler = async (event) => {
   event.stopPropagation()
 
   // Check if user is authenticated
   if (!isAuthenticated()) {
     // Redirect to auth page with return URL
-    router.push(`/auth?redirect=/product/${product._id}`) // Changed from product.id to product._id
+    router.push(`/auth?redirect=/product/${product._id || product.id}`)
     return
   }
 
   // User is authenticated, add to cart
-  console.log('Added to cart:', product.name)
-
-  // Show success feedback
-  showAddToCartFeedback(event.target)
+  addToCart(product, '', '', 1)
 }
 
 const showAddToCartFeedback = (button) => {
@@ -54,6 +53,15 @@ const showAddToCartFeedback = (button) => {
     class="card bg-[#E8B6D5] rounded-lg shadow-md overflow-hidden transition-shadow hover:shadow-xl mb-8 cursor-pointer relative"
     @click="navigateToProduct"
   >
+
+    <!-- Success Message -->
+    <div
+      v-if="showSuccessMessage"
+      class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out"
+    >
+      {{ successMessage }}
+    </div>
+
     <!-- NEW Badge -->
     <span
       v-if="product.is_new"
@@ -86,7 +94,7 @@ const showAddToCartFeedback = (button) => {
 
         <div class="flex justify-center">
           <button
-            @click="addToCart"
+            @click="addToCartHandler"
             class="w-[95%] h-[40px] py-2 bg-[#804D91] text-white font-medium rounded-xl hover:bg-[#AA69AF] transition duration-150"
           >
             Add to Cart
