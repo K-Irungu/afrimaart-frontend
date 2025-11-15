@@ -36,16 +36,6 @@ const addToCartHandler = async (event) => {
   addToCart(product, '', '', 1)
 }
 
-const showAddToCartFeedback = (button) => {
-  const originalText = button.innerHTML
-  button.innerHTML = '✅ Added!'
-  button.classList.add('bg-green-600')
-
-  setTimeout(() => {
-    button.innerHTML = originalText
-    button.classList.remove('bg-green-600')
-  }, 1500)
-}
 </script>
 
 <template>

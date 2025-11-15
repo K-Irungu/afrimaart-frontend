@@ -259,7 +259,7 @@ const isActive = (path) => {
 .account,
 .cart {
   background: #5d3471;
-  padding: 4px 8px;
+  padding: 4px 10px;
   font-size: 0.75rem;
   font-weight: 500;
   color: #ffffff;
@@ -289,39 +289,58 @@ const isActive = (path) => {
 
 /* Dropdown Styles */
 .user-dropdown-btn {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   background-color: #5d3471;
   color: #ffffff;
-  outline: none;
   border: none;
-  padding: 5px 10px;
-  transition: all 0.2s ease;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
 }
 
 .user-dropdown-btn:hover {
   background-color: #804d91;
+  box-shadow: 0 2px 6px rgba(128, 77, 145, 0.3);
 }
 
+/* Dropdown Container */
 .dropdown-menu {
-  animation: dropdownFade 0.2s ease-out;
+  border-radius: 12px;
+  border: 1px solid #e8d7ef;
+  box-shadow: 0px 8px 20px rgba(93, 52, 113, 0.18);
+  overflow: hidden; /* Smooth rounded edges */
 }
 
+/* Dropdown items */
+.dropdown-item {
+  font-size: 0.9rem;
+  padding: 12px 16px;
+  transition: background-color 0.25s ease, padding-left 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Hover effect */
+.dropdown-item:hover {
+  background-color: #f3e2fa;
+  padding-left: 22px; /* Smooth slide effect on hover */
+}
+
+/* Divider */
+.dropdown-menu .border-t {
+  border-color: #e6d2ef;
+}
+
+/* Animation */
 @keyframes dropdownFade {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
-}
-
-.dropdown-item {
-  transition: all 0.2s ease;
-}
-
-.rotate-180 {
-  transform: rotate(180deg);
 }
 </style>

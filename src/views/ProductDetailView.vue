@@ -4,9 +4,11 @@ import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
+import { useCart } from '@/composables/useCart.js';
 
 const route = useRoute()
 const router = useRouter()
+const { addToCart, showSuccessMessage, successMessage } = useCart()
 
 // Base URL for your products API
 const API_BASE_URL = 'http://localhost:5000/products'
@@ -18,6 +20,13 @@ const selectedWarranty = ref('')
 const quantity = ref(1)
 const isLoading = ref(true)
 const error = ref(null)
+
+// Check if user is authenticated
+const isAuthenticated = () => {
+  // Check for user data in localStorage or sessionStorage
+  const user = localStorage.getItem('user') || sessionStorage.getItem('user')
+  return !!user
+}
 
 // Extract numeric value from MongoDB Decimal128 objects
 const extractNumericValue = (value) => {
@@ -87,16 +96,31 @@ watch(() => route.params.id, fetchProduct)
 const incrementQuantity = () => quantity.value++
 const decrementQuantity = () => (quantity.value > 1 ? quantity.value-- : null)
 
-const addToCart = () => {
-  console.log('Added to cart:', {
-    product: product.value.name,
-    productId: product.value._id,
-    color: selectedColor.value,
-    warranty: selectedWarranty.value,
-    quantity: quantity.value,
-    price: product.value.price
-  })
-  // Add cart logic here
+const addToCartHandler = async (event) => {
+  event.stopPropagation()
+
+  // Check if user is authenticated
+  if (!isAuthenticated()) {
+    // Redirect to auth page with return URL
+    router.push(`/auth?redirect=/product/${product.value._id || product.value.id}`)
+    return
+  }
+
+  // Prepare product data for cart
+  const cartProduct = {
+    _id: product.value._id,
+    id: product.value.id,
+    name: product.value.name,
+    price: product.value.price,
+    product_image_url: product.value.product_image_url,
+    brand: product.value.brand,
+    selectedColor: selectedColor.value,
+    selectedWarranty: selectedWarranty.value,
+    quantity: quantity.value
+  }
+
+  // User is authenticated, add to cart
+  addToCart(cartProduct, selectedColor.value, selectedWarranty.value, quantity.value)
 }
 
 const addToWishlist = () => {
@@ -145,6 +169,14 @@ const originalPrice = computed(() => {
           </svg>
           <span class="ml-3 text-lg text-gray-600">Loading product...</span>
         </div>
+      </div>
+
+      <!-- Success Message -->
+      <div
+        v-if="showSuccessMessage"
+        class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out"
+      >
+        {{ successMessage }}
       </div>
 
       <!-- Error State -->
@@ -319,7 +351,7 @@ const originalPrice = computed(() => {
                   <!-- Action Buttons -->
                   <div class="action-btns flex gap-[6px] sm:w-auto">
                     <button
-                      @click="addToCart"
+                      @click="addToCartHandler"
                       class="add-btn flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 transform hover:scale-105"
                     >
                         <font-awesome-icon :icon="['fas', 'shopping-cart']" class="w-4 h-4" />
