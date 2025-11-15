@@ -170,14 +170,6 @@ const isActive = (path) => {
           </RouterLink>
 
           <RouterLink
-            to="/new-arrivals"
-            class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[110px] mr-[30px] flex items-center gap-1"
-            :class="isActive('/new-arrivals')"
-          >
-            <span>New Arrivals</span>
-          </RouterLink>
-
-          <RouterLink
             to="/deals"
             class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[70px] mr-[30px] flex items-center gap-1"
             :class="isActive('/deals')"

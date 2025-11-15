@@ -17,7 +17,7 @@ const isAuthenticated = () => {
 }
 
 const navigateToProduct = () => {
-  router.push(`/product/${product.id}`)
+  router.push(`/product/${product._id}`) // Changed from product.id to product._id
 }
 
 const addToCart = async (event) => {
@@ -26,7 +26,7 @@ const addToCart = async (event) => {
   // Check if user is authenticated
   if (!isAuthenticated()) {
     // Redirect to auth page with return URL
-    router.push(`/auth?redirect=/product/${product.id}`)
+    router.push(`/auth?redirect=/product/${product._id}`) // Changed from product.id to product._id
     return
   }
 
@@ -51,9 +51,17 @@ const showAddToCartFeedback = (button) => {
 
 <template>
   <div
-    class="card bg-[#E8B6D5] rounded-lg shadow-md overflow-hidden transition-shadow hover:shadow-xl mb-8 cursor-pointer"
+    class="card bg-[#E8B6D5] rounded-lg shadow-md overflow-hidden transition-shadow hover:shadow-xl mb-8 cursor-pointer relative"
     @click="navigateToProduct"
   >
+    <!-- NEW Badge -->
+    <span
+      v-if="product.is_new"
+      class="badge absolute top-[10px] right-[10px] py-[2px] px-[6px] text-white text-xs font-bold drop-shadow-md rounded-full z-20 shadow-md"
+    >
+      NEW
+    </span>
+
     <div class="card-img w-full h-[65%] bg-gray-100 overflow-hidden">
       <!-- Display the actual image -->
       <img :src="product.product_image_url" :alt="product.name" class="w-full h-full object-cover" />
@@ -100,6 +108,8 @@ const showAddToCartFeedback = (button) => {
   color: #5d3471;
   transition: all 0.3s ease;
   cursor: pointer;
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
 }
 
 .card-img img {
@@ -136,8 +146,59 @@ button:hover {
   font-weight: 600;
 }
 
+.badge {
+  margin-top: 12px;
+  margin-left: 5px;
+  border-radius: 10px;
+  background: #ce7f57; /* Warm Brownish Orange badge */
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+  animation: pulse 2s infinite;
+}
+
+
+/* Pulse for badge */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Fade-in animation for cards */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .card:hover {
   box-shadow: 0 8px 25px #5d34714d;
   transform: translateY(-4px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+    height: auto;
+  }
+  .card-img {
+    height: 200px;
+  }
+  .badge {
+    font-size: 0.6rem;
+    padding: 0.25rem 0.5rem;
+  }
 }
 </style>

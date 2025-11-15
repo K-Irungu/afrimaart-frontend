@@ -172,6 +172,46 @@ const filteredProducts = computed(() => {
   return filtered
 })
 
+// SORTING LOGIC
+const sortedProducts = computed(() => {
+  let sorted = [...filteredProducts.value]
+  const sortBy = route.query.sort || 'featured'
+
+  switch (sortBy) {
+    case 'newest':
+      // Show new products first, then by creation date or ID
+      sorted.sort((a, b) => {
+        // If both are new or both are not new, maintain order
+        if (a.is_new === b.is_new) return 0
+        // Show new products first
+        return a.is_new ? -1 : 1
+      })
+      break
+    case 'price-low-high':
+      sorted.sort((a, b) => a.price - b.price)
+      break
+    case 'price-high-low':
+      sorted.sort((a, b) => b.price - a.price)
+      break
+    case 'rating-high-low':
+      sorted.sort((a, b) => b.rating - a.rating)
+      break
+    case 'featured':
+    default:
+      // Featured: Show new products first, then by rating
+      sorted.sort((a, b) => {
+        // Show new products first
+        if (a.is_new && !b.is_new) return -1
+        if (!a.is_new && b.is_new) return 1
+        // Then sort by rating (highest first)
+        return b.rating - a.rating
+      })
+      break
+  }
+  
+  return sorted
+})
+
 // PAGINATION LOGIC
 const itemsPerPage = 9
 
@@ -182,14 +222,14 @@ const currentPage = computed(() => {
 
 // Calculate total pages
 const totalPages = computed(() => {
-  return Math.ceil(filteredProducts.value.length / itemsPerPage)
+  return Math.ceil(sortedProducts.value.length / itemsPerPage)
 })
 
 // Get paginated products for current page
 const paginatedProducts = computed(() => {
   const startIndex = (currentPage.value - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
-  return filteredProducts.value.slice(startIndex, endIndex)
+  return sortedProducts.value.slice(startIndex, endIndex)
 })
 
 // Check if any filters are active (not default)
@@ -274,7 +314,7 @@ const clearAllFilters = () => {
             :products="paginatedProducts" 
             :current-page="currentPage"
             :total-pages="totalPages"
-            :total-products="filteredProducts.length"
+            :total-products="sortedProducts.length"
           />
 
           <!-- No Filter Results -->

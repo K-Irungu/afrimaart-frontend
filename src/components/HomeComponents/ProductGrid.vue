@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, computed } from 'vue'
+import { defineProps, computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ProductCard from './ProductCard.vue'
 
@@ -24,6 +24,15 @@ const props = defineProps({
 
 const route = useRoute()
 const router = useRouter()
+
+// Sort options
+const sortOptions = [
+  { value: 'newest', label: 'Newest First' },
+  { value: 'price-low-high', label: 'Price: Low to High' },
+  { value: 'price-high-low', label: 'Price: High to Low' },
+]
+
+const currentSort = ref(route.query.sort || 'featured')
 
 // Generate page numbers for pagination
 const pageNumbers = computed(() => {
@@ -56,6 +65,17 @@ const navigateToPage = (page) => {
   })
 }
 
+// Handle sort change
+const handleSortChange = (event) => {
+  const newSort = event.target.value
+  currentSort.value = newSort
+  
+  // Update URL with sort parameter and reset to page 1
+  router.push({
+    query: { ...route.query, sort: newSort, page: 1 }
+  })
+}
+
 // Showing text
 const showingText = computed(() => {
   if (props.totalProducts === 0) return 'No results found'
@@ -76,11 +96,17 @@ const showingText = computed(() => {
         <label for="sort" class="text-sm text-[#5D3471]">Sort by:</label>
         <select
           id="sort"
-          class="p-2 border rounded-lg text-sm h-[30px] ml-[5px] select bg-[#E8B6D5] border-[#AA69AF] text-[#5D3471]"
+          v-model="currentSort"
+          @change="handleSortChange"
+          class="p-[4px] border rounded-lg text-sm h-[30px] ml-[5px] select bg-[#E8B6D5] border-[#AA69AF] text-[#5D3471] cursor-pointer"
         >
-          <option>Featured</option>
-          <option>Price: Low to High</option>
-          <option>Price: High to Low</option>
+          <option 
+            v-for="option in sortOptions" 
+            :key="option.value" 
+            :value="option.value"
+          >
+            {{ option.label }}
+          </option>
         </select>
       </div>
     </div>
@@ -100,7 +126,7 @@ const showingText = computed(() => {
       <button
         @click="navigateToPage(currentPage - 1)"
         :disabled="currentPage === 1"
-        class="previous-btn px-4 py-2 mx-[10px] text-sm font-medium text-[#5D3471] bg-[#E8B6D5] border border-[#AA69AF] rounded-lg hover:bg-[#AA69AF] hover:text-white transition-colors duration-200"
+        class="previous-btn px-4 py-2 mx-[10px] text-sm font-medium text-[#5D3471] bg-[#E8B6D5] border border-[#AA69AF] rounded-lg hover:bg-[#AA69AF] hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Previous
       </button>
@@ -124,7 +150,7 @@ const showingText = computed(() => {
       <button
         @click="navigateToPage(currentPage + 1)"
         :disabled="currentPage === totalPages"
-        class="next-btn px-4 py-2 mx-[10px] text-sm font-medium text-[#5D3471] bg-[#E8B6D5] border border-[#AA69AF] rounded-lg hover:bg-[#AA69AF] hover:text-white transition-colors duration-200"
+        class="next-btn px-4 py-2 mx-[10px] text-sm font-medium text-[#5D3471] bg-[#E8B6D5] border border-[#AA69AF] rounded-lg hover:bg-[#AA69AF] hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Next
       </button>
@@ -140,6 +166,7 @@ const showingText = computed(() => {
 
 .select {
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .previous-btn,
@@ -155,6 +182,15 @@ const showingText = computed(() => {
   margin: 0 4px;
 }
 
+/* Improve select appearance */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%235D3471' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+  padding-right: 28px;
+}
 
 @media (max-width: 1024px) {
   .lg\:grid-cols-3 {
