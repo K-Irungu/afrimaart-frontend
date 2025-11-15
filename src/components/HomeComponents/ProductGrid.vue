@@ -32,7 +32,7 @@ const sortOptions = [
   { value: 'price-high-low', label: 'Price: High to Low' },
 ]
 
-const currentSort = ref(route.query.sort || 'featured')
+const currentSort = ref(route.query.sort || 'newest')
 
 // Generate page numbers for pagination
 const pageNumbers = computed(() => {
@@ -98,7 +98,7 @@ const showingText = computed(() => {
           id="sort"
           v-model="currentSort"
           @change="handleSortChange"
-          class="p-[4px] border rounded-lg text-sm h-[30px] ml-[5px] select bg-[#E8B6D5] border-[#AA69AF] text-[#5D3471] cursor-pointer"
+          class="p-[6px] border rounded-lg text-sm h-[30px] ml-[5px] select bg-[#E8B6D5] border-[#AA69AF] text-[#5D3471] cursor-pointer"
         >
           <option 
             v-for="option in sortOptions" 
