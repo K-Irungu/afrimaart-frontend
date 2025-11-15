@@ -1,9 +1,14 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 import authIllustration from '@/assets/images/authIllustration.jpg'
+import defaultProfile from '@/assets/images/default-profile.png'
 
 const router = useRouter()
+
+// Base URL - Fixed to include /api
+const API_BASE_URL = 'http://localhost:5000/users'
 
 // Toggle between login and signup
 const isLogin = ref(true)
@@ -16,14 +21,14 @@ const loginForm = ref({
 })
 
 const signupForm = ref({
-  firstName: '',
-  lastName: '',
+  firstname: '',
+  lastname: '',
+  username: '',
   email: '',
-  phone: '',
   password: '',
   confirmPassword: '',
+  profile_img: defaultProfile,
   agreeToTerms: false,
-  newsletter: true,
 })
 
 // Form validation states
@@ -37,125 +42,163 @@ const toggleAuthMode = () => {
 }
 
 // Validation functions
-const validateEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
-}
-
-const validatePassword = (password) => {
-  return password.length >= 6
-}
-
-const validatePhone = (phone) => {
-  // Allows international format with +, and numbers with/without spaces/dashes
-  const phoneRegex = /^[\+]?[(]?[\d\s\-\(\)]{8,}$/
-  return phoneRegex.test(phone)
-}
+const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+const validatePassword = (password) => password.length >= 6
 
 const validateForm = () => {
   errors.value = {}
 
   if (isLogin.value) {
-    // Login validation
-    if (!loginForm.value.email) {
-      errors.value.email = 'Email is required'
-    } else if (!validateEmail(loginForm.value.email)) {
+    if (!loginForm.value.email) errors.value.email = 'Email is required'
+    else if (!validateEmail(loginForm.value.email))
       errors.value.email = 'Please enter a valid email address'
-    }
 
-    if (!loginForm.value.password) {
-      errors.value.password = 'Password is required'
-    } else if (!validatePassword(loginForm.value.password)) {
+    if (!loginForm.value.password) errors.value.password = 'Password is required'
+    else if (!validatePassword(loginForm.value.password))
       errors.value.password = 'Password must be at least 6 characters'
-    }
   } else {
-    // Signup validation
-    if (!signupForm.value.firstName) {
-      errors.value.firstName = 'First name is required'
-    }
+    // Signup validation - using correct field names
+    if (!signupForm.value.firstname) errors.value.firstname = 'First name is required'
+    if (!signupForm.value.lastname) errors.value.lastname = 'Last name is required'
+    if (!signupForm.value.username) errors.value.username = 'Username is required'
 
-    if (!signupForm.value.lastName) {
-      errors.value.lastName = 'Last name is required'
-    }
-
-    if (!signupForm.value.email) {
-      errors.value.email = 'Email is required'
-    } else if (!validateEmail(signupForm.value.email)) {
+    if (!signupForm.value.email) errors.value.email = 'Email is required'
+    else if (!validateEmail(signupForm.value.email))
       errors.value.email = 'Please enter a valid email address'
-    }
 
-    if (!signupForm.value.phone) {
-      errors.value.phone = 'Phone number is required'
-    } else if (!validatephone(signupForm.value.phone)) {
-      errors.value.phone = 'Please enter a valid phone number'
-    }
-
-    if (!signupForm.value.password) {
-      errors.value.password = 'Password is required'
-    } else if (!validatePassword(signupForm.value.password)) {
+    if (!signupForm.value.password) errors.value.password = 'Password is required'
+    else if (!validatePassword(signupForm.value.password))
       errors.value.password = 'Password must be at least 6 characters'
-    }
 
-    if (!signupForm.value.confirmPassword) {
+    if (!signupForm.value.confirmPassword)
       errors.value.confirmPassword = 'Please confirm your password'
-    } else if (signupForm.value.password !== signupForm.value.confirmPassword) {
+    else if (signupForm.value.password !== signupForm.value.confirmPassword)
       errors.value.confirmPassword = 'Passwords do not match'
-    }
 
-    if (!signupForm.value.agreeToTerms) {
+    if (!signupForm.value.agreeToTerms)
       errors.value.agreeToTerms = 'You must agree to the terms and conditions'
-    }
   }
 
+  console.log('Validation errors:', errors.value)
   return Object.keys(errors.value).length === 0
+}
+
+// API calls with better debugging
+const loginUser = async (userData) => {
+  try {
+    console.log('Sending login request to:', `${API_BASE_URL}/login`)
+    const response = await axios.post(`${API_BASE_URL}/login`, userData)
+    console.log('Login response:', response.data)
+    return response.data
+  } catch (error) {
+    console.error('Login error:', error.response?.data || error.message)
+    throw new Error(error.response?.data?.message || 'Login failed')
+  }
+}
+
+const registerUser = async (userData) => {
+  try {
+    console.log('Sending registration request to:', API_BASE_URL)
+    console.log('Registration data:', userData)
+    const response = await axios.post(API_BASE_URL, userData)
+    console.log('Registration response:', response.data)
+    return response.data
+  } catch (error) {
+    console.error('Registration error:', error.response?.data || error.message)
+    throw new Error(error.response?.data?.message || 'Registration failed')
+  }
+}
+
+// Check if user exists
+const checkUserExists = async (email) => {
+  try {
+    const response = await axios.get(API_BASE_URL)
+    return response.data.find((user) => user.email === email)
+  } catch (error) {
+    console.error('Error checking user:', error)
+    return null
+  }
 }
 
 // Form submission
 const handleSubmit = async () => {
-  if (!validateForm()) return
-
+  console.log('Form submitted, isLogin:', isLogin.value)
+  
+  if (!validateForm()) {
+    console.log('Form validation failed')
+    return
+  }
+  
   isLoading.value = true
+  errors.value = {} // Clear previous errors
 
   try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
     if (isLogin.value) {
-      console.log('Logging in:', loginForm.value)
-      // Store user data in localStorage
+      // Login
       const userData = {
-        id: 1,
         email: loginForm.value.email,
-        name: 'User Name', // You can get this from your API response
+        password: loginForm.value.password,
+      }
+      const response = await loginUser(userData)
+
+      const userSession = {
+        id: response.user._id,
+        email: response.user.email,
+        name: `${response.user.firstname} ${response.user.lastname}`,
+        username: response.user.username,
+        profile_img: response.user.profile_img,
         loginTime: new Date().toISOString(),
       }
-      localStorage.setItem('user', JSON.stringify(userData))
+      localStorage.setItem('user', JSON.stringify(userSession))
+      console.log('Login successful, redirecting...')
+      
+      router.push('/')
     } else {
-      console.log('Signing up:', signupForm.value)
-      // Store user data in localStorage
+      // Signup
+      console.log('Starting signup process...')
+      
+      const existingUser = await checkUserExists(signupForm.value.email)
+      if (existingUser) {
+        throw new Error('User with this email already exists')
+      }
+
+      const username = signupForm.value.username || 
+        `${signupForm.value.firstname.toLowerCase()}${signupForm.value.lastname.toLowerCase()}`
+
       const userData = {
-        id: Date.now(),
+        firstname: signupForm.value.firstname,
+        lastname: signupForm.value.lastname,
+        username: username,
         email: signupForm.value.email,
-        name: `${signupForm.value.firstName} ${signupForm.value.lastName}`,
-        phone: signupForm.value.phone,
+        password: signupForm.value.password,
+        profile_img: signupForm.value.profile_img,
+      }
+
+      console.log('Sending user data to backend:', userData)
+      const newUser = await registerUser(userData)
+
+      const userSession = {
+        id: newUser._id,
+        email: newUser.email,
+        name: `${newUser.firstname} ${newUser.lastname}`,
+        username: newUser.username,
+        profile_img: newUser.profile_img,
         signupTime: new Date().toISOString(),
       }
-      localStorage.setItem('user', JSON.stringify(userData))
+      localStorage.setItem('user', JSON.stringify(userSession))
+      console.log('Registration successful, redirecting...')
+      
+      router.push('/')
     }
-
-    // Redirect to home or intended page
-    router.push('/')
   } catch (error) {
     console.error('Auth error:', error)
-    errors.value.submit = isLogin.value
-      ? 'Login failed. Please check your credentials.'
-      : 'Signup failed. Please try again.'
+    errors.value.submit = error.message
   } finally {
     isLoading.value = false
   }
 }
 
-// Password visibility toggle
+// Password visibility
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 </script>
@@ -258,7 +301,7 @@ const showConfirmPassword = ref(false)
                 <label for="loginPassword" class="block text-sm font-medium text-gray-700 mb-2">
                   Password
                 </label>
-                <div class="">
+                <div class="relative">
                   <input
                     id="loginPassword"
                     v-model="loginForm.password"
@@ -271,6 +314,13 @@ const showConfirmPassword = ref(false)
                         : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
                     ]"
                   />
+                  <!-- <button
+                    type="button"
+                    @click="showPassword = !showPassword"
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-medium"
+                  >
+                    {{ showPassword ? 'Hide' : 'Show' }}
+                  </button> -->
                 </div>
                 <p v-if="errors.password" class="mt-1 text-sm text-red-600">
                   {{ errors.password }}
@@ -287,7 +337,9 @@ const showConfirmPassword = ref(false)
                   />
                   <span class="ml-2 text-sm text-gray-600">Remember me</span>
                 </label>
-                <a href="#" class="text-sm no-underline"> Forgot password? </a>
+                <a href="#" class="text-sm text-blue-600 hover:text-blue-700 no-underline transition-colors">
+                  Forgot password?
+                </a>
               </div>
 
               <!-- Submit Button -->
@@ -295,8 +347,7 @@ const showConfirmPassword = ref(false)
                 type="submit"
                 :disabled="isLoading"
                 :class="[
-                  'submit-btn w-full py-[8px] px-[6px] bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-blue-200',
-                  isLoading ? 'opacity-50 cursor-not-allowed' : '',
+                  'submit-btn w-full p-[10px] bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
                 ]"
               >
                 <span v-if="isLoading" class="flex items-center justify-center">
@@ -329,47 +380,67 @@ const showConfirmPassword = ref(false)
             <!-- Signup Form -->
             <form v-else @submit.prevent="handleSubmit" class="space-y-6">
               <!-- Name Fields -->
-              <div class="grid grid-cols-2 gap-[20px]">
+              <div class="grid grid-cols-2 gap-[15px]">
                 <div class="input-group">
-                  <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">
+                  <label for="firstname" class="block text-sm font-medium text-gray-700 mb-2">
                     First Name
                   </label>
                   <input
-                    id="firstName"
-                    v-model="signupForm.firstName"
+                    id="firstname"
+                    v-model="signupForm.firstname"
                     type="text"
                     placeholder="First name"
                     :class="[
                       'w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200',
-                      errors.firstName
+                      errors.firstname
                         ? 'border-red-500 focus:ring-red-200'
                         : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
                     ]"
                   />
-                  <p v-if="errors.firstName" class="mt-1 text-sm text-red-600">
-                    {{ errors.firstName }}
+                  <p v-if="errors.firstname" class="mt-1 text-sm text-red-600">
+                    {{ errors.firstname }}
                   </p>
                 </div>
                 <div class="input-group">
-                  <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">
+                  <label for="lastname" class="block text-sm font-medium text-gray-700 mb-2">
                     Last Name
                   </label>
                   <input
-                    id="lastName"
-                    v-model="signupForm.lastName"
+                    id="lastname"
+                    v-model="signupForm.lastname"
                     type="text"
                     placeholder="Last name"
                     :class="[
                       'w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200',
-                      errors.lastName
+                      errors.lastname
                         ? 'border-red-500 focus:ring-red-200'
                         : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
                     ]"
                   />
-                  <p v-if="errors.lastName" class="mt-1 text-sm text-red-600">
-                    {{ errors.lastName }}
+                  <p v-if="errors.lastname" class="mt-1 text-sm text-red-600">
+                    {{ errors.lastname }}
                   </p>
                 </div>
+              </div>
+
+              <!-- Username Field -->
+              <div class="input-group">
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                  Username
+                </label>
+                <input
+                  id="username"
+                  v-model="signupForm.username"
+                  type="text"
+                  placeholder="Choose a username"
+                  :class="[
+                    'w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200',
+                    errors.username
+                      ? 'border-red-500 focus:ring-red-200'
+                      : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
+                  ]"
+                />
+                <p v-if="errors.username" class="mt-1 text-sm text-red-600">{{ errors.username }}</p>
               </div>
 
               <!-- Email -->
@@ -392,29 +463,10 @@ const showConfirmPassword = ref(false)
                 <p v-if="errors.email" class="mt-1 text-sm text-red-600">{{ errors.email }}</p>
               </div>
 
-              <!-- Phone Number -->
-              <div class="input-group">
-                <label for="Phone" class="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number:
-                </label>
-                <input
-                  id="phoneNumber"
-                  v-model="signupForm.phone"
-                  type="phone"
-                  placeholder="Enter your phone number"
-                  :class="[
-                    'w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200',
-                    errors.phone
-                      ? 'border-red-500 focus:ring-red-200'
-                      : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
-                  ]"
-                />
-                <p v-if="errors.phone" class="mt-1 text-sm text-red-600">{{ errors.phone }}</p>
-              </div>
-
-              <div class="grid grid-cols-2 gap-[20px]">
+              <!-- Password Fields -->
+              <div class="grid grid-cols-2 gap-[15px]">
                 <!-- Password -->
-                <div class="input-group password">
+                <div class="input-group">
                   <label for="signupPassword" class="block text-sm font-medium text-gray-700 mb-2">
                     Password
                   </label>
@@ -431,22 +483,25 @@ const showConfirmPassword = ref(false)
                           : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
                       ]"
                     />
+                    <!-- <button
+                      type="button"
+                      @click="showPassword = !showPassword"
+                      class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-medium"
+                    >
+                      {{ showPassword ? 'Hide' : 'Show' }}
+                    </button> -->
                   </div>
                   <p v-if="errors.password" class="mt-1 text-sm text-red-600">
                     {{ errors.password }}
                   </p>
-                  <p class="mt-1 text-xs text-gray-500">
-                    <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="w-4 h-4" />
-                    Must be at least 6 characters
-                  </p>
                 </div>
 
                 <!-- Confirm Password -->
-                <div class="input-group confirm-password">
+                <div class="input-group">
                   <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">
                     Confirm Password
                   </label>
-                  <div>
+                  <div class="relative">
                     <input
                       id="confirmPassword"
                       v-model="signupForm.confirmPassword"
@@ -459,6 +514,13 @@ const showConfirmPassword = ref(false)
                           : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
                       ]"
                     />
+                    <!-- <button
+                      type="button"
+                      @click="showConfirmPassword = !showConfirmPassword"
+                      class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-medium"
+                    >
+                      {{ showConfirmPassword ? 'Hide' : 'Show' }}
+                    </button> -->
                   </div>
                   <p v-if="errors.confirmPassword" class="mt-1 text-sm text-red-600">
                     {{ errors.confirmPassword }}
@@ -466,9 +528,14 @@ const showConfirmPassword = ref(false)
                 </div>
               </div>
 
-              <!-- Terms and Newsletter
-              <div class="space-y-4">
-                <label class="flex items-start">
+              <!-- Password requirement note -->
+              <p class="text-xs text-gray-500 -mt-2 mb-[2px]">
+                Must be at least 6 characters
+              </p>
+
+              <!-- Terms and Conditions -->
+              <div class="space-y-4 mb-[10px]">
+                <label class="flex items-start gap-[20px]">
                   <input
                     v-model="signupForm.agreeToTerms"
                     type="checkbox"
@@ -488,29 +555,37 @@ const showConfirmPassword = ref(false)
                 <p v-if="errors.agreeToTerms" class="text-sm text-red-600">
                   {{ errors.agreeToTerms }}
                 </p>
-
-                <label class="flex items-center">
-                  <input
-                    v-model="signupForm.newsletter"
-                    type="checkbox"
-                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
-                  <span class="ml-2 text-sm text-gray-600">
-                    Send me product updates and marketing communications
-                  </span>
-                </label>
-              </div> -->
+              </div>
 
               <!-- Submit Button -->
               <button
                 type="submit"
                 :disabled="isLoading"
                 :class="[
-                  'submit-btn w-full py-[6px] px-[8px] my-[5px] text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:-translate-y-0.5',
-                  isLoading ? 'opacity-50 cursor-not-allowed' : '',
+                  'submit-btn w-full py-[10px] bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-green-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
                 ]"
               >
                 <span v-if="isLoading" class="flex items-center justify-center">
+                  <svg
+                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
                   Creating Account...
                 </span>
                 <span v-else>Create Account</span>
@@ -518,12 +593,12 @@ const showConfirmPassword = ref(false)
             </form>
 
             <!-- Footer Links -->
-            <div class="footer-links mt-[8px] text-center">
-              <p class="text-sm">
+            <div class="footer-links mt-6 text-center">
+              <p class="text-sm text-gray-600">
                 {{ isLogin ? "Don't have an account?" : 'Already have an account?' }}
                 <button
                   @click="toggleAuthMode"
-                  class="font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                  class="font-semibold text-blue-600 hover:text-blue-700 transition-colors ml-1"
                 >
                   {{ isLogin ? 'Sign up' : 'Sign in' }}
                 </button>
@@ -581,7 +656,7 @@ const showConfirmPassword = ref(false)
   margin-bottom: 10px;
 }
 .input-group input {
-  padding: 8px;
+  padding: 10px;
   border-radius: 10px;
   background: #eebefe;
 }
