@@ -56,7 +56,7 @@ const showAddToCartFeedback = (button) => {
   >
     <div class="card-img w-full h-[65%] bg-gray-100 overflow-hidden">
       <!-- Display the actual image -->
-      <img :src="product.image" :alt="product.name" class="w-full h-full object-cover" />
+      <img :src="product.product_image_url" :alt="product.name" class="w-full h-full object-cover" />
     </div>
 
     <!-- card-details -->
@@ -64,7 +64,7 @@ const showAddToCartFeedback = (button) => {
       <div class="p-[6px]">
         <h4 class="card-name">{{ product.name }}</h4>
         <div class="flex justify-between items-center mt-1 mb-3">
-          <span class="card-price text-lg">${{ product.price }}</span>
+          <span class="card-price text-lg">Ksh.{{ product.price }}</span>
           <span class="card-brand text-xs text-[#5D3471] bg-[#E8B6D5] px-2 py-0.5 rounded-full">
             {{ product.brand }}
           </span>

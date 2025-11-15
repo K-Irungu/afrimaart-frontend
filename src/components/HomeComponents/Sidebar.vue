@@ -1,27 +1,32 @@
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref, defineProps, defineEmits } from 'vue'
 
 const emit = defineEmits(['update:filters'])
+const props = defineProps({
+  categories: { 
+    type: Array, 
+    default: () => ["All", "Shoes", "Clothes", "Electronics", "Accessories"] 
+  },
+  brands: {
+    type: Array,
+    default: () => ["Any", "Acme", "Nimbus", "Orbit"]
+  }
+})
 
-// Mock Data for the Filters
-const categories = ['All', 'Apparel', 'Shoes', 'Accessories', 'Home', 'Tech']
-const brands = ['Any', 'Acme', 'Nimbus', 'Orbit']
 const ratings = ['4+', '3+', 'All']
 
 // Reactive state for selected filters
 const selectedFilters = ref({
   category: 'All',
-  brands: ['Any'], // Using an array for potential multi-select
-  priceRange: [0, 250],
+  brands: ['Any'],
+  priceRange: [0, 1000],
   rating: '4+',
 })
 
-// Function to handle filter updates and emit the change
 const updateFilters = () => {
   emit('update:filters', selectedFilters.value)
 }
 
-// Functions to handle specific filter changes
 const selectCategory = (cat) => {
   selectedFilters.value.category = cat
   updateFilters()
@@ -29,10 +34,22 @@ const selectCategory = (cat) => {
 
 const toggleBrand = (brand) => {
   const index = selectedFilters.value.brands.indexOf(brand)
-  if (index > -1) {
-    selectedFilters.value.brands.splice(index, 1)
+  
+  if (brand === 'Any') {
+    selectedFilters.value.brands = ['Any']
   } else {
-    selectedFilters.value.brands.push(brand)
+    if (index > -1) {
+      selectedFilters.value.brands.splice(index, 1)
+      if (selectedFilters.value.brands.length === 0) {
+        selectedFilters.value.brands = ['Any']
+      }
+    } else {
+      const anyIndex = selectedFilters.value.brands.indexOf('Any')
+      if (anyIndex > -1) {
+        selectedFilters.value.brands.splice(anyIndex, 1)
+      }
+      selectedFilters.value.brands.push(brand)
+    }
   }
   updateFilters()
 }
@@ -42,7 +59,7 @@ const selectRating = (rating) => {
   updateFilters()
 }
 
-// Initial emit to set the starting state
+// Initial emit
 updateFilters()
 </script>
 
@@ -52,17 +69,17 @@ updateFilters()
 
     <!-- Categories -->
     <section class="my-[20px]">
-      <h3 class="categories text-lg mb-3">Categories</h3>
-      <div class="grid grid-cols-3 gap-4 gap-[5px]">
+      <h3 class="categories text-lg mb-[5px]">Categories</h3>
+      <div class="grid grid-cols-3 gap-[5px]">
         <button
-          v-for="cat in categories"
+          v-for="cat in props.categories"
           :key="cat"
           @click="selectCategory(cat)"
-          :class="[
+          :class="[ 
             's-btn px-3 py-1 text-sm rounded-full transition',
             selectedFilters.category === cat
               ? 'bg-[#5D3471] text-white'
-              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF]',
+              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF]'
           ]"
         >
           {{ cat }}
@@ -93,7 +110,7 @@ updateFilters()
       <h3 class="brand text-lg mb-3">Brand</h3>
       <div class="space-y-2">
         <label
-          v-for="brand in brands"
+          v-for="brand in props.brands"
           :key="brand"
           class="flex gap-[10px] items-center space-x-2 text-sm text-[#5D3471]"
         >

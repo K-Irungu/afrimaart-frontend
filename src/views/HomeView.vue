@@ -1,134 +1,217 @@
 <script setup>
 import { RouterLink } from 'vue-router'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import '@/assets/base.css'
 import ProductGrid from '@/components/HomeComponents/ProductGrid.vue'
 import Navbar from '@/components/Navbar.vue'
 import Sidebar from '@/components/HomeComponents/Sidebar.vue'
 import Footer from '@/components/Footer.vue'
-import sneakersImage from '@/assets/images/sneakers.jpg'
-import slateWatchImage from '@/assets/images/slate-watch.jpg'
-import headphonesImage from '@/assets/images/headphones.jpg'
-import cozyHoodieImage from '@/assets/images/cozyhood.jpg'
-import nomadBackpackImage from '@/assets/images/nomadic-backpack.jpg'
-import brewMugImage from '@/assets/images/brew-mag.jpg'
-import sprintShortsImage from '@/assets/images/sprint-shorts.jpg'
-import haloSunglassesImage from '@/assets/images/halo-glasses.jpg'
-import beatGoSpeakerImage from '@/assets/images/beatgo-speaker.jpg'
+import axios from 'axios'
 
-// --- Mock Product Data (Same as before) ---
-const allProducts = [
-  {
-    id: 1,
-    name: 'AeroRun Sneakers',
-    price: 129,
-    brand: 'Acme',
-    category: 'Shoes',
-    rating: 4.5,
-    image: sneakersImage,
-  },
-  {
-    id: 2,
-    name: 'Slate Watch',
-    price: 199,
-    brand: 'Nimbus',
-    category: 'Accessories',
-    rating: 4.0,
-    image: slateWatchImage,
-  },
-  {
-    id: 3,
-    name: 'Pulse Headphones',
-    price: 149,
-    brand: 'Orbit',
-    category: 'Tech',
-    rating: 4.2,
-    image: headphonesImage,
-  },
-  {
-    id: 4,
-    name: 'Cozy Hoodie',
-    price: 79,
-    brand: 'Acme',
-    category: 'Apparel',
-    rating: 3.8,
-    image: cozyHoodieImage,
-  },
-  {
-    id: 5,
-    name: 'Nomad Backpack',
-    price: 219,
-    brand: 'Nimbus',
-    category: 'Accessories',
-    rating: 4.6,
-    image: nomadBackpackImage,
-  },
-  {
-    id: 6,
-    name: 'Brew Mug',
-    price: 24,
-    brand: 'Orbit',
-    category: 'Home',
-    rating: 3.5,
-    image: brewMugImage,
-  },
-  {
-    id: 7,
-    name: 'Sprint Shorts',
-    price: 49,
-    brand: 'Acme',
-    category: 'Apparel',
-    rating: 4.1,
-    image: sprintShortsImage,
-  },
-  {
-    id: 8,
-    name: 'Halo Sunglasses',
-    price: 89,
-    brand: 'Nimbus',
-    category: 'Accessories',
-    rating: 4.7,
-    image: haloSunglassesImage,
-  },
-  {
-    id: 9,
-    name: 'BeatGo Speaker',
-    price: 99,
-    brand: 'Orbit',
-    category: 'Tech',
-    rating: 3.9,
-    image: beatGoSpeakerImage,
-  },
-]
+// Base URL for your products API
+const API_BASE_URL = 'http://localhost:5000/products'
 
-// --- Reactive State and Filter Logic (Same as before) ---
+const categories = ref([
+  "All", 
+  "Shoes", 
+  "Clothes", 
+  "Food", 
+  "Electronics", 
+  "Accessories", 
+  "Furniture", 
+  "Home", 
+  "Sports & Outdoors"
+])
+
+// PRODUCTS (FROM DB)
+const allProducts = ref([])
+
+// Reactive state
+const isLoading = ref(true)
+const error = ref(null)
+
+const route = useRoute()
+
+// FIXED: Change default rating to 'Any' to show all products initially
 const currentFilters = ref({
   category: 'All',
   brands: ['Any'],
-  priceRange: [0, 250],
-  rating: '4+',
+  priceRange: [0, 1000],
+  rating: 'Any',
+})
+
+// Extract numeric value from MongoDB Decimal128 objects
+const extractNumericValue = (value) => {
+  if (!value) return 0
+  if (typeof value === 'number') return value
+  if (typeof value === 'string') return Number(value) || 0
+  if (value.$numberDecimal) return Number(value.$numberDecimal) || 0
+  return Number(value) || 0
+}
+
+// Transform product data to extract numeric values
+const transformProductData = (products) => {
+  return products.map(product => ({
+    ...product,
+    // Extract numeric price and rating from MongoDB Decimal128 objects
+    price: extractNumericValue(product.price),
+    rating: extractNumericValue(product.rating),
+    // Keep the original for reference if needed
+    _originalPrice: product.price,
+    _originalRating: product.rating
+  }))
+}
+
+// Fetch products from backend
+const fetchProducts = async () => {
+  try {
+    isLoading.value = true
+    error.value = null
+    console.log('Fetching products from:', API_BASE_URL)
+
+    const response = await axios.get(API_BASE_URL)
+    console.log('Products received:', response.data)
+    
+    // Check if we got data
+    if (response.data && Array.isArray(response.data)) {
+      // Transform the data to extract numeric values
+      allProducts.value = transformProductData(response.data)
+      console.log('Products loaded successfully:', allProducts.value.length)
+      
+      // Debug: Log first product to see structure
+      if (allProducts.value.length > 0) {
+        console.log('First product sample (transformed):', allProducts.value[0])
+      }
+    } else {
+      console.error('Invalid response format:', response.data)
+      allProducts.value = []
+    }
+    
+  } catch (err) {
+    console.error("Error fetching products:", err)
+    error.value = err.message
+    allProducts.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Run fetch when page loads
+onMounted(() => {
+  fetchProducts()
 })
 
 const handleFilterUpdate = (newFilters) => {
+  console.log('Filters received from Sidebar:', JSON.parse(JSON.stringify(newFilters)))
   currentFilters.value = newFilters
 }
 
+// Get unique brands from products
+const availableBrands = computed(() => {
+  if (!allProducts.value.length) return ['Any']
+  const brands = [...new Set(allProducts.value.map(product => product.brand))].filter(brand => brand)
+  return ['Any', ...brands]
+})
+
+// Get unique categories from products
+const availableCategories = computed(() => {
+  if (!allProducts.value.length) return ['All']
+  const cats = [...new Set(allProducts.value.map(product => product.category))].filter(cat => cat)
+  return ['All', ...cats]
+})
+
+// Helper function to get minimum rating from filter
+const getMinRating = (ratingFilter) => {
+  if (ratingFilter === '4+') return 4
+  if (ratingFilter === '3+') return 3
+  if (ratingFilter === '2+') return 2
+  if (ratingFilter === '1+') return 1
+  return 0 // For 'Any' or no rating filter
+}
+
+// FIXED: FILTER PRODUCTS with proper data extraction
 const filteredProducts = computed(() => {
-  return allProducts.filter((product) => {
-    // ... filtering logic remains here ...
+  if (!allProducts.value.length) {
+    return []
+  }
+  
+  const filtered = allProducts.value.filter((product) => {
+    // FIXED: Now using already transformed numeric values
+    const productPrice = product.price
+    const productRating = product.rating
+    const productBrand = String(product.brand || '')
+    const productCategory = String(product.category || '')
+
+    // Category filter
     const categoryMatch =
-      currentFilters.value.category === 'All' || product.category === currentFilters.value.category
+      currentFilters.value.category === 'All' ||
+      productCategory === currentFilters.value.category
+
+    // Brand filter
     const brandMatch =
       currentFilters.value.brands.includes('Any') ||
-      currentFilters.value.brands.includes(product.brand)
-    const priceMatch = product.price <= currentFilters.value.priceRange[1]
-    let minRating = 0
-    if (currentFilters.value.rating === '4+') minRating = 4
-    if (currentFilters.value.rating === '3+') minRating = 3
-    const ratingMatch = product.rating >= minRating
+      currentFilters.value.brands.length === 0 ||
+      currentFilters.value.brands.includes(productBrand)
+
+    // Price filter
+    const priceMatch = 
+      productPrice >= currentFilters.value.priceRange[0] &&
+      productPrice <= currentFilters.value.priceRange[1]
+
+    // Rating filter - only apply if not 'Any'
+    let ratingMatch = true
+    if (currentFilters.value.rating !== 'Any') {
+      const minRating = getMinRating(currentFilters.value.rating)
+      ratingMatch = productRating >= minRating
+    }
+
     return categoryMatch && brandMatch && priceMatch && ratingMatch
   })
+  
+  return filtered
 })
+
+// PAGINATION LOGIC
+const itemsPerPage = 9
+
+// Get current page from route or default to 1
+const currentPage = computed(() => {
+  return Number(route.query.page) || 1
+})
+
+// Calculate total pages
+const totalPages = computed(() => {
+  return Math.ceil(filteredProducts.value.length / itemsPerPage)
+})
+
+// Get paginated products for current page
+const paginatedProducts = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  return filteredProducts.value.slice(startIndex, endIndex)
+})
+
+// Check if any filters are active (not default)
+const areFiltersActive = computed(() => {
+  return (
+    currentFilters.value.category !== 'All' ||
+    !(currentFilters.value.brands.length === 1 && currentFilters.value.brands[0] === 'Any') ||
+    currentFilters.value.priceRange[0] > 0 ||
+    currentFilters.value.priceRange[1] < 1000 ||
+    currentFilters.value.rating !== 'Any'
+  )
+})
+
+// Clear all filters
+const clearAllFilters = () => {
+  currentFilters.value = {
+    category: 'All',
+    brands: ['Any'],
+    priceRange: [0, 1000],
+    rating: 'Any',
+  }
+}
 </script>
 
 <template>
@@ -138,17 +221,76 @@ const filteredProducts = computed(() => {
 
     <div class="main-content flex gap-[20px] w-full max-w-7xl mx-auto px-4 mt-[20px]">
       <!-- Sidebar Filters -->
-      <Sidebar @update:filters="handleFilterUpdate" />
+      <Sidebar 
+        :categories="availableCategories" 
+        :brands="availableBrands"
+        @update:filters="handleFilterUpdate" 
+      />
 
       <!-- Main content -->
       <main class="flex-1 py-8">
-        <!-- Use ProductGrid component -->
-        <ProductGrid :products="filteredProducts" />
+        <!-- Loading State -->
+        <div v-if="isLoading" class="text-center py-12">
+          <div class="flex items-center justify-center">
+            <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="ml-3 text-lg text-gray-600">Loading products...</span>
+          </div>
+        </div>
 
-        <!-- Show message if no products
-        <div v-if="filteredProducts.length === 0" class="text-center py-12">
-          <p class="text-gray-500 text-lg">No products match your filters.</p>
-        </div> -->
+        <!-- Error State -->
+        <div v-else-if="error" class="text-center py-12">
+          <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+            <p class="text-red-700 mb-4">Error loading products: {{ error }}</p>
+            <button 
+              @click="fetchProducts"
+              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+
+        <!-- No Products State -->
+        <div v-else-if="allProducts.length === 0" class="text-center py-12">
+          <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-md mx-auto">
+            <p class="text-yellow-700 text-lg">No products found in the database.</p>
+            <p class="text-yellow-600 text-sm mt-2">Check if your backend is running and has products.</p>
+            <button 
+              @click="fetchProducts"
+              class="mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Reload Products
+            </button>
+          </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div v-else>
+          <!-- Show filtered products -->
+          <ProductGrid 
+            :products="paginatedProducts" 
+            :current-page="currentPage"
+            :total-pages="totalPages"
+            :total-products="filteredProducts.length"
+          />
+
+          <!-- No Filter Results -->
+          <div v-if="filteredProducts.length === 0 && areFiltersActive" class="text-center py-12">
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-8 max-w-md mx-auto">
+              <p class="text-gray-500 text-lg mb-2">No products match your filters.</p>
+              <p class="text-gray-400 text-sm mb-4">Try adjusting your filter criteria.</p>
+              <button 
+                @click="clearAllFilters"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                Show All Products
+              </button>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
 
@@ -161,5 +303,16 @@ const filteredProducts = computed(() => {
 .main-content {
   width: 90%;
   color: #000000;
+}
+
+/* Smooth transitions for filter changes */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
