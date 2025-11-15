@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps } from 'vue'
+import { defineProps, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { product } = defineProps({
@@ -11,13 +11,22 @@ const { product } = defineProps({
 
 const router = useRouter()
 
+// Calculate original price based on discount percentage
+const originalPrice = computed(() => {
+  if (product.discount_percentage > 0) {
+    const currentPrice = typeof product.price === 'number' ? product.price : Number(product.price)
+    return (currentPrice / (1 - product.discount_percentage / 100)).toFixed(2)
+  }
+  return null
+})
+
 // Proper authentication check
 const isAuthenticated = () => {
   return !!localStorage.getItem('user')
 }
 
 const navigateToProduct = () => {
-  router.push(`/product/${product.id}`)
+  router.push(`/product/${product._id || product.id}`)
 }
 
 const addToCart = async (event) => {
@@ -25,15 +34,12 @@ const addToCart = async (event) => {
 
   // Check if user is authenticated
   if (!isAuthenticated()) {
-    // Redirect to auth page with return URL
-    router.push(`/auth?redirect=/product/${product.id}`)
+    router.push(`/auth?redirect=/product/${product._id || product.id}`)
     return
   }
 
-  // User is authenticated, add to cart
   console.log('Added to cart:', product.name)
 
-  // Show success feedback
   showAddToCartFeedback(event.target)
 }
 
@@ -54,51 +60,73 @@ const showAddToCartFeedback = (button) => {
     class="card bg-white rounded-lg shadow-md overflow-hidden transition-shadow hover:shadow-xl cursor-pointer relative"
     @click="navigateToProduct"
   >
-    <!-- Moved badge here -->
+    <!-- Discount Badge -->
     <span
+      v-if="product.discount_percentage > 0"
       class="badge absolute top-2 left-2 bg-red-600 text-white text-xs font-semibold px-[6px] py-0.5 rounded-sm z-20"
     >
-      -{{ product.discount }}%
+      -{{ product.discount_percentage }}%
     </span>
 
     <div class="card-img w-full h-48 bg-gray-100 overflow-hidden relative h-[65%]">
-      <img :src="product.image" :alt="product.name" class="w-full h-full object-cover" />
+      <img :src="product.product_image_url" :alt="product.name" class="w-full h-full object-cover" />
     </div>
 
     <!-- Card details -->
     <div class="card-content p-[6px] h-[35%]">
-      <div class="flex gap-[5px] m-[10px]">
-        <div>
-          <h4 class="card-name font-semibold text-gray-800 mb-[5px]">{{ product.name }}</h4>
-          <div class="flex gap-[6px] mt-1 mb-3">
-            <span class="card-price text-lg font-bold text-gray-900">${{ product.price }}</span>
-            <span class="card-orprice text-sm text-gray-400 line-through ml-2">
-              ${{ product.originalPrice }}
-            </span>
-          </div>
-        </div>
 
-        <!-- Tag display -->
-        <div class="grid grid-flow-col grid-rows-2 gap-4 mb-3 w-full place-items-end">
+      <!-- Updated layout START -->
+      <div class="m-[5px]">
+        <!-- Name + Deal Tag Row -->
+        <div class="flex justify-between items-start gap-2 mb-[5px]">
+          <h4 class="card-name text-sm font-semibold line-clamp-2 flex-1">
+            {{ product.name }}
+          </h4>
+
           <span
-            v-if="product.dealTag"
-            class="tag col-span-2 text-white text-xs px-[5px] py-0.5 rounded-full"
+            v-if="product.deal_tag"
+            class="tag text-white text-xs px-[5px] py-0.5 rounded-full font-medium shrink-0"
             :class="{
-              'bg-red-500': product.dealTag === 'Flash',
-              'bg-green-500': product.dealTag === 'Clearance',
-              'bg-yellow-600': product.dealTag === 'Deal',
-              'bg-blue-600': product.dealTag === 'Bundle',
+              'bg-red-500': product.deal_tag === 'Flash',
+              'bg-green-500': product.deal_tag === 'Clearance',
+              'bg-yellow-600': product.deal_tag === 'Deal',
+              'bg-blue-600': product.deal_tag === 'Bundle',
             }"
           >
-            {{ product.dealTag }}
+            {{ product.deal_tag }}
+          </span>
+        </div>
+
+        <!-- Prices -->
+        <div class="flex gap-[6px] mt-1 mb-3 items-center">
+          <span class="card-price text-lg font-bold text-gray-900">
+            Ksh.{{ typeof product.price === 'number' ? product.price.toFixed(2) : Number(product.price).toFixed(2) }}
+          </span>
+
+          <span v-if="originalPrice" class="card-orprice text-sm text-gray-400 line-through ml-2">
+            Ksh.{{ originalPrice }}
+          </span>
+        </div>
+
+        <!-- Rating + Brand -->
+        <div class="flex items-center gap-[5px] mb-2">
+          <div class="flex items-center mr-[2px]">
+            <span class="text-sm text-[#CE7F57]">★</span>
+            <span class="text-sm text-gray-600 ml-1">
+              {{ typeof product.rating === 'number' ? product.rating.toFixed(1) : Number(product.rating).toFixed(1) }}
+            </span>
+          </div>
+          <span class="card-brand text-xs text-[#5D3471] bg-[#E8B6D5] px-2 py-0.5 rounded-full ml-2">
+            {{ product.brand }}
           </span>
         </div>
       </div>
+      <!-- Updated layout END -->
 
       <div class="flex justify-center">
         <button
           @click="addToCart"
-          class="w-[95%] h-[40px] w-full py-2 bg-[#804D91] text-white font-medium rounded-lg hover:bg-[#AA69AF] transition duration-150"
+          class="w-[95%] h-[40px] py-2 bg-[#804D91] text-white font-medium rounded-lg hover:bg-[#AA69AF] transition duration-150"
         >
           Add to Cart
         </button>
@@ -109,18 +137,18 @@ const showAddToCartFeedback = (button) => {
 
 <style scoped>
 .card {
-  background: #e8b6d5; /* Soft Pink background */
+  background: #e8b6d5;
   width: 90%;
-  height: 400px;
-  border: 1px solid #aa69af; /* Medium Orchid border */
+  height: 510px;
+  border: 1px solid #aa69af;
   border-radius: 20px;
   margin-bottom: 2rem;
-  color: #5d3471; /* Deep Purple text */
+  color: #5d3471;
   transition: all 0.3s ease;
 }
 
 .card:hover {
-  box-shadow: 0 8px 25px rgba(93, 52, 113, 0.3); /* Deep Purple glow */
+  box-shadow: 0 8px 25px rgba(93, 52, 113, 0.3);
   transform: translateY(-4px);
 }
 
@@ -130,7 +158,7 @@ const showAddToCartFeedback = (button) => {
 }
 
 .card-content button {
-  background: #804d91; /* Royal Purple button */
+  background: #804d91;
   border: none;
   border-radius: 10px;
   margin-top: 5px;
@@ -139,26 +167,20 @@ const showAddToCartFeedback = (button) => {
 }
 
 .card-content button:hover {
-  background: #aa69af; /* Medium Orchid hover */
+  background: #aa69af;
 }
 
 .card-name,
 .card-price {
   font-size: 1rem;
   font-weight: 700;
-  color: #5d3471; /* Deep Purple */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: #5d3471;
 }
 
 .card-orprice {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #804d91; /* Royal Purple for contrast */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: #804d91;
 }
 
 .card-brand {
@@ -169,34 +191,26 @@ const showAddToCartFeedback = (button) => {
 
 .badge {
   margin-top: 12px;
-  margin-left: 5px;
+  margin-left: 6px;
   border-radius: 10px;
-  background: #ce7f57; /* Warm Brownish Orange badge */
+  background: #ce7f57;
   color: #ffffff;
   font-weight: 700;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-  z-index: 20;
   animation: pulse 2s infinite;
 }
 
 .tag {
   height: 25px;
-  width: auto;
-  background: #804d91; /* Royal Purple tag */
+  background: #804d91;
   color: #ffffff;
   font-weight: 700;
   border-radius: 10px;
+  white-space: nowrap;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-  z-index: 20;
 }
 
 @keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 </style>

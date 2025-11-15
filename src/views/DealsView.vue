@@ -1,118 +1,175 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import '@/assets/base.css'
 import Navbar from '@/components/Navbar.vue'
 import DealsSidebar from '@/components/DealsComponets/DealsSidebar.vue'
 import DealsProductGrid from '@/components/DealsComponets/DealsProductGrid.vue'
 import Footer from '@/components/Footer.vue'
+import axios from 'axios'
 
-// Import your images
-import vueKnitRunner from '@/assets/images/convers.jpg'
-import orionWatch from '@/assets/images/orion-watch.png'
-import nomadTote from '@/assets/images/nomad-tot.jpg'
-import pulseBudsX from '@/assets/images/pulse-buds.png'
-import cloudKnitSweater from '@/assets/images/cloud-knit.jpg'
-import arcCeramicVase from '@/assets/images/ceramic-vase.jpg'
-import sprintShorts from '@/assets/images/sprint-shorts.jpg'
-import haloStarShades from '@/assets/images/halo-shades.png'
-import beatGoMini from '@/assets/images/beatgo-mini.png'
+const API_BASE_URL = 'http://localhost:5000/products'
 
-// --- Mock Product Data for New Arrivals ---
-const dealProducts = ref([
-  {
-    id: 1,
-    name: 'Vue Knit Runner',
-    price: 90,
-    originalPrice: 139,
-    discount: 35,
-    dealTag: 'Flash',
-    image: vueKnitRunner,
-  },
-  {
-    id: 2,
-    name: 'Orion Watch S2',
-    price: 169,
-    originalPrice: 229,
-    discount: 26,
-    dealTag: 'Clearance',
-    image: orionWatch,
-  },
-  {
-    id: 3,
-    name: 'Nomad Tote',
-    price: 139,
-    originalPrice: 179,
-    discount: 22,
-    dealTag: 'Deal',
-    image: nomadTote,
-  },
-  {
-    id: 4,
-    name: 'Pulse Buds X',
-    price: 90,
-    originalPrice: 129,
-    discount: 30,
-    dealTag: 'Flash',
-    image: pulseBudsX,
-  },
-  {
-    id: 5,
-    name: 'Cloud Knit Sweater',
-    price: 74,
-    originalPrice: 99,
-    discount: 25,
-    dealTag: 'Deal',
-    image: cloudKnitSweater,
-  },
-  {
-    id: 6,
-    name: 'Arc Ceramic Vase',
-    price: 39,
-    originalPrice: 49,
-    discount: 20,
-    dealTag: 'Clearance',
-    image: arcCeramicVase,
-  },
-  {
-    id: 7,
-    name: 'SprintLife Shorts',
-    price: 39,
-    originalPrice: 59,
-    discount: 33,
-    dealTag: 'Deal',
-    image: sprintShorts,
-  },
-  {
-    id: 8,
-    name: 'Halo Slim Shades',
-    price: 66,
-    originalPrice: 95,
-    discount: 30,
-    dealTag: 'Bundle',
-    image: haloStarShades,
-  },
-  {
-    id: 9,
-    name: 'BeatGo Mini',
-    price: 65,
-    originalPrice: 89,
-    discount: 26,
-    dealTag: 'Deal',
-    image: beatGoMini,
-  },
-])
+// Products from API
+const allProducts = ref([])
+const isLoading = ref(true)
+const error = ref(null)
 
-// --- Filter Logic Handler ---
-const currentFilters = ref({})
+const route = useRoute()
+
+// Extract numeric value from MongoDB Decimal128 objects
+const extractNumericValue = (value) => {
+  if (!value) return 0
+  if (typeof value === 'number') return value
+  if (typeof value === 'string') return Number(value) || 0
+  if (value.$numberDecimal) return Number(value.$numberDecimal) || 0
+  return Number(value) || 0
+}
+
+// Transform product data
+const transformProductData = (products) => {
+  return products.map(product => ({
+    ...product,
+    price: extractNumericValue(product.price),
+    rating: extractNumericValue(product.rating),
+  }))
+}
+
+// Fetch products from backend
+const fetchProducts = async () => {
+  try {
+    isLoading.value = true
+    error.value = null
+
+    const response = await axios.get(API_BASE_URL)
+    
+    if (response.data && Array.isArray(response.data)) {
+      allProducts.value = transformProductData(response.data)
+    } else {
+      allProducts.value = []
+    }
+    
+  } catch (err) {
+    console.error("Error fetching products:", err)
+    error.value = err.message
+    allProducts.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Run fetch when page loads
+onMounted(() => {
+  fetchProducts()
+})
+
+// --- Filter Logic ---
+const currentFilters = ref({
+  dealType: 'All deals',
+  category: 'All',
+  discount: '10%+',
+  priceRange: [0, 1000],
+})
 
 const handleFilterUpdate = (newFilters) => {
   currentFilters.value = newFilters
-  // Filtering logic would be applied here in a real application
 }
 
-const filteredDealProducts = computed(() => {
-  // For simplicity, returning all products
-  return dealProducts.value
+// Filter products based on selected filters
+const filteredProducts = computed(() => {
+  if (!allProducts.value.length) return []
+
+  return allProducts.value.filter(product => {
+    // Filter by deal type
+    if (currentFilters.value.dealType !== 'All deals') {
+      if (product.deal_tag !== currentFilters.value.dealType) {
+        return false
+      }
+    }
+
+    // Filter by category
+    if (currentFilters.value.category !== 'All') {
+      if (product.category !== currentFilters.value.category) {
+        return false
+      }
+    }
+
+    // Filter by discount percentage
+    const discountValue = parseInt(currentFilters.value.discount)
+    if (product.discount_percentage < discountValue) {
+      return false
+    }
+
+    // Filter by price range
+    const productPrice = product.price
+    if (productPrice < currentFilters.value.priceRange[0] || 
+        productPrice > currentFilters.value.priceRange[1]) {
+      return false
+    }
+
+    // Only show products that have either discount or deal tag
+    if (product.discount_percentage === 0 && !product.deal_tag) {
+      return false
+    }
+
+    return true
+  })
+})
+
+// SORTING LOGIC
+const sortedProducts = computed(() => {
+  let sorted = [...filteredProducts.value]
+  const sortBy = route.query.sort || 'discount-high-low'
+
+  switch (sortBy) {
+    case 'discount-high-low':
+      // Sort by discount percentage (highest first)
+      sorted.sort((a, b) => b.discount_percentage - a.discount_percentage)
+      break
+    case 'price-low-high':
+      sorted.sort((a, b) => a.price - b.price)
+      break
+    case 'price-high-low':
+      sorted.sort((a, b) => b.price - a.price)
+      break
+    case 'rating-high-low':
+      sorted.sort((a, b) => b.rating - a.rating)
+      break
+    default:
+      // Default: discount high to low
+      sorted.sort((a, b) => b.discount_percentage - a.discount_percentage)
+      break
+  }
+  
+  return sorted
+})
+
+// Get current page from route
+const currentPage = computed(() => {
+  return Number(route.query.page) || 1
+})
+
+// Calculate total pages
+const totalPages = computed(() => {
+  const itemsPerPage = 9
+  return Math.ceil(sortedProducts.value.length / itemsPerPage)
+})
+
+// Get paginated products
+const paginatedProducts = computed(() => {
+  const startIndex = (currentPage.value - 1) * 9
+  const endIndex = startIndex + 9
+  return sortedProducts.value.slice(startIndex, endIndex)
+})
+
+// Count products by filter for display
+const filterStats = computed(() => {
+  const total = allProducts.value.length
+  const filtered = filteredProducts.value.length
+  const withDiscounts = allProducts.value.filter(p => p.discount_percentage > 0).length
+  const withDealTags = allProducts.value.filter(p => p.deal_tag).length
+  
+  return { total, filtered, withDiscounts, withDealTags }
 })
 </script>
 
@@ -126,28 +183,63 @@ const filteredDealProducts = computed(() => {
       <div class="max-w-7xl mx-auto flex justify-between items-center px-[20px] py-[10px]">
         <div class="">
           <h1 class="banner-ttl text-3xl font-bold mb-1">Save big on top products</h1>
-          <p class="text-gray-400">Curated products added this week. | Limited quantities.</p>
+          <p class="text-gray-400">
+            {{ filterStats.withDiscounts }} products with discounts • 
+            {{ filterStats.withDealTags }} special deals available
+          </p>
         </div>
         <button
           class="bg-[#5d3471] hover:bg-[#AA69AF] text-[#ffff] font-medium py-[5px] px-[8px] rounded-lg transition-all duration-200"
         >
-          Update daily
+          Hot Deals
         </button>
       </div>
     </div>
 
-    <!-- Main Content Area (Matches HomeView layout) -->
-    <div class="main-content flex gap-[20px] w-full max-w-7xl mx-auto px-4 mt-[20px]">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="text-center py-12">
+      <div class="flex items-center justify-center">
+        <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span class="ml-3 text-lg text-gray-600">Loading deals...</span>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="text-center py-12">
+      <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+        <p class="text-red-700 mb-4">Error loading deals: {{ error }}</p>
+        <button 
+          @click="fetchProducts"
+          class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div v-else class="main-content flex gap-[20px] w-full max-w-7xl mx-auto px-4 mt-[20px]">
       <!-- Sidebar Filters -->
       <DealsSidebar @update:filters="handleFilterUpdate" />
 
       <!-- Main content -->
       <main class="flex-1 py-8">
-        <DealsProductGrid :products="filteredDealProducts" :currentPage="1" :totalPages="2" />
+        <DealsProductGrid 
+          :products="paginatedProducts" 
+          :currentPage="currentPage"
+          :totalPages="totalPages"
+          :totalProducts="sortedProducts.length"
+        />
 
         <!-- Show message if no products -->
-        <div v-if="filteredDealProducts.length === 0" class="text-center py-12">
-          <p class="text-gray-500 text-lg">No products match your filters.</p>
+        <div v-if="filteredProducts.length === 0 && !isLoading" class="show-msg flex justify-center items-center text-center py-12">
+          <div class="bg-gray-50 p-8 max-w-md mx-auto">
+            <p class="text-gray-500 text-lg mb-2">No deals match your filters.</p>
+            <p class="text-gray-400 text-sm mb-4">Try adjusting your filter criteria.</p>
+          </div>
         </div>
       </main>
     </div>
@@ -189,5 +281,15 @@ const filteredDealProducts = computed(() => {
   height: 36px;
   border-radius: 15px;
   border: none;
+}
+.show-msg{
+  border-radius: 20px;
+  border: 1.5px solid #e9bdff;
+  height: 300px;
+  background: #aa69af;
+}
+.show-msg p{
+  font-size: 2rem;
+  font-weight: 400;
 }
 </style>
