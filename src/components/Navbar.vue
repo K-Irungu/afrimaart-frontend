@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useCart } from '@/composables/useCart'
 import logo from '@/assets/images/Afrimart2.png'
@@ -8,37 +8,53 @@ const router = useRouter()
 const route = useRoute()
 const { cartCount } = useCart()
 
+// Accept user as prop
+const props = defineProps({
+  user: {
+    type: Object,
+    default: () => ({})
+  }
+})
+
 // Authentication state
 const isAuthenticated = ref(false)
-const user = ref(null)
 const showDropdown = ref(false)
+
+// Computed property for user display name
+const userDisplayName = computed(() => {
+  if (props.user?.firstName && props.user?.lastName) {
+    return `${props.user.firstName} ${props.user.lastName}`
+  }
+  return props.user?.name || 'Account'
+})
 
 // Check authentication status
 const checkAuthStatus = () => {
   const userData = localStorage.getItem('user')
-  if (userData) {
+  if (userData || props.user?.firstName) {
     isAuthenticated.value = true
-    user.value = JSON.parse(userData)
   } else {
     isAuthenticated.value = false
-    user.value = null
   }
 }
+
+// Watch for user prop changes
+watch(() => props.user, () => {
+  checkAuthStatus()
+}, { deep: true })
 
 // Initialize auth status on component mount
 onMounted(() => {
   checkAuthStatus()
-
-  // Listen for storage changes (in case of logout from other tabs)
   window.addEventListener('storage', checkAuthStatus)
 })
 
 // Logout function
 const handleLogout = () => {
   localStorage.removeItem('user')
-  localStorage.removeItem('cart') // Clear cart on logout
+  sessionStorage.removeItem('user')
+  localStorage.removeItem('cart')
   isAuthenticated.value = false
-  user.value = null
   showDropdown.value = false
   router.push('/')
 }
@@ -105,7 +121,7 @@ const isActive = (path) => {
             class="user-dropdown-btn flex items-center gap-2 no-underline space-x-2 cursor-pointer transition-colors outline outline-offset-2 rounded-[5px] p-2 hover:bg-gray-100"
           >
             <font-awesome-icon :icon="['fa', 'user']" class="h-[20px] w-[20px]" />
-            <span class="text-lg font-[400]">{{ user?.name || 'Account' }}</span>
+            <span class="text-lg font-[400]">{{ userDisplayName }}</span>
             <font-awesome-icon
               :icon="['fas', 'chevron-down']"
               class="h-[12px] w-[12px] transition-transform duration-200"

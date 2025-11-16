@@ -1,104 +1,247 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
-// Mock payment methods data
+const BASE_URL = 'http://localhost:5000/payment-methods';
+
 const paymentMethods = ref([])
 const loading = ref(true)
 const isAddingNewPayment = ref(false)
-const selectedPaymentType = ref('mpesa') // Default to M-Pesa
+const selectedPaymentType = ref('mpesa')
 
-// New payment form
 const newPaymentForm = ref({
-  type: 'mpesa', // Default to M-Pesa
-  // Card fields
+  type: 'mpesa',
   cardNumber: '',
   cardHolder: '',
   expiryDate: '',
   cvv: '',
-  // M-Pesa fields
   phoneNumber: '',
-  // PayPal fields
   paypalEmail: '',
   isDefault: false,
 })
 
-// Payment method options for dropdown
+// Get current user ID
+const getCurrentUserId = () => {
+  const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user')
+  if (storedUser) {
+    try {
+      const userData = JSON.parse(storedUser)
+      return userData.id || userData._id
+    } catch (e) {
+      console.error('Error parsing stored user data:', e)
+    }
+  }
+  return null
+}
+
+// Payment method options
 const paymentOptions = [
   { value: 'mpesa', label: 'M-Pesa', icon: ['fas', 'mobile-screen'] },
   { value: 'card', label: 'Credit/Debit Card', icon: ['fas', 'credit-card'] },
   { value: 'paypal', label: 'PayPal', icon: ['fab', 'paypal'] },
 ]
 
-// Simulate loading payment methods
-onMounted(() => {
-  setTimeout(() => {
-    paymentMethods.value = [
-      {
-        id: 1,
-        type: 'mpesa',
-        phoneNumber: '+254 712 345 678',
-        isDefault: true,
-      },
-      {
-        id: 2,
-        type: 'card',
-        cardType: 'visa',
-        lastFour: '4242',
-        cardHolder: 'Ava Thompson',
-        expiryDate: '12/25',
-        isDefault: false,
-      },
-      {
-        id: 3,
-        type: 'paypal',
-        email: 'ava.thompson@example.com',
-        isDefault: false,
-      },
-    ]
+// Fetch payment methods from API
+const fetchPaymentMethods = async () => {
+  loading.value = true
+  try {
+    const userId = getCurrentUserId()
+    
+    if (!userId) {
+      throw new Error('No user ID found. Please log in again.')
+    }
+
+    const response = await fetch(`${BASE_URL}?userId=${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+
+    console.log('Payment methods response status:', response.status)
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch payment methods')
+    }
+
+    const methods = await response.json()
+    console.log('Payment methods result:', methods)
+    
+    paymentMethods.value = methods
+  } catch (error) {
+    console.error('Error fetching payment methods:', error)
+    
+    // Use mock data as fallback
+    console.log('Using mock data as fallback...')
+    paymentMethods.value = getMockPaymentMethods()
+  } finally {
     loading.value = false
-  }, 1500)
-})
+  }
+}
 
-const addNewPayment = () => {
-  console.log('Adding new payment method:', newPaymentForm.value)
+// Mock data for development
+const getMockPaymentMethods = () => {
+  const userId = getCurrentUserId()
+  return [
+    {
+      _id: '1',
+      user: userId,
+      type: 'mpesa',
+      phone_number: '+254712345678',
+      isDefault: true,
+    },
+    {
+      _id: '2',
+      user: userId,
+      type: 'card',
+      card_holder: 'Ava Thompson',
+      last_four: '4242',
+      expiry: '12/25',
+      isDefault: false,
+    }
+  ]
+}
 
-  let newPayment = {}
+// Add new payment method
+const addNewPayment = async () => {
+  try {
+    const userId = getCurrentUserId()
+    
+    if (!userId) {
+      throw new Error('No user ID found. Please log in again.')
+    }
 
-  switch (newPaymentForm.value.type) {
-    case 'card':
-      newPayment = {
-        id: Date.now(),
-        type: 'card',
-        cardType: 'visa', // Determine based on card number in real app
-        lastFour: newPaymentForm.value.cardNumber.slice(-4),
-        cardHolder: newPaymentForm.value.cardHolder,
-        expiryDate: newPaymentForm.value.expiryDate,
-        isDefault: newPaymentForm.value.isDefault,
+    let paymentData = {
+      user: userId,
+      type: newPaymentForm.value.type,
+      isDefault: newPaymentForm.value.isDefault,
+    }
+
+    // Add type-specific data
+    switch (newPaymentForm.value.type) {
+      case 'card':
+        paymentData = {
+          ...paymentData,
+          card_holder: newPaymentForm.value.cardHolder,
+          last_four: newPaymentForm.value.cardNumber.slice(-4),
+          expiry: newPaymentForm.value.expiryDate,
+        }
+        break
+
+      case 'mpesa':
+        paymentData = {
+          ...paymentData,
+          phone_number: newPaymentForm.value.phoneNumber,
+        }
+        break
+
+      case 'paypal':
+        paymentData = {
+          ...paymentData,
+          paypal_email: newPaymentForm.value.paypalEmail,
+        }
+        break
+    }
+
+    console.log('Sending payment data:', paymentData)
+
+    const response = await fetch(BASE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(paymentData)
+    })
+
+    console.log('Add payment response status:', response.status)
+    
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.message || 'Failed to create payment method')
+    }
+
+    const result = await response.json()
+    console.log('Add payment result:', result)
+    
+    paymentMethods.value.push(result)
+    isAddingNewPayment.value = false
+    resetNewPaymentForm()
+    alert('Payment method added successfully!')
+    
+  } catch (error) {
+    console.error('Error adding payment method:', error)
+    
+    // Fallback: add to local state
+    const newPayment = {
+      _id: Date.now().toString(),
+      user: getCurrentUserId(),
+      type: newPaymentForm.value.type,
+      phone_number: newPaymentForm.value.phoneNumber,
+      card_holder: newPaymentForm.value.cardHolder,
+      last_four: newPaymentForm.value.cardNumber.slice(-4),
+      expiry: newPaymentForm.value.expiryDate,
+      paypal_email: newPaymentForm.value.paypalEmail,
+      isDefault: newPaymentForm.value.isDefault,
+    }
+    
+    paymentMethods.value.push(newPayment)
+    isAddingNewPayment.value = false
+    resetNewPaymentForm()
+    alert('Payment method added locally (API unavailable)')
+  }
+}
+
+// Set as default payment method
+const setAsDefault = async (paymentId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${paymentId}/default`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
       }
-      break
+    })
 
-    case 'mpesa':
-      newPayment = {
-        id: Date.now(),
-        type: 'mpesa',
-        phoneNumber: newPaymentForm.value.phoneNumber,
-        isDefault: newPaymentForm.value.isDefault,
-      }
-      break
+    if (!response.ok) {
+      throw new Error('Failed to set default payment method')
+    }
 
-    case 'paypal':
-      newPayment = {
-        id: Date.now(),
-        type: 'paypal',
-        email: newPaymentForm.value.paypalEmail,
-        isDefault: newPaymentForm.value.isDefault,
-      }
-      break
+    const result = await response.json()
+    
+    // Update local state
+    paymentMethods.value.forEach((payment) => {
+      payment.isDefault = payment._id === paymentId
+    })
+    
+    alert('Default payment method updated successfully!')
+  } catch (error) {
+    console.error('Error setting default payment method:', error)
+    alert(`Error setting default payment method: ${error.message}`)
+  }
+}
+
+// Remove payment method
+const removePayment = async (paymentId) => {
+  if (!confirm('Are you sure you want to remove this payment method?')) {
+    return
   }
 
-  paymentMethods.value.push(newPayment)
-  isAddingNewPayment.value = false
-  resetNewPaymentForm()
+  try {
+    const response = await fetch(`${BASE_URL}/${paymentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to delete payment method')
+    }
+
+    paymentMethods.value = paymentMethods.value.filter((payment) => payment._id !== paymentId)
+    alert('Payment method removed successfully!')
+  } catch (error) {
+    console.error('Error removing payment method:', error)
+    alert(`Error removing payment method: ${error.message}`)
+  }
 }
 
 const cancelAddPayment = () => {
@@ -108,7 +251,7 @@ const cancelAddPayment = () => {
 
 const resetNewPaymentForm = () => {
   newPaymentForm.value = {
-    type: 'mpesa', // Reset to M-Pesa
+    type: 'mpesa',
     cardNumber: '',
     cardHolder: '',
     expiryDate: '',
@@ -117,36 +260,13 @@ const resetNewPaymentForm = () => {
     paypalEmail: '',
     isDefault: false,
   }
-  selectedPaymentType.value = 'mpesa' // Reset to M-Pesa
+  selectedPaymentType.value = 'mpesa'
 }
 
-const setAsDefault = (paymentId) => {
-  paymentMethods.value.forEach((payment) => {
-    payment.isDefault = payment.id === paymentId
-  })
-  console.log(`Setting payment ${paymentId} as default`)
-}
-
-const removePayment = (paymentId) => {
-  if (confirm('Are you sure you want to remove this payment method?')) {
-    paymentMethods.value = paymentMethods.value.filter((payment) => payment.id !== paymentId)
-    console.log(`Removing payment ${paymentId}`)
-  }
-}
-
-const getPaymentIcon = (paymentType, cardType = null) => {
+const getPaymentIcon = (paymentType) => {
   switch (paymentType) {
     case 'card':
-      switch (cardType) {
-        case 'visa':
-          return ['fab', 'cc-visa']
-        case 'mastercard':
-          return ['fab', 'cc-mastercard']
-        case 'amex':
-          return ['fab', 'cc-amex']
-        default:
-          return ['fas', 'credit-card']
-      }
+      return ['fas', 'credit-card']
     case 'paypal':
       return ['fab', 'paypal']
     case 'mpesa':
@@ -156,19 +276,10 @@ const getPaymentIcon = (paymentType, cardType = null) => {
   }
 }
 
-const getPaymentColor = (paymentType, cardType = null) => {
+const getPaymentColor = (paymentType) => {
   switch (paymentType) {
     case 'card':
-      switch (cardType) {
-        case 'visa':
-          return 'text-blue-600'
-        case 'mastercard':
-          return 'text-red-600'
-        case 'amex':
-          return 'text-blue-500'
-        default:
-          return 'text-gray-600'
-      }
+      return 'text-blue-600'
     case 'paypal':
       return 'text-blue-400'
     case 'mpesa':
@@ -194,11 +305,11 @@ const getPaymentDisplayName = (paymentType) => {
 const getPaymentDetails = (payment) => {
   switch (payment.type) {
     case 'card':
-      return `•••• ${payment.lastFour} • ${payment.cardHolder}`
+      return `•••• ${payment.last_four} • ${payment.card_holder}`
     case 'paypal':
-      return payment.email
+      return payment.paypal_email
     case 'mpesa':
-      return payment.phoneNumber
+      return payment.phone_number
     default:
       return ''
   }
@@ -227,8 +338,14 @@ const handlePaymentTypeChange = (event) => {
   selectedPaymentType.value = event.target.value
   newPaymentForm.value.type = event.target.value
 }
+
+// Load payment methods on component mount
+onMounted(() => {
+  fetchPaymentMethods()
+})
 </script>
 
+<!-- The template remains exactly the same as your original -->
 <template>
   <div class="payment-methods">
     <!-- Header -->
@@ -270,15 +387,15 @@ const handlePaymentTypeChange = (event) => {
     <div v-else class="payment-methods-grid space-y-6">
       <div
         v-for="payment in paymentMethods"
-        :key="payment.id"
+        :key="payment._id"
         class="payment-item bg-white p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-all duration-300"
       >
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
             <div class="payment-icon">
               <font-awesome-icon
-                :icon="getPaymentIcon(payment.type, payment.cardType)"
-                :class="['w-10 h-10', getPaymentColor(payment.type, payment.cardType)]"
+                :icon="getPaymentIcon(payment.type)"
+                :class="['w-10 h-10', getPaymentColor(payment.type)]"
               />
             </div>
             <div class="payment-details">
@@ -294,22 +411,22 @@ const handlePaymentTypeChange = (event) => {
                 </span>
               </div>
               <p class="text-gray-600 text-base">{{ getPaymentDetails(payment) }}</p>
-              <p v-if="payment.type === 'card'" class="text-gray-500 text-sm mt-1">
-                Expires {{ payment.expiryDate }}
+              <p v-if="payment.type === 'card' && payment.expiry" class="text-gray-500 text-sm mt-1">
+                Expires {{ payment.expiry }}
               </p>
             </div>
           </div>
           <div class="payment-actions flex items-center gap-[7px]">
             <button
               v-if="!payment.isDefault"
-              @click="setAsDefault(payment.id)"
+              @click="setAsDefault(payment._id)"
               class="set-default-btn text-sm text-indigo-600 px-4 py-2 border border-indigo-600 rounded-lg hover:bg-indigo-50 transition-all flex items-center gap-2"
             >
               <font-awesome-icon :icon="['fas', 'star']" class="w-4 h-4" />
               Set Default
             </button>
             <button
-              @click="removePayment(payment.id)"
+              @click="removePayment(payment._id)"
               class="remove-btn text-sm text-red-600 px-4 py-2 border border-red-300 rounded-lg hover:bg-red-50 transition-all flex items-center gap-2"
             >
               <font-awesome-icon :icon="['fas', 'trash']" class="w-4 h-4" />
@@ -514,6 +631,8 @@ const handlePaymentTypeChange = (event) => {
     </div>
   </div>
 </template>
+
+<!-- Keep your existing styles -->
 
 <style scoped>
 .payment-methods {

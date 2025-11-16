@@ -235,7 +235,7 @@ const formatStatus = (status) => {
       </div>
 
       <!-- Pagination (You can implement pagination logic later) -->
-      <div class="pagination flex justify-center gap-[10p] pt-6 space-x-3 mt-4">
+      <div class="pagination flex justify-center gap-[10px] pt-6 space-x-3 mt-4">
         <button
           class="text-sm font-medium text-white px-[10px] py-[6px] rounded-lg border bg-[#5D3471] hover:bg-[#AA69AF] transition-colors"
           disabled

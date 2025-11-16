@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, provide } from 'vue'
 import Navbar from '@/components/Navbar.vue'
 import AccountSidebar from '@/components/Account/AccountSidebar.vue'
 import ProfileDetails from '@/components/Account/ProfileDetails.vue'
@@ -11,12 +11,13 @@ import Addresses from '@/components/Account/Addresses.vue'
 
 // --- User Data (now minimal) ---
 const user = ref({
-  // Only keep basic info needed for sidebar display
   firstName: '',
   lastName: '',
   email: '',
   img: '/default-avatar.png'
 })
+
+provide('user', user)
 
 // --- Mock Orders Data ---
 const orders = ref([])
@@ -68,7 +69,6 @@ const notifications = ref([
 
 // Load basic user data for sidebar
 const loadUserForSidebar = () => {
-  // Get user data from localStorage/sessionStorage for sidebar display
   const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user')
   if (storedUser) {
     try {
@@ -85,10 +85,39 @@ const loadUserForSidebar = () => {
   }
 }
 
-// Handle profile updates from child component
+// Handle profile updates from child component - UPDATED
 const handleProfileUpdate = (updatedUser) => {
   console.log('Profile updated:', updatedUser)
-  // Update sidebar user data
+  
+  // Update the reactive user object
+  user.value = {
+    ...user.value,
+    firstName: updatedUser.firstname || updatedUser.firstName || '',
+    lastName: updatedUser.lastname || updatedUser.lastName || '',
+    email: updatedUser.email || '',
+    img: updatedUser.profile_img || updatedUser.profileImg || updatedUser.image || user.value.img
+  }
+  
+  // Also update localStorage/sessionStorage
+  const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user')
+  if (storedUser) {
+    try {
+      const currentStoredUser = JSON.parse(storedUser)
+      const updatedStoredUser = {
+        ...currentStoredUser,
+        firstname: updatedUser.firstname || updatedUser.firstName,
+        lastname: updatedUser.lastname || updatedUser.lastName,
+        email: updatedUser.email,
+        profile_img: updatedUser.profile_img || updatedUser.profileImg
+      }
+      localStorage.setItem('user', JSON.stringify(updatedStoredUser))
+      sessionStorage.setItem('user', JSON.stringify(updatedStoredUser))
+    } catch (e) {
+      console.error('Error updating stored user:', e)
+    }
+  }
+  
+  // Force reload user data for sidebar
   loadUserForSidebar()
 }
 
@@ -193,7 +222,7 @@ const handleSignOut = () => {
 <template>
   <div class="min-h-screen">
     <!-- Navbar -->
-    <Navbar />
+    <Navbar :user="user"/>
 
     <main class="main max-w-7xl mx-auto px-4 py-8">
       <div class="text-sm text-[#804D91] mb-6 pb-[10px] my-[10px]">

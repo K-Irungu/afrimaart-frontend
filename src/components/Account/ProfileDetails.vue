@@ -206,7 +206,7 @@ const saveChanges = async () => {
       throw new Error('No user ID found. Please log in again.')
     }
 
-    // Prepare data for backend - match schema field names
+    // Prepare data for backend
     const userData = {
       firstname: editingUser.value.firstname,
       lastname: editingUser.value.lastname,
@@ -215,8 +215,6 @@ const saveChanges = async () => {
       phone: editingUser.value.phone || null,
       profile_img: editingUser.value.profile_img
     }
-    
-    console.log('Saving user data:', userData) // Debug log
     
     // Call the update API
     const response = await fetch(`${BASE_URL}/${userId}`, {
@@ -233,9 +231,8 @@ const saveChanges = async () => {
     }
 
     const updatedUser = await response.json()
-    console.log('Update response:', updatedUser) // Debug log
     
-    // Update local state with the response
+    // Update local state
     initializeUserData(updatedUser.user || updatedUser)
     
     // Update stored user data
@@ -243,20 +240,14 @@ const saveChanges = async () => {
     if (currentStoredUser) {
       const updatedStoredUser = { 
         ...currentStoredUser, 
-        firstname: userData.firstname,
-        lastname: userData.lastname,
-        username: userData.username,
-        email: userData.email,
-        phone: userData.phone,
-        profile_img: userData.profile_img
+        ...userData
       }
       localStorage.setItem('user', JSON.stringify(updatedStoredUser))
       sessionStorage.setItem('user', JSON.stringify(updatedStoredUser))
-      console.log('Updated stored user data') // Debug log
     }
     
-    // Emit event to parent component
-    emit('save-changes', updatedUser)
+    // Emit event to parent component with the updated user data
+    emit('save-changes', updatedUser.user || updatedUser) // Make sure this line is present
     isEditing.value = false
     
     alert('Profile updated successfully!')
