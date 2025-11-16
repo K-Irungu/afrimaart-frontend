@@ -9,19 +9,13 @@ const emit = defineEmits(['remove', 'update-quantity', 'move-to-wishlist', 'save
 
 const handleQuantityChange = (event) => {
   const newQuantity = parseInt(event.target.value)
-  emit('update-quantity', props.item.id, newQuantity)
+  // Use productId instead of id
+  emit('update-quantity', props.item.productId, newQuantity)
 }
 
 const handleRemove = () => {
-  emit('remove', props.item.id)
-}
-
-const handleMoveToWishlist = () => {
-  emit('move-to-wishlist', props.item.id)
-}
-
-const handleSaveForLater = () => {
-  emit('save-for-later', props.item.id)
+  // Use productId instead of id
+  emit('remove', props.item.productId)
 }
 </script>
 
@@ -115,10 +109,10 @@ const handleSaveForLater = () => {
       <div class="flex items-center justify-between pt-4 border-gray-200">
         <!-- Quantity Selector -->
         <div class="qty-selector flex items-center gap-[10px]">
-          <label :for="`qty-${item.id}`" class="text-sm font-semibold text-gray-700">Quantity</label>
+          <label :for="`qty-${item.productId}`" class="text-sm font-semibold text-gray-700">Quantity</label>
           <div class="flex items-center gap-2 bg-white border-gray-300 rounded-lg px-3 py-1">
             <select
-              :id="`qty-${item.id}`"
+              :id="`qty-${item.productId}`"
               :value="item.quantity"
               @change="handleQuantityChange"
               class="qty-dropdown p-[5px] bg-transparent border-none focus:outline-none focus:ring-0 text-sm font-medium text-gray-900 cursor-pointer"
@@ -135,7 +129,6 @@ const handleSaveForLater = () => {
 
         <!-- Action Buttons -->
         <div class="flex items-center gap-[10px]">
-
           <!-- Remove Button -->
           <button
             @click="handleRemove"

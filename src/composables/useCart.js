@@ -37,7 +37,6 @@ export function useCart() {
     } else {
       // Add new item
       cartItems.value.push({
-        id: Date.now().toString(), // Unique ID for cart item
         productId: product._id,
         name: product.name,
         price: product.price,
@@ -63,14 +62,14 @@ export function useCart() {
   }
 
   // Remove item from cart
-  const removeFromCart = (itemId) => {
-    cartItems.value = cartItems.value.filter(item => item.id !== itemId)
+  const removeFromCart = (productId) => {
+    cartItems.value = cartItems.value.filter(item => item.productId !== productId)
     saveCartToStorage()
   }
 
   // Update item quantity
-  const updateQuantity = (itemId, newQuantity) => {
-    const item = cartItems.value.find(item => item.id === itemId)
+  const updateQuantity = (productId, newQuantity) => {
+    const item = cartItems.value.find(item => item.productId === productId)
     if (item && newQuantity > 0) {
       item.quantity = newQuantity
       saveCartToStorage()
@@ -81,26 +80,6 @@ export function useCart() {
   const clearCart = () => {
     cartItems.value = []
     localStorage.removeItem('cart')
-  }
-
-  // Move item to wishlist (you can implement wishlist functionality separately)
-  const moveToWishlist = (itemId) => {
-    const itemIndex = cartItems.value.findIndex(item => item.id === itemId)
-    if (itemIndex > -1) {
-      // Add to wishlist logic here
-      console.log('Moving to wishlist:', cartItems.value[itemIndex])
-      removeFromCart(itemId)
-    }
-  }
-
-  // Save item for later
-  const saveForLater = (itemId) => {
-    const itemIndex = cartItems.value.findIndex(item => item.id === itemId)
-    if (itemIndex > -1) {
-      // Save for later logic here
-      console.log('Saving for later:', cartItems.value[itemIndex])
-      removeFromCart(itemId)
-    }
   }
 
   // Computed properties
@@ -127,8 +106,6 @@ export function useCart() {
     removeFromCart,
     updateQuantity,
     clearCart,
-    moveToWishlist,
-    saveForLater,
     loadCartFromStorage
   }
 }

@@ -123,21 +123,25 @@ const availableCategories = computed(() => {
 
 // Helper function to get minimum rating from filter
 const getMinRating = (ratingFilter) => {
-  if (ratingFilter === '4+') return 4
-  if (ratingFilter === '3+') return 3
-  if (ratingFilter === '2+') return 2
-  if (ratingFilter === '1+') return 1
-  return 0 // For 'Any' or no rating filter
+  switch (ratingFilter) {
+    case '5': return 5
+    case '4+': return 4
+    case '3+': return 3
+    case '2+': return 2
+    case '1+': return 1
+    case 'Any': 
+    default: return 0
+  }
 }
 
-// FIXED: FILTER PRODUCTS with proper data extraction
+// FILTER PRODUCTS with proper data extraction
 const filteredProducts = computed(() => {
   if (!allProducts.value.length) {
     return []
   }
   
   const filtered = allProducts.value.filter((product) => {
-    // FIXED: Now using already transformed numeric values
+    // Using already transformed numeric values
     const productPrice = product.price
     const productRating = product.rating
     const productBrand = String(product.brand || '')
@@ -159,18 +163,29 @@ const filteredProducts = computed(() => {
       productPrice >= currentFilters.value.priceRange[0] &&
       productPrice <= currentFilters.value.priceRange[1]
 
-    // Rating filter - only apply if not 'Any'
+    // IMPROVED: Rating filter with exact and minimum rating support
     let ratingMatch = true
     if (currentFilters.value.rating !== 'Any') {
       const minRating = getMinRating(currentFilters.value.rating)
-      ratingMatch = productRating >= minRating
+      
+      // For exact 5-star rating, show only 5-star products
+      if (currentFilters.value.rating === '5') {
+        ratingMatch = Math.floor(productRating) === 5
+      } else {
+        // For 4+, 3+, etc. show products with that minimum rating
+        ratingMatch = productRating >= minRating
+      }
     }
 
+    console.log(`Product: ${product.name}, Rating: ${productRating}, Filter: ${currentFilters.value.rating}, Match: ${ratingMatch}`)
+    
     return categoryMatch && brandMatch && priceMatch && ratingMatch
   })
   
+  console.log(`Filtered ${filtered.length} products with rating filter: ${currentFilters.value.rating}`)
   return filtered
 })
+
 
 // SORTING LOGIC
 const sortedProducts = computed(() => {

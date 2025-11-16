@@ -13,14 +13,22 @@ const props = defineProps({
   }
 })
 
-const ratings = ['4+', '3+', 'All']
+// Enhanced ratings with more options
+const ratings = [
+  { label: '5 Stars', value: '5', minRating: 5 },
+  { label: '4+ Stars', value: '4+', minRating: 4 },
+  { label: '3+ Stars', value: '3+', minRating: 3 },
+  { label: '2+ Stars', value: '2+', minRating: 2 },
+  { label: '1+ Stars', value: '1+', minRating: 1 },
+  { label: 'Any Rating', value: 'Any', minRating: 0 }
+]
 
 // Reactive state for selected filters
 const selectedFilters = ref({
   category: 'All',
   brands: ['Any'],
   priceRange: [0, 1000],
-  rating: '4+',
+  rating: 'Any',
 })
 
 const updateFilters = () => {
@@ -54,9 +62,20 @@ const toggleBrand = (brand) => {
   updateFilters()
 }
 
-const selectRating = (rating) => {
-  selectedFilters.value.rating = rating
+const selectRating = (ratingValue) => {
+  selectedFilters.value.rating = ratingValue
   updateFilters()
+}
+
+// Helper to display stars visually
+const getStarDisplay = (ratingValue) => {
+  if (ratingValue === 'Any') return '★'
+  if (ratingValue === '5') return '★★★★★'
+  if (ratingValue === '4+') return '★★★★☆'
+  if (ratingValue === '3+') return '★★★☆☆'
+  if (ratingValue === '2+') return '★★☆☆☆'
+  if (ratingValue === '1+') return '★☆☆☆☆'
+  return '★'
 }
 
 // Initial emit
@@ -87,24 +106,6 @@ updateFilters()
       </div>
     </section>
 
-    <!-- Price Range -->
-    <section class="mb-[20px]">
-      <h3 class="price-rage text-lg mb-3">Price</h3>
-      <div class="relative h-1 bg-[#E8B6D5] rounded-full my-4">
-        <div class="absolute h-1 bg-[#AA69AF] rounded-full" style="left: 0%; width: 100%"></div>
-        <div class="absolute h-4 w-4 bg-[#804D91] rounded-full -top-1.5" style="left: 0%"></div>
-        <div class="absolute h-4 w-4 bg-[#804D91] rounded-full -top-1.5" style="right: 0%"></div>
-      </div>
-      <div class="flex justify-between text-sm text-[#5D3471]">
-        <span class="px-2 py-1 border rounded border-[#E8B6D5]"
-          >${{ selectedFilters.priceRange[0] }}</span
-        >
-        <span class="px-2 py-1 border rounded border-[#E8B6D5]"
-          >${{ selectedFilters.priceRange[1] }}</span
-        >
-      </div>
-    </section>
-
     <!-- Brands -->
     <section class="mb-[20px]">
       <h3 class="brand text-lg mb-3">Brand</h3>
@@ -125,22 +126,53 @@ updateFilters()
       </div>
     </section>
 
-    <!-- Rating -->
+    <!-- Enhanced Rating Section -->
     <section class="mb-[20px]">
-      <h3 class="rating text-lg mb-3">Rating</h3>
-      <div class="flex gap-[10px]">
+      <h3 class="rating text-lg mb-3">Customer Rating</h3>
+      
+      <!-- Current Selection Display -->
+      <div class="mb-3 p-2 bg-[#F8F0F5] rounded-lg">
+        <p class="text-sm text-[#5D3471] font-medium">
+          {{ selectedFilters.rating === 'Any' ? 'Showing all ratings' : `Showing ${selectedFilters.rating} stars & above` }}
+        </p>
+      </div>
+      
+      <!-- Rating Options -->
+      <div class="space-y-2">
         <button
           v-for="rate in ratings"
-          :key="rate"
-          @click="selectRating(rate)"
+          :key="rate.value"
+          @click="selectRating(rate.value)"
           :class="[
-            's-btn px-3 py-1 text-sm rounded-full transition',
-            selectedFilters.rating === rate
+            'rating-btn w-full flex items-center justify-between px-[6px] py-[4px] text-sm rounded-lg transition mb-[6px]',
+            selectedFilters.rating === rate.value
               ? 'bg-[#804D91] text-white'
-              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF]',
+              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF] hover:text-white',
           ]"
         >
-          {{ rate }}
+          <span class="flex items-center">
+            <span class="text-yellow-400 mr-[6px]">{{ getStarDisplay(rate.value) }}</span>
+            {{ rate.label }}
+          </span>
+          <span v-if="selectedFilters.rating === rate.value" class="text-white">✓</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Active Filters Summary -->
+    <section v-if="selectedFilters.rating !== 'Any'" class="mb-[20px] p-3 bg-[#F0E6F5] rounded-lg">
+      <h4 class="text-sm font-semibold text-[#5D3471] mb-2">Active Rating Filter:</h4>
+      <div class="flex items-center justify-between">
+        <span class="inline-flex items-center">
+          <span class="text-yellow-400 mr-1">{{ getStarDisplay(selectedFilters.rating) }}</span>
+          {{ selectedFilters.rating }} stars & above
+        </span>
+        <button 
+          @click="selectRating('Any')" 
+          class="text-[#804D91] hover:text-[#5D3471] text-sm font-medium"
+          title="Clear rating filter"
+        >
+          Clear
         </button>
       </div>
     </section>
@@ -167,5 +199,15 @@ updateFilters()
   border: none;
   width: auto;
   cursor: pointer;
+}
+
+.rating-btn{
+  border: none;
+  border-radius: 6px;
+}
+
+/* Custom styles for star ratings */
+.text-yellow-400 {
+  color: #fbbf24;
 }
 </style>

@@ -13,7 +13,7 @@ const tabs = [
   { id: 'orders', name: 'Orders', icon: 'shopping-bag' },
   { id: 'addresses', name: 'Addresses', icon: 'map-pin' },
   { id: 'payment', name: 'Payment methods', icon: 'credit-card' },
-  { id: 'notifications', name: 'Notifications', icon: 'bell' },
+  // { id: 'notifications', name: 'Notifications', icon: 'bell' },
 ]
 </script>
 

@@ -9,7 +9,7 @@ import OrderSummary from '@/components/OrderSummary.vue'
 
 // Get router instance
 const router = useRouter()
-const { cartItems, cartCount, cartTotal, clearCart, removeFromCart, updateQuantity, moveToWishlist, saveForLater } = useCart()
+const { cartItems, cartCount, cartTotal, clearCart, removeFromCart, updateQuantity } = useCart()
 
 const handleClearCart = () => {
   if (confirm('Are you sure you want to clear your cart?')) {
@@ -19,20 +19,33 @@ const handleClearCart = () => {
 
 // Calculate cart totals
 const subtotal = computed(() => cartTotal.value)
-const shipping = computed(() => subtotal.value > 0 ? 12.0 : 0)
+const shipping = computed(() => {
+  // Fixed shipping amount
+  return subtotal.value > 0 ? 200 : 0 // Ksh 200 fixed shipping
+})
+const tax = computed(() => subtotal.value * 0.14) // 14% tax
+const discount = computed(() => 0) // You can add discount logic here
 
 // Checkout handler
 const handleCheckout = () => {
-  try {
-    const isAuthenticated = !!localStorage.getItem('user')
-    if (!isAuthenticated) {
-      router.push('/auth?redirect=/checkout')
-      return
-    }
-    router.push('/checkout')
-  } catch (error) {
-    console.error('Error during checkout:', error)
+  const cartData = {
+    items: cartItems.value,
+    subtotal: subtotal.value,
+    shipping: shipping.value,
+    tax: tax.value,
+    discount: discount.value
   }
+  
+  // Save to localStorage as backup
+  localStorage.setItem('checkoutCartData', JSON.stringify(cartData))
+  
+  // Navigate to checkout with cart data
+  router.push({
+    path: '/checkout',
+    query: {
+      cartData: JSON.stringify(cartData)
+    }
+  })
 }
 
 // Continue shopping handler
@@ -77,8 +90,6 @@ const handleContinueShopping = () => {
               :item="item"
               @remove="removeFromCart"
               @update-quantity="updateQuantity"
-              @move-to-wishlist="moveToWishlist"
-              @save-for-later="saveForLater"
             />
           </div>
         </main>
