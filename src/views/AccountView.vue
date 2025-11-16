@@ -9,14 +9,13 @@ import PaymentMethods from '@/components/Account/PaymentMethods.vue'
 import Footer from '@/components/Footer.vue'
 import Addresses from '@/components/Account/Addresses.vue'
 
-// --- Mock User Data ---
+// --- User Data (now minimal) ---
 const user = ref({
-  firstName: 'Ava',
-  lastName: 'Thompson',
-  email: 'ava.t@example.com',
-  phone: '+1 415 555 0132',
-  username: 'ava.t@example.com',
-  img: '/path/to/avatar.jpg',
+  // Only keep basic info needed for sidebar display
+  firstName: '',
+  lastName: '',
+  email: '',
+  img: '/default-avatar.png'
 })
 
 // --- Mock Orders Data ---
@@ -67,8 +66,44 @@ const notifications = ref([
   },
 ])
 
+// Load basic user data for sidebar
+const loadUserForSidebar = () => {
+  // Get user data from localStorage/sessionStorage for sidebar display
+  const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user')
+  if (storedUser) {
+    try {
+      const userData = JSON.parse(storedUser)
+      user.value = {
+        firstName: userData.firstname || userData.firstName || '',
+        lastName: userData.lastname || userData.lastName || '',
+        email: userData.email || '',
+        img: userData.profile_img || userData.profileImg || userData.image || '/default-avatar.png'
+      }
+    } catch (e) {
+      console.error('Error parsing stored user data:', e)
+    }
+  }
+}
+
+// Handle profile updates from child component
+const handleProfileUpdate = (updatedUser) => {
+  console.log('Profile updated:', updatedUser)
+  // Update sidebar user data
+  loadUserForSidebar()
+}
+
+// Handle account deletion
+const handleAccountDelete = (deletedUserId) => {
+  console.log('Account deleted:', deletedUserId)
+  // Redirect to home page or show login page
+  window.location.href = '/'
+}
+
 // Simulate loading data
 onMounted(() => {
+  // Load user data for sidebar
+  loadUserForSidebar()
+
   // Simulate loading orders
   setTimeout(() => {
     orders.value = [
@@ -139,6 +174,20 @@ const getTabDisplayName = (tabId) => {
   }
   return tabNames[tabId] || tabId
 }
+
+// Handle sign out
+const handleSignOut = () => {
+  // Clear all stored user data
+  localStorage.removeItem('user')
+  sessionStorage.removeItem('user')
+  localStorage.removeItem('userId')
+  sessionStorage.removeItem('userId')
+  localStorage.removeItem('token')
+  sessionStorage.removeItem('token')
+  
+  // Redirect to login page or home page
+  window.location.href = '/'
+}
 </script>
 
 <template>
@@ -161,6 +210,7 @@ const getTabDisplayName = (tabId) => {
           </p>
         </div>
         <button
+          @click="handleSignOut"
           class="signout-btn bg-[#5d3471] text-[#ffff] font-medium py-[8px] px-[10px] rounded-lg transition text-sm flex items-center gap-2 hover:bg-[#AA69AF]"
         >
           <font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" class="w-4 h-4 mr-[6px]" />
@@ -178,9 +228,12 @@ const getTabDisplayName = (tabId) => {
         <!-- Content - Flexible width -->
         <div class="flex-1">
           <div v-if="activeTab === 'profile'">
+            <!-- ProfileDetails now handles its own data fetching -->
             <ProfileDetails
               :user="user"
-              @save-changes="console.log('Save profile changes', user)"
+              @save-changes="handleProfileUpdate"
+              @delete-account="handleAccountDelete"
+              @back-to-account="console.log('Back to account')"
             />
           </div>
 

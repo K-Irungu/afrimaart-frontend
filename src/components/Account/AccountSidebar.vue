@@ -20,16 +20,16 @@ const tabs = [
 <template>
   <div class="sidenav bg-white rounded-lg shadow-sm p-4 h-fit sticky top-4">
     <div class="flex items-center border-b pb-4 mb-[20px] p-[10px]">
-      <div class="h-14 w-14 rounded-full bg-gray-200 overflow-hidden mr-4">
+      <div class="h-14 w-14 rounded-full bg-gray-200 overflow-hidden mr-[10px]">
         <img
           :src="user.img"
           :alt="`${user.firstName} ${user.lastName}`"
-          class="w-full h-full object-cover"
+          class="w-[50px] h-[50px] object-cover"
         />
       </div>
       <div>
-        <div class="font-semibold text-gray-800">{{ user.firstName }} {{ user.lastName }}</div>
-        <div class="text-sm text-gray-500">{{ user.username }}</div>
+        <div class="text-[1.5rem] font-[500] text-gray-800 mb-[5px]">{{ user.firstName }} {{ user.lastName }}</div>
+        <div class="text-sm text-gray-500">{{ user.email }}</div>
       </div>
     </div>
 
