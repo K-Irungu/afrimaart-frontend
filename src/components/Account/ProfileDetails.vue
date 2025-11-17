@@ -268,78 +268,78 @@ const cancelChanges = () => {
 }
 
 // Upload image to backend
-const uploadImageToServer = async (file) => {
-  const userId = getCurrentUserId()
-  if (!userId) {
-    throw new Error('No user ID found')
-  }
+// const uploadImageToServer = async (file) => {
+//   const userId = getCurrentUserId()
+//   if (!userId) {
+//     throw new Error('No user ID found')
+//   }
 
-  // Create FormData for file upload
-  const formData = new FormData()
-  formData.append('profile_img', file)
+//   // Create FormData for file upload
+//   const formData = new FormData()
+//   formData.append('profile_img', file)
 
-  const response = await fetch(`${BASE_URL}/${userId}/upload-image`, {
-    method: 'POST',
-    body: formData
-    // Note: Don't set Content-Type header for FormData, browser will set it automatically with boundary
-  })
+//   const response = await fetch(`${BASE_URL}/${userId}/upload-image`, {
+//     method: 'POST',
+//     body: formData
+//     // Note: Don't set Content-Type header for FormData, browser will set it automatically with boundary
+//   })
 
-  if (!response.ok) {
-    const errorData = await response.json()
-    throw new Error(errorData.message || 'Failed to upload image')
-  }
+//   if (!response.ok) {
+//     const errorData = await response.json()
+//     throw new Error(errorData.message || 'Failed to upload image')
+//   }
 
-  const result = await response.json()
-  return result.profile_img // Return the new image URL
-}
+//   const result = await response.json()
+//   return result.profile_img // Return the new image URL
+// }
 
 // Remove image - set to default
-const removeImage = async () => {
-  if (!confirm('Are you sure you want to remove your profile image?')) {
-    return
-  }
+// const removeImage = async () => {
+//   if (!confirm('Are you sure you want to remove your profile image?')) {
+//     return
+//   }
 
-  try {
-    const userId = getCurrentUserId()
-    if (!userId) {
-      throw new Error('No user ID found')
-    }
+//   try {
+//     const userId = getCurrentUserId()
+//     if (!userId) {
+//       throw new Error('No user ID found')
+//     }
 
-    // Call backend to remove image (set to default)
-    const response = await fetch(`${BASE_URL}/${userId}/remove-image`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
+//     // Call backend to remove image (set to default)
+//     const response = await fetch(`${BASE_URL}/${userId}/remove-image`, {
+//       method: 'PUT',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       }
+//     })
 
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.message || 'Failed to remove image')
-    }
+//     if (!response.ok) {
+//       const errorData = await response.json()
+//       throw new Error(errorData.message || 'Failed to remove image')
+//     }
 
-    const result = await response.json()
+//     const result = await response.json()
     
-    // Update local state
-    editingUser.value.profile_img = 'default-avatar.png'
+//     // Update local state
+//     editingUser.value.profile_img = 'default-avatar.png'
     
-    // Update stored user data
-    const currentStoredUser = getCurrentUserFromStorage()
-    if (currentStoredUser) {
-      const updatedStoredUser = { 
-        ...currentStoredUser, 
-        profile_img: 'default-avatar.png'
-      }
-      localStorage.setItem('user', JSON.stringify(updatedStoredUser))
-      sessionStorage.setItem('user', JSON.stringify(updatedStoredUser))
-    }
+//     // Update stored user data
+//     const currentStoredUser = getCurrentUserFromStorage()
+//     if (currentStoredUser) {
+//       const updatedStoredUser = { 
+//         ...currentStoredUser, 
+//         profile_img: 'default-avatar.png'
+//       }
+//       localStorage.setItem('user', JSON.stringify(updatedStoredUser))
+//       sessionStorage.setItem('user', JSON.stringify(updatedStoredUser))
+//     }
     
-    alert('Profile image removed successfully!')
-  } catch (error) {
-    console.error('Error removing image:', error)
-    alert(`Error removing image: ${error.message}`)
-  }
-}
+//     alert('Profile image removed successfully!')
+//   } catch (error) {
+//     console.error('Error removing image:', error)
+//     alert(`Error removing image: ${error.message}`)
+//   }
+// }
 
 const handleDelete = async () => {
   if (!confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')) {
@@ -449,22 +449,22 @@ const debugInfo = computed(() => {
               @change="handleImageUpload"
               class="hidden"
             />
-            <button
+            <!-- <button
               v-if="isEditing"
               @click="uploadImageToServer"
               class="upload-btn px-4 py-2 text-sm font-medium rounded-lg text-white border border-gray-300 hover:bg-[#AA69AF] transition flex items-center gap-2"
             >
               <font-awesome-icon :icon="['fas', 'upload']" class="w-4 h-4 mr-[5px]" />
               Upload new
-            </button>
-            <button
+            </button> -->
+            <!-- <button
               v-if="isEditing"
               @click="removeImage"
               class="remove-btn px-4 py-2 text-sm font-medium rounded-lg text-white border border-[#CE7F57] hover:bg-[#AA69AF] transition flex items-center gap-2"
             >
               <font-awesome-icon :icon="['fas', 'trash']" class="w-4 h-4 mr-[5px]" />
               Remove
-            </button>
+            </button> -->
           </div>
         </div>
 

@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 
 const submitForm = () => {
-  alert('Message sent! (Form submission logic goes here)')
+  alert('Message sent')
 }
 </script>
 
@@ -30,7 +30,11 @@ const submitForm = () => {
 
         <!-- Contact Form -->
         <div class="contact-form bg-white p-8 rounded-2xl shadow-sm border border-[#E8B6D5]">
-          <form @submit.prevent="submitForm" class="form space-y-6 text-black">
+          <form   
+          action="https://formspree.io/f/xvgdyvbd"
+          method="POST" 
+          class="form space-y-6 text-black"
+          >
             <div class="input-group">
               <label for="email" class="block text-sm font-medium mb-2 text-[#5D3471]">
                 Your email
