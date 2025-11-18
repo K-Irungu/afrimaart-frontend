@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import authIllustration from '@/assets/images/authIllustration.jpg'
@@ -7,8 +7,9 @@ import defaultProfile from '@/assets/images/default-profile.png'
 
 const router = useRouter()
 
-// Base URL - Fixed to include /api
+// Base URLs for different roles
 const API_BASE_URL = 'http://localhost:5000/users'
+const ADMIN_BASE_URL = 'http://localhost:5000/admin'
 
 // Toggle between login and signup
 const isLogin = ref(true)
@@ -28,6 +29,7 @@ const signupForm = ref({
   password: '',
   confirmPassword: '',
   profile_img: defaultProfile,
+  role: 'customer', // Default role
   agreeToTerms: false,
 })
 
@@ -40,6 +42,14 @@ const toggleAuthMode = () => {
   isLogin.value = !isLogin.value
   errors.value = {}
 }
+
+// Watch for role changes to handle username field
+watch(() => signupForm.value.role, (newRole) => {
+  if (newRole === 'admin') {
+    // Clear username when switching to admin
+    signupForm.value.username = ''
+  }
+})
 
 // Validation functions
 const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -60,7 +70,11 @@ const validateForm = () => {
     // Signup validation - using correct field names
     if (!signupForm.value.firstname) errors.value.firstname = 'First name is required'
     if (!signupForm.value.lastname) errors.value.lastname = 'Last name is required'
-    if (!signupForm.value.username) errors.value.username = 'Username is required'
+    
+    // Only require username for customer role
+    if (signupForm.value.role === 'customer' && !signupForm.value.username) {
+      errors.value.username = 'Username is required'
+    }
 
     if (!signupForm.value.email) errors.value.email = 'Email is required'
     else if (!validateEmail(signupForm.value.email))
@@ -84,10 +98,11 @@ const validateForm = () => {
 }
 
 // API calls with better debugging
-const loginUser = async (userData) => {
+const loginUser = async (userData, isAdmin = false) => {
   try {
-    console.log('Sending login request to:', `${API_BASE_URL}/login`)
-    const response = await axios.post(`${API_BASE_URL}/login`, userData)
+    const url = isAdmin ? `${ADMIN_BASE_URL}/login` : `${API_BASE_URL}/login`
+    console.log('Sending login request to:', url)
+    const response = await axios.post(url, userData)
     console.log('Login response:', response.data)
     return response.data
   } catch (error) {
@@ -96,11 +111,12 @@ const loginUser = async (userData) => {
   }
 }
 
-const registerUser = async (userData) => {
+const registerUser = async (userData, isAdmin = false) => {
   try {
-    console.log('Sending registration request to:', API_BASE_URL)
+    const url = isAdmin ? `${ADMIN_BASE_URL}/register` : API_BASE_URL
+    console.log('Sending registration request to:', url)
     console.log('Registration data:', userData)
-    const response = await axios.post(API_BASE_URL, userData)
+    const response = await axios.post(url, userData)
     console.log('Registration response:', response.data)
     return response.data
   } catch (error) {
@@ -110,9 +126,10 @@ const registerUser = async (userData) => {
 }
 
 // Check if user exists
-const checkUserExists = async (email) => {
+const checkUserExists = async (email, isAdmin = false) => {
   try {
-    const response = await axios.get(API_BASE_URL)
+    const url = isAdmin ? `${ADMIN_BASE_URL}/admins` : API_BASE_URL
+    const response = await axios.get(url)
     return response.data.find((user) => user.email === email)
   } catch (error) {
     console.error('Error checking user:', error)
@@ -134,36 +151,55 @@ const handleSubmit = async () => {
 
   try {
     if (isLogin.value) {
-      // Login
+      // Login - Determine if it's admin login
+      const isAdminLogin = loginForm.value.email.includes('admin') || loginForm.value.email.includes('@admin.')
+      
       const userData = {
         email: loginForm.value.email,
         password: loginForm.value.password,
       }
-      const response = await loginUser(userData)
+      
+      const response = await loginUser(userData, isAdminLogin)
+
+      // Handle both user and admin response structures
+      const userDataResponse = response.user || response.admin;
+      const token = response.token || null;
 
       const userSession = {
-        id: response.user._id,
-        email: response.user.email,
-        name: `${response.user.firstname} ${response.user.lastname}`,
-        username: response.user.username,
-        profile_img: response.user.profile_img,
+        id: userDataResponse._id,
+        email: userDataResponse.email,
+        name: `${userDataResponse.firstname} ${userDataResponse.lastname}`,
+        username: userDataResponse.username || '',
+        profile_img: userDataResponse.profile_img,
+        role: userDataResponse.role,
         loginTime: new Date().toISOString(),
+        token: token
       }
       localStorage.setItem('user', JSON.stringify(userSession))
       console.log('Login successful, redirecting...')
       
-      router.push('/')
+      // Redirect based on role
+      if (userDataResponse.role === 'admin') {
+        router.push('/adminDashboard')
+      } else {
+        router.push('/')
+      }
     } else {
       // Signup
       console.log('Starting signup process...')
+      const isAdminSignup = signupForm.value.role === 'admin'
       
-      const existingUser = await checkUserExists(signupForm.value.email)
+      const existingUser = await checkUserExists(signupForm.value.email, isAdminSignup)
       if (existingUser) {
         throw new Error('User with this email already exists')
       }
 
-      const username = signupForm.value.username || 
-        `${signupForm.value.firstname.toLowerCase()}${signupForm.value.lastname.toLowerCase()}`
+      // Generate username only for customers
+      let username = ''
+      if (signupForm.value.role === 'customer') {
+        username = signupForm.value.username || 
+          `${signupForm.value.firstname.toLowerCase()}${signupForm.value.lastname.toLowerCase()}`
+      }
 
       const userData = {
         firstname: signupForm.value.firstname,
@@ -172,23 +208,35 @@ const handleSubmit = async () => {
         email: signupForm.value.email,
         password: signupForm.value.password,
         profile_img: signupForm.value.profile_img,
+        role: signupForm.value.role,
       }
 
       console.log('Sending user data to backend:', userData)
-      const newUser = await registerUser(userData)
+      const response = await registerUser(userData, isAdminSignup)
+
+      // Handle both user and admin response structures
+      const userDataResponse = response.user || response.admin;
+      const token = response.token || null;
 
       const userSession = {
-        id: newUser._id,
-        email: newUser.email,
-        name: `${newUser.firstname} ${newUser.lastname}`,
-        username: newUser.username,
-        profile_img: newUser.profile_img,
+        id: userDataResponse._id,
+        email: userDataResponse.email,
+        name: `${userDataResponse.firstname} ${userDataResponse.lastname}`,
+        username: userDataResponse.username || '',
+        profile_img: userDataResponse.profile_img,
+        role: userDataResponse.role,
         signupTime: new Date().toISOString(),
+        token: token
       }
       localStorage.setItem('user', JSON.stringify(userSession))
       console.log('Registration successful, redirecting...')
       
-      router.push('/')
+      // Redirect based on role
+      if (userDataResponse.role === 'admin') {
+        router.push('/adminDashboard')
+      } else {
+        router.push('/')
+      }
     }
   } catch (error) {
     console.error('Auth error:', error)
@@ -314,13 +362,6 @@ const showConfirmPassword = ref(false)
                         : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
                     ]"
                   />
-                  <!-- <button
-                    type="button"
-                    @click="showPassword = !showPassword"
-                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-medium"
-                  >
-                    {{ showPassword ? 'Hide' : 'Show' }}
-                  </button> -->
                 </div>
                 <p v-if="errors.password" class="mt-1 text-sm text-red-600">
                   {{ errors.password }}
@@ -423,8 +464,8 @@ const showConfirmPassword = ref(false)
                 </div>
               </div>
 
-              <!-- Username Field -->
-              <div class="input-group">
+              <!-- Username Field (Only for Customer) -->
+              <div v-if="signupForm.role === 'customer'" class="input-group">
                 <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
                   Username
                 </label>
@@ -463,6 +504,62 @@ const showConfirmPassword = ref(false)
                 <p v-if="errors.email" class="mt-1 text-sm text-red-600">{{ errors.email }}</p>
               </div>
 
+              <!-- Role Selection -->
+              <div class="input-group">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Account Type
+                </label>
+                <div class="grid grid-cols-2 gap-[10px]">
+                  <div>
+                    <input
+                      id="customerRole"
+                      v-model="signupForm.role"
+                      type="radio"
+                      value="customer"
+                      class="hidden peer"
+                    />
+                    <label
+                      for="customerRole"
+                      :class="[
+                        'block p-4 border-2 rounded-[10px] text-center cursor-pointer transition-all duration-200',
+                        signupForm.role === 'customer'
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-300 bg-gray-50 text-gray-600 hover:bg-gray-100',
+                      ]"
+                    >
+                      <div class="font-medium">Customer</div>
+                      <div class="text-xs mt-1">Regular user account</div>
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      id="adminRole"
+                      v-model="signupForm.role"
+                      type="radio"
+                      value="admin"
+                      class="hidden peer"
+                    />
+                    <label
+                      for="adminRole"
+                      :class="[
+                        'block p-4 border-2 rounded-[10px] text-center cursor-pointer transition-all duration-200',
+                        signupForm.role === 'admin'
+                          ? 'border-purple-500 bg-purple-50 text-purple-700'
+                          : 'border-gray-300 bg-gray-50 text-gray-600 hover:bg-gray-100',
+                      ]"
+                    >
+                      <div class="font-medium">Admin</div>
+                      <div class="text-xs mt-1">Administrator account</div>
+                    </label>
+                  </div>
+                </div>
+                <p class="mt-2 text-xs text-gray-500">
+                  {{ signupForm.role === 'admin' 
+                    ? 'Admin accounts use separate API endpoints for enhanced security.' 
+                    : 'Customer accounts can access regular user features.' }}
+                </p>
+              </div>
+
               <!-- Password Fields -->
               <div class="grid grid-cols-2 gap-[15px]">
                 <!-- Password -->
@@ -483,13 +580,6 @@ const showConfirmPassword = ref(false)
                           : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
                       ]"
                     />
-                    <!-- <button
-                      type="button"
-                      @click="showPassword = !showPassword"
-                      class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-medium"
-                    >
-                      {{ showPassword ? 'Hide' : 'Show' }}
-                    </button> -->
                   </div>
                   <p v-if="errors.password" class="mt-1 text-sm text-red-600">
                     {{ errors.password }}
@@ -514,13 +604,6 @@ const showConfirmPassword = ref(false)
                           : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
                       ]"
                     />
-                    <!-- <button
-                      type="button"
-                      @click="showConfirmPassword = !showConfirmPassword"
-                      class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-medium"
-                    >
-                      {{ showConfirmPassword ? 'Hide' : 'Show' }}
-                    </button> -->
                   </div>
                   <p v-if="errors.confirmPassword" class="mt-1 text-sm text-red-600">
                     {{ errors.confirmPassword }}
@@ -612,6 +695,7 @@ const showConfirmPassword = ref(false)
 </template>
 
 <style scoped>
+/* Your existing styles remain the same */
 .auth-main {
   background: #c2d9fc;
 }
@@ -703,6 +787,38 @@ form {
 input:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Role selection styles */
+.role-selection {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.role-option {
+  flex: 1;
+  text-align: center;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #f9fafb;
+}
+
+.role-option:hover {
+  background: #f3f4f6;
+}
+
+.role-option.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.role-option.admin.selected {
+  border-color: #8b5cf6;
+  background: #faf5ff;
 }
 
 /* Smooth scrolling */
