@@ -102,11 +102,19 @@ const loginUser = async (userData, isAdmin = false) => {
   try {
     const url = isAdmin ? `${ADMIN_BASE_URL}/login` : `${API_BASE_URL}/login`
     console.log('Sending login request to:', url)
+    console.log('Login data:', userData)
+    
     const response = await axios.post(url, userData)
-    console.log('Login response:', response.data)
+    console.log('Full login response:', response)
+    console.log('Login response data:', response.data)
+    
     return response.data
   } catch (error) {
-    console.error('Login error:', error.response?.data || error.message)
+    console.error('Login error details:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message
+    })
     throw new Error(error.response?.data?.message || 'Login failed')
   }
 }
@@ -116,11 +124,18 @@ const registerUser = async (userData, isAdmin = false) => {
     const url = isAdmin ? `${ADMIN_BASE_URL}/register` : API_BASE_URL
     console.log('Sending registration request to:', url)
     console.log('Registration data:', userData)
+    
     const response = await axios.post(url, userData)
-    console.log('Registration response:', response.data)
+    console.log('Full registration response:', response)
+    console.log('Registration response data:', response.data)
+    
     return response.data
   } catch (error) {
-    console.error('Registration error:', error.response?.data || error.message)
+    console.error('Registration error details:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message
+    })
     throw new Error(error.response?.data?.message || 'Registration failed')
   }
 }
@@ -134,6 +149,56 @@ const checkUserExists = async (email, isAdmin = false) => {
   } catch (error) {
     console.error('Error checking user:', error)
     return null
+  }
+}
+
+// Helper function to safely extract user data
+const extractUserData = (response, isAdmin = false) => {
+  console.log('Extracting user data from:', response)
+  
+  // Handle different response structures
+  let userData = null
+  let token = null
+  
+  if (response.user) {
+    userData = response.user
+    token = response.token
+  } else if (response.admin) {
+    userData = response.admin
+    token = response.token
+  } else if (response.data) {
+    // If response is nested under data property
+    userData = response.data.user || response.data.admin || response.data
+    token = response.data.token
+  } else {
+    // Use the response directly if it contains user fields
+    userData = response
+    token = response.token
+  }
+  
+  console.log('Extracted user data:', userData)
+  console.log('Extracted token:', token)
+  
+  // Validate that we have the required fields
+  if (!userData) {
+    throw new Error('No user data found in response')
+  }
+  
+  // Check for required fields with fallbacks
+  const userId = userData._id || userData.id
+  if (!userId) {
+    console.error('User data missing ID:', userData)
+    throw new Error('User data is missing required ID field')
+  }
+  
+  if (!userData.email) {
+    console.error('User data missing email:', userData)
+    throw new Error('User data is missing required email field')
+  }
+  
+  return {
+    userData,
+    token
   }
 }
 
@@ -159,27 +224,32 @@ const handleSubmit = async () => {
         password: loginForm.value.password,
       }
       
+      console.log('Attempting login...')
       const response = await loginUser(userData, isAdminLogin)
 
-      // Handle both user and admin response structures
-      const userDataResponse = response.user || response.admin;
-      const token = response.token || null;
+      // Extract user data safely
+      const { userData: userDataResponse, token } = extractUserData(response, isAdminLogin)
+      
+      console.log('Login successful, user data:', userDataResponse)
 
+      // Create user session
       const userSession = {
-        id: userDataResponse._id,
+        id: userDataResponse._id || userDataResponse.id,
         email: userDataResponse.email,
-        name: `${userDataResponse.firstname} ${userDataResponse.lastname}`,
+        name: `${userDataResponse.firstname || userDataResponse.firstName || ''} ${userDataResponse.lastname || userDataResponse.lastName || ''}`.trim(),
         username: userDataResponse.username || '',
-        profile_img: userDataResponse.profile_img,
-        role: userDataResponse.role,
+        profile_img: userDataResponse.profile_img || userDataResponse.profileImg || defaultProfile,
+        role: userDataResponse.role || (isAdminLogin ? 'admin' : 'customer'),
         loginTime: new Date().toISOString(),
         token: token
       }
+      
+      console.log('User session to store:', userSession)
       localStorage.setItem('user', JSON.stringify(userSession))
       console.log('Login successful, redirecting...')
       
       // Redirect based on role
-      if (userDataResponse.role === 'admin') {
+      if (userSession.role === 'admin') {
         router.push('/adminDashboard')
       } else {
         router.push('/')
@@ -214,33 +284,37 @@ const handleSubmit = async () => {
       console.log('Sending user data to backend:', userData)
       const response = await registerUser(userData, isAdminSignup)
 
-      // Handle both user and admin response structures
-      const userDataResponse = response.user || response.admin;
-      const token = response.token || null;
+      // Extract user data safely
+      const { userData: userDataResponse, token } = extractUserData(response, isAdminSignup)
+      
+      console.log('Registration successful, user data:', userDataResponse)
 
+      // Create user session
       const userSession = {
-        id: userDataResponse._id,
+        id: userDataResponse._id || userDataResponse.id,
         email: userDataResponse.email,
-        name: `${userDataResponse.firstname} ${userDataResponse.lastname}`,
+        name: `${userDataResponse.firstname || userDataResponse.firstName || ''} ${userDataResponse.lastname || userDataResponse.lastName || ''}`.trim(),
         username: userDataResponse.username || '',
-        profile_img: userDataResponse.profile_img,
-        role: userDataResponse.role,
+        profile_img: userDataResponse.profile_img || userDataResponse.profileImg || defaultProfile,
+        role: userDataResponse.role || signupForm.value.role,
         signupTime: new Date().toISOString(),
         token: token
       }
+      
+      console.log('User session to store:', userSession)
       localStorage.setItem('user', JSON.stringify(userSession))
       console.log('Registration successful, redirecting...')
       
       // Redirect based on role
-      if (userDataResponse.role === 'admin') {
+      if (userSession.role === 'admin') {
         router.push('/adminDashboard')
       } else {
         router.push('/')
       }
     }
   } catch (error) {
-    console.error('Auth error:', error)
-    errors.value.submit = error.message
+    console.error('Auth error details:', error)
+    errors.value.submit = error.message || 'Authentication failed. Please try again.'
   } finally {
     isLoading.value = false
   }
@@ -249,6 +323,27 @@ const handleSubmit = async () => {
 // Password visibility
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
+
+// Test function to check your backend response structure
+const testBackendResponse = async () => {
+  try {
+    console.log('Testing backend response structure...')
+    
+    // Test regular user endpoint
+    const userResponse = await axios.get(`${API_BASE_URL}/test`).catch(() => null)
+    console.log('User endpoint test:', userResponse?.data)
+    
+    // Test admin endpoint
+    const adminResponse = await axios.get(`${ADMIN_BASE_URL}/test`).catch(() => null)
+    console.log('Admin endpoint test:', adminResponse?.data)
+    
+  } catch (error) {
+    console.log('Backend test failed (this is normal):', error.message)
+  }
+}
+
+// Uncomment the line below to test your backend when component loads
+// onMounted(() => testBackendResponse())
 </script>
 
 <template>
@@ -319,7 +414,12 @@ const showConfirmPassword = ref(false)
               v-if="errors.submit"
               class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"
             >
-              {{ errors.submit }}
+              <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                {{ errors.submit }}
+              </div>
             </div>
 
             <!-- Login Form -->
@@ -693,6 +793,8 @@ const showConfirmPassword = ref(false)
     </div>
   </div>
 </template>
+
+<!-- Your existing styles remain the same -->
 
 <style scoped>
 /* Your existing styles remain the same */

@@ -1,28 +1,25 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import Navbar from '../Navbar.vue';
 
-// Mock product list (replace with API calls later)
-const products = ref([
-  {
-    id: 1,
-    name: 'Wireless Headphones',
-    description: 'High-quality headphones with noise cancellation.',
-    price: 128.0,
-    discount_percentage: 10,
-    brand: 'SoundMax',
-    category: 'Electronics',
-    qty: 50,
-    product_image_url: 'https://i.pinimg.com/736x/76/9d/84/769d8454f78dabe81ec54e51fea6d156.jpg',
-    rating: 4.5,
-    features: ['Bluetooth', 'Noise Cancelling'],
-    specifications: { battery: '20h', weight: '250g' },
-    color: ['Black', 'Silver'],
-    warranty: { duration: '1 year' },
-    deal_tag: 'Deal',
-    is_new: true,
-  }
-]);
+// API base URL
+const API_BASE = 'http://localhost:5000';
+
+// Reactive data
+const products = ref([]);
+const loading = ref(false);
+const error = ref(null);
+const colorsInput = ref('');
+const featuresInput = ref('');
+const specKey = ref('');
+const specValue = ref('');
+const warrantyKey = ref('');
+const warrantyValue = ref('');
+
+// Pagination state
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+const totalItems = ref(0);
 
 // Form State
 const showForm = ref(false);
@@ -32,6 +29,160 @@ const formData = ref({});
 // View Details Modal
 const showViewModal = ref(false);
 const selectedProduct = ref(null);
+
+// Computed properties for pagination
+const totalPages = computed(() => {
+  return Math.ceil(totalItems.value / itemsPerPage.value);
+});
+
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return products.value.slice(start, end);
+});
+
+const pageInfo = computed(() => {
+  const start = ((currentPage.value - 1) * itemsPerPage.value) + 1;
+  const end = Math.min(currentPage.value * itemsPerPage.value, totalItems.value);
+  return `Showing ${start}-${end} of ${totalItems.value} products`;
+});
+
+// Generate page numbers for pagination
+const pageNumbers = computed(() => {
+  const pages = [];
+  const maxVisiblePages = 5;
+  
+  let startPage = Math.max(1, currentPage.value - Math.floor(maxVisiblePages / 2));
+  let endPage = Math.min(totalPages.value, startPage + maxVisiblePages - 1);
+  
+  // Adjust start page if we're near the end
+  if (endPage - startPage + 1 < maxVisiblePages) {
+    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
+  
+  return pages;
+});
+
+// Fetch products from API
+async function fetchProducts() {
+  loading.value = true;
+  error.value = null;
+  try {
+    const response = await fetch(`${API_BASE}/products`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch products');
+    }
+    const data = await response.json();
+    products.value = data;
+    totalItems.value = data.length;
+  } catch (err) {
+    error.value = err.message;
+    console.error('Error fetching products:', err);
+  } finally {
+    loading.value = false;
+  }
+}
+
+// Pagination functions
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+}
+
+function previousPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+}
+
+function goToPage(page) {
+  currentPage.value = page;
+}
+
+// Create or Update product
+async function saveProduct() {
+  try {
+    let response;
+    
+    if (editingProduct.value) {
+      // Update existing product
+      response = await fetch(`${API_BASE}/products/${editingProduct.value._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData.value)
+      });
+    } else {
+      // Create new product
+      response = await fetch(`${API_BASE}/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData.value)
+      });
+    }
+
+    if (!response.ok) {
+      throw new Error('Failed to save product');
+    }
+
+    const savedProduct = await response.json();
+    
+    if (editingProduct.value) {
+      // Update in local state
+      const index = products.value.findIndex(p => p._id === editingProduct.value._id);
+      if (index !== -1) {
+        products.value[index] = savedProduct;
+      }
+    } else {
+      // Add to local state
+      products.value.push(savedProduct);
+      totalItems.value = products.value.length;
+    }
+    
+    showForm.value = false;
+    fetchProducts(); // Refresh to get the latest data
+  } catch (err) {
+    error.value = err.message;
+    console.error('Error saving product:', err);
+  }
+}
+
+// Delete product
+async function deleteProduct(id) {
+  if (!confirm('Are you sure you want to delete this product?')) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/products/${id}`, {
+      method: 'DELETE'
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete product');
+    }
+
+    // Remove from local state
+    products.value = products.value.filter(p => p._id !== id);
+    totalItems.value = products.value.length;
+    
+    // Adjust current page if we deleted the last item on the page
+    if (paginatedProducts.value.length === 0 && currentPage.value > 1) {
+      currentPage.value--;
+    }
+  } catch (err) {
+    error.value = err.message;
+    console.error('Error deleting product:', err);
+  }
+}
 
 function openViewModal(product) {
   selectedProduct.value = product;
@@ -43,10 +194,91 @@ function closeViewModal() {
   selectedProduct.value = null;
 }
 
+// Methods to handle form data
+function updateColors() {
+  if (colorsInput.value.trim()) {
+    formData.value.color = colorsInput.value
+      .split(',')
+      .map(color => color.trim())
+      .filter(color => color.length > 0);
+  } else {
+    formData.value.color = [];
+  }
+}
+
+function updateFeatures() {
+  if (featuresInput.value.trim()) {
+    formData.value.features = featuresInput.value
+      .split(',')
+      .map(feature => feature.trim())
+      .filter(feature => feature.length > 0);
+  } else {
+    formData.value.features = [];
+  }
+}
+
+// add specs
+function addSpecification() {
+  if (specKey.value.trim() && specValue.value.trim()) {
+    if (!formData.value.specifications) {
+      formData.value.specifications = {};
+    }
+    formData.value.specifications[specKey.value.trim()] = specValue.value.trim();
+    // Clear inputs
+    specKey.value = '';
+    specValue.value = '';
+  }
+}
+
+//remove specs
+function removeSpecification(key) {
+  if (formData.value.specifications && formData.value.specifications[key]) {
+    delete formData.value.specifications[key];
+  }
+}
+
+//add warranty
+function addWarranty() {
+  if (warrantyKey.value.trim() && warrantyValue.value.trim()) {
+    if (!formData.value.warranty) {
+      formData.value.warranty = {};
+    }
+    formData.value.warranty[warrantyKey.value.trim()] = warrantyValue.value.trim();
+    // Clear inputs
+    warrantyKey.value = '';
+    warrantyValue.value = '';
+  }
+}
+
+//remove warranty
+function removeWarranty(key) {
+  if (formData.value.warranty && formData.value.warranty[key]) {
+    delete formData.value.warranty[key];
+  }
+}
+
+// Update openForm to initialize the inputs
 function openForm(product = null) {
   if (product) {
     editingProduct.value = product;
-    formData.value = { ...product };
+    formData.value = { 
+      ...product,
+      // Ensure numbers are properly formatted
+      price: product.price ? parseFloat(product.price) : '',
+      discount_percentage: product.discount_percentage || 0,
+      qty: product.qty || 0,
+      rating: product.rating ? parseFloat(product.rating) : 0,
+      // Ensure arrays and objects exist
+      features: product.features || [],
+      color: product.color || [],
+      specifications: product.specifications || {},
+      warranty: product.warranty || {}
+    };
+    
+    // Initialize input fields
+    colorsInput.value = product.color ? product.color.join(', ') : '';
+    featuresInput.value = product.features ? product.features.join(', ') : '';
+    
   } else {
     formData.value = {
       name: '',
@@ -65,26 +297,44 @@ function openForm(product = null) {
       deal_tag: null,
       is_new: false,
     };
+    colorsInput.value = '';
+    featuresInput.value = '';
+    specKey.value = '';
+    specValue.value = '';
     editingProduct.value = null;
   }
   showForm.value = true;
+  error.value = null;
 }
 
-function saveProduct() {
-  if (editingProduct.value) {
-    const index = products.value.findIndex(p => p.id === editingProduct.value.id);
-    products.value[index] = { ...formData.value };
-  } else {
-    const newId = products.value.length + 1;
-    products.value.push({ id: newId, ...formData.value });
-  }
-  showForm.value = false;
+// Format currency for display
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('en-KE', {
+    style: 'currency',
+    currency: 'KES',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount);
 }
 
-// Delete product
-function deleteProduct(id) {
-  products.value = products.value.filter(p => p.id !== id);
+// Refresh products
+function refreshProducts() {
+  currentPage.value = 1; // Reset to first page when refreshing
+  fetchProducts();
 }
+
+// Add this method to your methods
+function truncateWords(text, maxWords) {
+  if (!text) return '';
+  const words = text.split(' ');
+  if (words.length <= maxWords) return text;
+  return words.slice(0, maxWords).join(' ') + '...';
+}
+
+// Fetch products when component mounts
+onMounted(() => {
+  fetchProducts();
+});
 </script>
 
 <template>
@@ -94,112 +344,221 @@ function deleteProduct(id) {
     <div class="product-container mx-auto p-6">
       <!-- Header with Add Button -->
       <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Products Management</h1>
-        <button
-          @click="openForm()"
-          class="add-product-btn"
-        >
-          <font-awesome-icon :icon="['fas', 'plus']" class="w-4 h-4" />
-          <span>Add Product</span>
-        </button>
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Products Management</h1>
+          <p class="text-sm text-gray-600 mt-1">Manage your product catalog</p>
+        </div>
+        <div class="flex items-center gap-[10px]">
+          <div class="text-sm text-gray-600">
+            Total Products: {{ totalItems }}
+          </div>
+          <button
+            @click="refreshProducts"
+            class="refresh-btn"
+            :disabled="loading"
+          >
+            <font-awesome-icon 
+              :icon="['fas', 'rotate']" 
+              class="w-4 h-4" 
+              :class="{ 'animate-spin': loading }" 
+            />
+            <span>Refresh</span>
+          </button>
+          <button
+            @click="openForm()"
+            class="add-product-btn"
+          >
+            <font-awesome-icon :icon="['fas', 'plus']" class="w-4 h-4" />
+            <span>Add Product</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Products Table -->
-      <div class="table-container">
-        <table class="products-table">
-          <thead class="table-header">
-            <tr>
-              <th scope="col" class="table-head rounded-tl-2xl">
-                Image
-              </th>
-              <th scope="col" class="table-head">
-                Name
-              </th>
-              <th scope="col" class="table-head">
-                Description
-              </th>
-              <th scope="col" class="table-head">
-                Brand
-              </th>
-              <th scope="col" class="table-head">
-                Category
-              </th>
-              <th scope="col" class="table-head">
-                Price
-              </th>
-              <th scope="col" class="table-head">
-                Qty
-              </th>
-              <th scope="col" class="table-head rounded-tr-2xl">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-              v-for="product in products" 
-              :key="product.id" 
-              class="table-row"
+      <!-- Error Message -->
+      <div v-if="error" class="error-message">
+        <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="w-5 h-5" />
+        <span>{{ error }}</span>
+        <button @click="fetchProducts" class="retry-btn">Retry</button>
+      </div>
+
+      <!-- Loading State -->
+      <div v-if="loading" class="loading-state">
+        <font-awesome-icon :icon="['fas', 'spinner']" class="w-8 h-8 animate-spin" />
+        <p>Loading products...</p>
+      </div>
+
+      <!-- Products Table Section -->
+      <div v-else class="table-section">
+        <!-- Page Info -->
+        <div class="page-info">
+          {{ pageInfo }}
+        </div>
+
+        <div class="table-container">
+          <table class="products-table">
+            <thead class="table-header">
+              <tr>
+                <th scope="col" class="table-head rounded-tl-2xl">
+                  Image
+                </th>
+                <th scope="col" class="table-head">
+                  Name
+                </th>
+                <th scope="col" class="table-head">
+                  Description
+                </th>
+                <th scope="col" class="table-head">
+                  Brand
+                </th>
+                <th scope="col" class="table-head">
+                  Category
+                </th>
+                <th scope="col" class="table-head">
+                  Price
+                </th>
+                <th scope="col" class="table-head">
+                  Qty
+                </th>
+                <th scope="col" class="table-head rounded-tr-2xl">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr 
+                v-for="product in paginatedProducts" 
+                :key="product._id" 
+                class="table-row"
+              >
+                <td class="table-cell">
+                  <img 
+                    :src="product.product_image_url" 
+                    :alt="product.name"
+                    class="product-image"
+                  >
+                </td>
+                <td class="table-cell font-semibold text-gray-900">{{ product.name }}</td>
+                <td class="table-cell text-gray-600 max-w-xs truncate">{{ truncateWords(product.description, 4) }}</td>
+                <td class="table-cell text-gray-700">{{ product.brand }}</td>
+                <td class="table-cell">
+                  <span class="category-tag">
+                    {{ product.category }}
+                  </span>
+                </td>
+                <td class="table-cell font-bold text-green-600">{{ formatCurrency(product.price) }}</td>
+                <td class="table-cell">
+                  <span :class="product.qty > 10 ? 'stock-tag in-stock' : 'stock-tag low-stock'">
+                    {{ product.qty }}
+                  </span>
+                </td>
+                <td class="table-cell">
+                  <div class="action-buttons">
+                    <!-- View -->
+                    <button
+                      @click="openViewModal(product)"
+                      class="action-btn view-btn"
+                    >
+                      <font-awesome-icon :icon="['fas', 'eye']" class="w-4 h-4" />
+                      <span>View</span>
+                    </button>
+
+                    <!-- Edit -->
+                    <button
+                      @click="openForm(product)"
+                      class="action-btn edit-btn"
+                    >
+                      <font-awesome-icon :icon="['fas', 'edit']" class="w-4 h-4" />
+                      <span>Edit</span>
+                    </button>
+
+                    <!-- Delete -->
+                    <button
+                      @click="deleteProduct(product._id)"
+                      class="action-btn delete-btn"
+                    >
+                      <font-awesome-icon :icon="['fas', 'trash']" class="w-4 h-4" />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Empty State -->
+          <div v-if="products.length === 0 && !loading" class="empty-state">
+            <font-awesome-icon :icon="['fas', 'box-open']" class="w-16 h-16 text-gray-400" />
+            <h3 class="empty-title">No Products Found</h3>
+            <p class="empty-description">There are no products to display at the moment.</p>
+          </div>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div v-if="products.length > 0" class="pagination-controls">
+          <div class="pagination-info">
+            {{ pageInfo }}
+          </div>
+          
+          <div class="pagination-buttons">
+            <!-- Previous Button -->
+            <button
+              @click="previousPage"
+              :disabled="currentPage === 1"
+              class="pagination-btn pagination-prev"
             >
-              <td class="table-cell">
-                <img 
-                  :src="product.product_image_url" 
-                  :alt="product.name"
-                  class="product-image"
-                >
-              </td>
-              <td class="table-cell font-semibold text-gray-900">{{ product.name }}</td>
-              <td class="table-cell text-gray-600 max-w-xs truncate">{{ product.description }}</td>
-              <td class="table-cell text-gray-700">{{ product.brand }}</td>
-              <td class="table-cell">
-                <span class="category-tag">
-                  {{ product.category }}
-                </span>
-              </td>
-              <td class="table-cell font-bold text-green-600">${{ product.price }}</td>
-              <td class="table-cell">
-                <span :class="product.qty > 10 ? 'stock-tag in-stock' : 'stock-tag low-stock'">
-                  {{ product.qty }}
-                </span>
-              </td>
-              <td class="table-cell">
-                <div class="action-buttons">
-                  <!-- View -->
-                  <button
-                    @click="openViewModal(product)"
-                    class="action-btn view-btn"
-                  >
-                    <font-awesome-icon :icon="['fas', 'eye']" class="w-4 h-4" />
-                    <span>View</span>
-                  </button>
+              <font-awesome-icon :icon="['fas', 'chevron-left']" class="w-4 h-4" />
+              <span>Previous</span>
+            </button>
 
-                  <!-- Edit -->
-                  <button
-                    @click="openForm(product)"
-                    class="action-btn edit-btn"
-                  >
-                    <font-awesome-icon :icon="['fas', 'edit']" class="w-4 h-4" />
-                    <span>Edit</span>
-                  </button>
+            <!-- Page Numbers -->
+            <div class="page-numbers">
+              <button
+                v-for="page in pageNumbers"
+                :key="page"
+                @click="goToPage(page)"
+                :class="['page-btn', { active: currentPage === page }]"
+              >
+                {{ page }}
+              </button>
+              
+              <!-- Ellipsis for many pages -->
+              <span v-if="pageNumbers[pageNumbers.length - 1] < totalPages" class="page-ellipsis">
+                ...
+              </span>
+            </div>
 
-                  <!-- Delete -->
-                  <button
-                    @click="deleteProduct(product.id)"
-                    class="action-btn delete-btn"
-                  >
-                    <font-awesome-icon :icon="['fas', 'trash']" class="w-4 h-4" />
-                    <span>Delete</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            <!-- Next Button -->
+            <button
+              @click="nextPage"
+              :disabled="currentPage === totalPages"
+              class="pagination-btn pagination-next"
+            >
+              <span>Next</span>
+              <font-awesome-icon :icon="['fas', 'chevron-right']" class="w-4 h-4" />
+            </button>
+          </div>
+
+          <!-- Items Per Page Selector -->
+          <div class="items-per-page">
+            <label for="itemsPerPage" class="items-per-page-label">Show:</label>
+            <select
+              id="itemsPerPage"
+              v-model="itemsPerPage"
+              class="items-per-page-select"
+              @change="currentPage = 1"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <!-- Product Details Modal -->
       <div
-        v-if="showViewModal"
+        v-if="showViewModal && selectedProduct"
         class="modal-overlay"
       >
         <div class="modal-container view-modal">
@@ -255,7 +614,7 @@ function deleteProduct(id) {
                 </div>
                 <div class="info-card">
                   <p class="info-label">Price</p>
-                  <p class="info-value price">${{ selectedProduct.price }}</p>
+                  <p class="info-value price">{{ formatCurrency(selectedProduct.price) }}</p>
                 </div>
                 <div class="info-card">
                   <p class="info-label">Discount</p>
@@ -351,6 +710,12 @@ function deleteProduct(id) {
           </div>
 
           <form @submit.prevent="saveProduct" class="form-content">
+            <!-- Error Message for Form -->
+            <div v-if="error" class="error-message">
+              <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="w-5 h-5" />
+              <span>{{ error }}</span>
+            </div>
+
             <!-- Basic Information Section -->
             <div class="form-grid">
               <!-- Name -->
@@ -382,7 +747,7 @@ function deleteProduct(id) {
             <div class="form-grid-three">
               <!-- Price -->
               <div class="form-group">
-                <label class="form-label">Price ($)</label>
+                <label class="form-label">Price (KES)</label>
                 <input 
                   v-model="formData.price" 
                   type="number" 
@@ -438,6 +803,7 @@ function deleteProduct(id) {
                   <option>Beauty</option>
                   <option>Toys</option>
                   <option>Books</option>
+                  <option>Furniture</option>
                 </select>
               </div>
 
@@ -449,10 +815,10 @@ function deleteProduct(id) {
                   class="form-input"
                 >
                   <option :value="null">No Deal Tag</option>
-                  <option>Flash Sale</option>
+                  <option>Flash</option>
                   <option>Clearance</option>
-                  <option>Deal of the Day</option>
-                  <option>Bundle Offer</option>
+                  <option>Deal</option>
+                  <option>Bundle</option>
                 </select>
               </div>
             </div>
@@ -467,6 +833,124 @@ function deleteProduct(id) {
                 required 
                 placeholder="Enter product description"
               ></textarea>
+            </div>
+
+            <!-- Colors - Array of strings -->
+            <div class="form-group">
+              <label class="form-label">Colors (comma-separated)</label>
+              <input 
+                v-model="colorsInput" 
+                type="text" 
+                class="form-input" 
+                placeholder="e.g., Red, Blue, Green, Black"
+                @input="updateColors"
+              />
+              <p class="input-hint">Enter colors separated by commas</p>
+            </div>
+
+            <!-- Features - Array of strings -->
+            <div class="form-group">
+              <label class="form-label">Features (comma-separated)</label>
+              <input 
+                v-model="featuresInput" 
+                type="text" 
+                class="form-input" 
+                placeholder="e.g., Wireless, Bluetooth, Waterproof, Fast Charging"
+                @input="updateFeatures"
+              />
+              <p class="input-hint">Enter features separated by commas</p>
+            </div>
+
+            <!-- Specifications - Object with key-value pairs -->
+            <div class="form-section">
+              <h3 class="section-title">Specifications</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label">Specification Key</label>
+                  <input 
+                    v-model="specKey" 
+                    type="text" 
+                    class="form-input" 
+                    placeholder="e.g., Weight, Dimensions, Battery"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Specification Value</label>
+                  <input 
+                    v-model="specValue" 
+                    type="text" 
+                    class="form-input" 
+                    placeholder="e.g., 500g, 10x5x2cm, 4000mAh"
+                  />
+                </div>
+              </div>
+              <button type="button" @click="addSpecification" class="add-spec-btn">
+                <font-awesome-icon :icon="['fas', 'plus']" class="w-4 h-4" />
+                Add Specification
+              </button>
+
+              <!-- Display added specifications -->
+              <div v-if="Object.keys(formData.specifications).length > 0" class="specs-preview">
+                <h4 class="preview-title">Added Specifications:</h4>
+                <div v-for="(value, key) in formData.specifications" :key="key" class="spec-preview-item">
+                  <span class="spec-key">{{ key }}:</span>
+                  <span class="spec-value">{{ value }}</span>
+                  <button type="button" @click="removeSpecification(key)" class="remove-spec-btn">
+                    <font-awesome-icon :icon="['fas', 'times']" class="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Warranty - Object with key-value pairs -->
+            <div class="form-section">
+              <h3 class="section-title">Warranty Information</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label">Warranty Period</label>
+                  <input 
+                    v-model="formData.warranty.period" 
+                    type="text" 
+                    class="form-input" 
+                    placeholder="e.g., 1 year, 2 years, Lifetime"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Warranty Type</label>
+                  <input 
+                    v-model="formData.warranty.type" 
+                    type="text" 
+                    class="form-input" 
+                    placeholder="e.g., Manufacturer, Limited, International"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Warranty Details</label>
+                <textarea 
+                  v-model="formData.warranty.details" 
+                  rows="2" 
+                  class="form-textarea" 
+                  placeholder="Additional warranty information..."
+                ></textarea>
+              </div>
+
+              <button type="button" @click="addWarranty" class="add-spec-btn">
+                <font-awesome-icon :icon="['fas', 'plus']" class="w-4 h-4" />
+                Add Warranty Information
+              </button>
+
+              <!-- Display added warranty information -->
+              <div v-if="formData.warranty && Object.keys(formData.warranty).length > 0" class="specs-preview">
+                <h4 class="preview-title">Warranty Information:</h4>
+                <div v-for="(value, key) in formData.warranty" :key="key" class="spec-preview-item">
+                  <span class="spec-key">{{ key }}:</span>
+                  <span class="spec-value">{{ value }}</span>
+                  <button type="button" @click="removeWarranty(key)" class="remove-spec-btn">
+                    <font-awesome-icon :icon="['fas', 'times']" class="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Image URL -->
@@ -502,9 +986,14 @@ function deleteProduct(id) {
               <button 
                 type="submit" 
                 class="submit-btn"
+                :disabled="loading"
               >
-                <font-awesome-icon :icon="['fas', 'check']" class="w-4 h-4" />
-                <span>{{ editingProduct ? 'Update Product' : 'Create Product' }}</span>
+                <font-awesome-icon 
+                  :icon="['fas', 'check']" 
+                  class="w-4 h-4" 
+                  :class="{ 'animate-spin': loading }" 
+                />
+                <span>{{ loading ? 'Saving...' : (editingProduct ? 'Update Product' : 'Create Product') }}</span>
               </button>
             </div>
           </form>
@@ -515,6 +1004,107 @@ function deleteProduct(id) {
 </template>
 
 <style scoped>
+.refresh-btn {
+  background: #5d3471;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: #4a2960;
+  transform: scale(1.05);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.refresh-btn {
+  background: #5d3471;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: #4a2960;
+  transform: scale(1.05);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.retry-btn:hover {
+  background: #b91c1c;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.loading-state p {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-description {
+  color: #6b7280;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================== */
 .product-container {
   width: 90%;
   margin: 0 auto;
@@ -683,6 +1273,7 @@ function deleteProduct(id) {
   border-radius: 16px;
   box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
   max-height: 90vh;
+  width: 90vw;
   overflow-y: auto;
 }
 
@@ -990,6 +1581,8 @@ function deleteProduct(id) {
   }
 }
 
+/* form */
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -1093,6 +1686,104 @@ function deleteProduct(id) {
   transform: scale(1.05);
 }
 
+/* Form Sections */
+.form-section {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.input-hint {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* Specification Buttons */
+.add-spec-btn {
+  background: #5d3471;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 12px;
+}
+
+.add-spec-btn:hover {
+  background: #4a2960;
+  transform: scale(1.05);
+}
+
+/* Specifications Preview */
+.specs-preview {
+  margin-top: 16px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.preview-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+.spec-preview-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.spec-preview-item:last-child {
+  border-bottom: none;
+}
+
+.spec-key {
+  font-weight: 600;
+  color: #374151;
+  min-width: 100px;
+}
+
+.spec-value {
+  color: #6b7280;
+  flex: 1;
+}
+
+.remove-spec-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-spec-btn:hover {
+  background: #dc2626;
+}
+
 /* Custom scrollbar */
 .modal-container::-webkit-scrollbar {
   width: 8px;
@@ -1110,6 +1801,161 @@ function deleteProduct(id) {
 
 .modal-container::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
+}
+
+/* pagination */
+.table-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.page-info {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Pagination Controls */
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  margin-top: 1rem;
+}
+
+.pagination-info {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.page-btn {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 2.5rem;
+}
+
+.page-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.page-btn.active {
+  background: #5d3471;
+  color: white;
+  border-color: #5d3471;
+}
+
+.page-ellipsis {
+  padding: 0.5rem 0.25rem;
+  color: #6b7280;
+}
+
+.items-per-page {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.items-per-page-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.items-per-page-select {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+}
+
+.items-per-page-select:focus {
+  outline: none;
+  border-color: #5d3471;
+  box-shadow: 0 0 0 2px rgba(93, 52, 113, 0.1);
+}
+
+/* Responsive Design for Pagination */
+@media (max-width: 1024px) {
+  .pagination-controls {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .pagination-buttons {
+    justify-content: center;
+  }
+  
+  .items-per-page {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-numbers {
+    display: none;
+  }
+  
+  .pagination-btn span {
+    display: none;
+  }
+  
+  .pagination-btn {
+    padding: 0.5rem;
+  }
 }
 
 /* Smooth transitions */

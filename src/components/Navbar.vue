@@ -305,15 +305,6 @@ const isActive = (path) => {
               <font-awesome-icon :icon="['fas', 'shopping-bag']" class="w-4 h-4" />
               <span>Orders</span>
             </RouterLink>
-
-            <RouterLink
-              to="/admin/analytics"
-              class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[90px] mr-[0px] flex items-center gap-1 admin-nav-link"
-              :class="isActive('/admin/analytics')"
-            >
-              <font-awesome-icon :icon="['fas', 'chart-bar']" class="w-4 h-4" />
-              <span>Analytics</span>
-            </RouterLink>
           </template>
 
           <!-- CUSTOMER NAVIGATION (When customer is authenticated OR no one is authenticated) -->

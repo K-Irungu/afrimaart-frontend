@@ -9,8 +9,9 @@ import PaymentMethods from '@/components/Account/PaymentMethods.vue'
 import Footer from '@/components/Footer.vue'
 import Addresses from '@/components/Account/Addresses.vue'
 
-// --- User Data (now minimal) ---
+// --- User Data ---
 const user = ref({
+  _id: '',
   firstName: '',
   lastName: '',
   email: '',
@@ -19,7 +20,7 @@ const user = ref({
 
 provide('user', user)
 
-// --- Mock Orders Data ---
+// --- Orders Data ---
 const orders = ref([])
 const ordersLoading = ref(true)
 
@@ -67,13 +68,14 @@ const notifications = ref([
   },
 ])
 
-// Load basic user data for sidebar
+// Load user data including ID
 const loadUserForSidebar = () => {
   const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user')
   if (storedUser) {
     try {
       const userData = JSON.parse(storedUser)
       user.value = {
+        _id: userData._id || userData.id || '',
         firstName: userData.firstname || userData.firstName || '',
         lastName: userData.lastname || userData.lastName || '',
         email: userData.email || '',
@@ -85,7 +87,43 @@ const loadUserForSidebar = () => {
   }
 }
 
-// Handle profile updates from child component - UPDATED
+// Fetch user orders from API
+const fetchUserOrders = async () => {
+  try {
+    ordersLoading.value = true
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token')
+    
+    if (!user.value._id) {
+      console.error('No user ID available')
+      orders.value = []
+      ordersLoading.value = false
+      return
+    }
+
+    const response = await fetch(`http://localhost:5000/orders/user/${user.value._id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (response.ok) {
+      const apiOrders = await response.json()
+      console.log('Fetched orders from API:', apiOrders)
+      orders.value = apiOrders
+    } else {
+      console.error('Failed to fetch orders:', response.status)
+      orders.value = []
+    }
+  } catch (error) {
+    console.error('Error fetching orders:', error)
+    orders.value = []
+  } finally {
+    ordersLoading.value = false
+  }
+}
+
+// Handle profile updates from child component
 const handleProfileUpdate = (updatedUser) => {
   console.log('Profile updated:', updatedUser)
   
@@ -128,20 +166,49 @@ const handleAccountDelete = (deletedUserId) => {
   window.location.href = '/'
 }
 
+// Use the same tab IDs as in AccountSidebar
+const activeTab = ref('profile')
+
+const handleTabChange = (tabId) => {
+  activeTab.value = tabId
+  // Refresh orders when switching to orders tab
+  if (tabId === 'orders') {
+    fetchUserOrders()
+  }
+}
+
+// Get display name for breadcrumb
+const getTabDisplayName = (tabId) => {
+  const tabNames = {
+    profile: 'Profile',
+    orders: 'Orders',
+    addresses: 'Addresses',
+    payment: 'Payment Methods',
+    notifications: 'Notifications',
+    security: 'Security',
+    help: 'Help & Support',
+  }
+  return tabNames[tabId] || tabId
+}
+
+// Handle sign out
+const handleSignOut = () => {
+  // Clear all stored user data
+  localStorage.removeItem('user')
+  sessionStorage.removeItem('user')
+  localStorage.removeItem('userId')
+  sessionStorage.removeItem('userId')
+  localStorage.removeItem('token')
+  sessionStorage.removeItem('token')
+  
+  // Redirect to login page or home page
+  window.location.href = '/'
+}
+
 // Simulate loading data
 onMounted(() => {
   // Load user data for sidebar
   loadUserForSidebar()
-
-  // Simulate loading orders
-  setTimeout(() => {
-    orders.value = [
-      { id: 58421, date: 'Aug 12, 2025', items: 2, total: 28.4, status: 'Shipped' },
-      { id: 57902, date: 'Jul 28, 2025', items: 3, total: 62.0, status: 'Preparing' },
-      { id: 57102, date: 'Jun 11, 2025', items: 5, total: 279.5, status: 'Returned' },
-    ]
-    ordersLoading.value = false
-  }, 1500)
 
   // Simulate loading addresses
   setTimeout(() => {
@@ -174,49 +241,6 @@ onMounted(() => {
     addressesLoading.value = false
   }, 2000)
 })
-
-// --- Mock Preferences Data ---
-const preferences = ref({
-  orderUpdates: true,
-  productReviews: true,
-  dealsPromos: false,
-  twoStepVerification: true,
-})
-
-// Use the same tab IDs as in AccountSidebar
-const activeTab = ref('profile')
-
-const handleTabChange = (tabId) => {
-  activeTab.value = tabId
-}
-
-// Get display name for breadcrumb
-const getTabDisplayName = (tabId) => {
-  const tabNames = {
-    profile: 'Profile',
-    orders: 'Orders',
-    addresses: 'Addresses',
-    payment: 'Payment Methods',
-    notifications: 'Notifications',
-    security: 'Security',
-    help: 'Help & Support',
-  }
-  return tabNames[tabId] || tabId
-}
-
-// Handle sign out
-const handleSignOut = () => {
-  // Clear all stored user data
-  localStorage.removeItem('user')
-  sessionStorage.removeItem('user')
-  localStorage.removeItem('userId')
-  sessionStorage.removeItem('userId')
-  localStorage.removeItem('token')
-  sessionStorage.removeItem('token')
-  
-  // Redirect to login page or home page
-  window.location.href = '/'
-}
 </script>
 
 <template>

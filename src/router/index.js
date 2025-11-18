@@ -11,7 +11,6 @@ import CheckoutView from '@/views/CheckoutView.vue'
 import Admin from '@/views/Admin.vue'
 import AdminProducts from '@/components/Admin/AdminProducts.vue'
 import AdminOrders from '@/components/Admin/AdminOrders.vue'
-import AdminAnalytics from '@/components/Admin/AdminAnalytics.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -76,11 +75,6 @@ const router = createRouter({
       path: '/admin/orders',
       name: 'adminOrders',
       component: AdminOrders,
-    },
-    {
-      path: '/admin/analytics',
-      name: 'adminAnalytics',
-      component: AdminAnalytics
     },
     {
       // Redirect any unmatched routes to home

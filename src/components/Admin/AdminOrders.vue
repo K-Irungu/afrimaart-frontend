@@ -1,126 +1,19 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import Navbar from '../Navbar.vue';
 
-// Mock orders data (replace with API calls later)
-const orders = ref([
-  {
-    _id: '1',
-    user: {
-      _id: 'user1',
-      name: 'John Doe',
-      email: 'john@example.com'
-    },
-    items: [
-      {
-        product: {
-          _id: 'prod1',
-          name: 'Wireless Headphones',
-          product_image_url: 'https://i.pinimg.com/736x/76/9d/84/769d8454f78dabe81ec54e51fea6d156.jpg'
-        },
-        quantity: 2,
-        price_at_purchase: 128.00
-      },
-      {
-        product: {
-          _id: 'prod2',
-          name: 'Smart Watch',
-          product_image_url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30'
-        },
-        quantity: 1,
-        price_at_purchase: 199.99
-      }
-    ],
-    total_amount: 455.99,
-    shipping_address: {
-      _id: 'addr1',
-      street: '123 Main St',
-      city: 'New York',
-      state: 'NY',
-      zipCode: '10001',
-      country: 'USA'
-    },
-    payment_details: {
-      _id: 'pay1',
-      method: 'Credit Card',
-      last4: '4242',
-      brand: 'Visa'
-    },
-    status: 'Processing',
-    createdAt: '2024-01-15T10:30:00Z'
-  },
-  {
-    _id: '2',
-    user: {
-      _id: 'user2',
-      name: 'Sarah Smith',
-      email: 'sarah@example.com'
-    },
-    items: [
-      {
-        product: {
-          _id: 'prod3',
-          name: 'Running Shoes',
-          product_image_url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff'
-        },
-        quantity: 1,
-        price_at_purchase: 89.99
-      }
-    ],
-    total_amount: 89.99,
-    shipping_address: {
-      _id: 'addr2',
-      street: '456 Oak Ave',
-      city: 'Los Angeles',
-      state: 'CA',
-      zipCode: '90210',
-      country: 'USA'
-    },
-    payment_details: {
-      _id: 'pay2',
-      method: 'PayPal',
-      email: 'sarah@example.com'
-    },
-    status: 'Pending',
-    createdAt: '2024-01-14T15:45:00Z'
-  },
-  {
-    _id: '3',
-    user: {
-      _id: 'user3',
-      name: 'Mike Johnson',
-      email: 'mike@example.com'
-    },
-    items: [
-      {
-        product: {
-          _id: 'prod4',
-          name: 'Coffee Maker',
-          product_image_url: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085'
-        },
-        quantity: 1,
-        price_at_purchase: 75.50
-      }
-    ],
-    total_amount: 75.50,
-    shipping_address: {
-      _id: 'addr3',
-      street: '789 Pine Rd',
-      city: 'Chicago',
-      state: 'IL',
-      zipCode: '60601',
-      country: 'USA'
-    },
-    payment_details: {
-      _id: 'pay3',
-      method: 'Credit Card',
-      last4: '8888',
-      brand: 'Mastercard'
-    },
-    status: 'Delivered',
-    createdAt: '2024-01-13T09:15:00Z'
-  }
-]);
+// API base URL - adjust according to your backend
+const API_BASE = 'http://localhost:5000';
+
+// Reactive data
+const orders = ref([]);
+const loading = ref(false);
+const error = ref(null);
+
+// Pagination state
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+const totalItems = ref(0);
 
 // Modal States
 const showViewModal = ref(false);
@@ -130,6 +23,114 @@ const selectedOrder = ref(null);
 // Form State for editing status
 const statusForm = ref({
   status: ''
+});
+
+// Computed properties for pagination
+const totalPages = computed(() => {
+  return Math.ceil(totalItems.value / itemsPerPage.value);
+});
+
+const paginatedOrders = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return orders.value.slice(start, end);
+});
+
+const pageInfo = computed(() => {
+  const start = ((currentPage.value - 1) * itemsPerPage.value) + 1;
+  const end = Math.min(currentPage.value * itemsPerPage.value, totalItems.value);
+  return `Showing ${start}-${end} of ${totalItems.value} orders`;
+});
+
+// Fetch orders from API
+async function fetchOrders() {
+  loading.value = true;
+  error.value = null;
+  try {
+    const response = await fetch(`${API_BASE}/orders`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch orders');
+    }
+    const data = await response.json();
+    orders.value = data;
+    totalItems.value = data.length;
+  } catch (err) {
+    error.value = err.message;
+    console.error('Error fetching orders:', err);
+  } finally {
+    loading.value = false;
+  }
+}
+
+// Update order status
+async function updateOrderStatus() {
+  if (!selectedOrder.value) return;
+
+  try {
+    const response = await fetch(`${API_BASE}/orders/${selectedOrder.value._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        status: statusForm.value.status
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update order status');
+    }
+
+    const updatedOrder = await response.json();
+    
+    // Update the order in the local state
+    const index = orders.value.findIndex(o => o._id === selectedOrder.value._id);
+    if (index !== -1) {
+      orders.value[index] = updatedOrder;
+    }
+    
+    closeModals();
+  } catch (err) {
+    error.value = err.message;
+    console.error('Error updating order:', err);
+  }
+}
+
+// Pagination functions
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+}
+
+function previousPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+}
+
+function goToPage(page) {
+  currentPage.value = page;
+}
+
+// Generate page numbers for pagination
+const pageNumbers = computed(() => {
+  const pages = [];
+  const maxVisiblePages = 5;
+  
+  let startPage = Math.max(1, currentPage.value - Math.floor(maxVisiblePages / 2));
+  let endPage = Math.min(totalPages.value, startPage + maxVisiblePages - 1);
+  
+  // Adjust start page if we're near the end
+  if (endPage - startPage + 1 < maxVisiblePages) {
+    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
+  
+  return pages;
 });
 
 // Open View Modal
@@ -153,17 +154,6 @@ function closeModals() {
   statusForm.value.status = '';
 }
 
-// Update Order Status
-function updateOrderStatus() {
-  if (selectedOrder.value) {
-    const index = orders.value.findIndex(o => o._id === selectedOrder.value._id);
-    if (index !== -1) {
-      orders.value[index].status = statusForm.value.status;
-    }
-  }
-  closeModals();
-}
-
 // Get Status Badge Class
 function getStatusClass(status) {
   const statusClasses = {
@@ -181,17 +171,63 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   });
 }
 
-// Format currency
+// Format currency - Updated to display Ksh
 function formatCurrency(amount) {
-  return new Intl.NumberFormat('en-US', {
+  // Handle Decimal128 from MongoDB
+  if (amount && typeof amount === 'object' && amount.$numberDecimal) {
+    amount = parseFloat(amount.$numberDecimal);
+  }
+  return new Intl.NumberFormat('en-KE', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'KES',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   }).format(amount);
 }
+
+// Format price at purchase (handles Decimal128)
+function formatPrice(price) {
+  if (price && typeof price === 'object' && price.$numberDecimal) {
+    return parseFloat(price.$numberDecimal);
+  }
+  return price;
+}
+
+// Calculate item subtotal
+function calculateSubtotal(item) {
+  const price = formatPrice(item.price_at_purchase);
+  return price * item.quantity;
+}
+
+// Calculate total amount (handles Decimal128)
+function getTotalAmount(order) {
+  if (order.total_amount && typeof order.total_amount === 'object' && order.total_amount.$numberDecimal) {
+    return parseFloat(order.total_amount.$numberDecimal);
+  }
+  return order.total_amount;
+}
+
+// Safe access for nested properties
+function safeGet(obj, path, defaultValue = 'N/A') {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj) || defaultValue;
+}
+
+// Refresh orders
+function refreshOrders() {
+  currentPage.value = 1; // Reset to first page when refreshing
+  fetchOrders();
+}
+
+// Fetch orders when component mounts
+onMounted(() => {
+  fetchOrders();
+});
 </script>
 
 <template>
@@ -201,107 +237,219 @@ function formatCurrency(amount) {
     <div class="order-container mx-auto p-6">
       <!-- Header -->
       <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Orders Management</h1>
-        <div class="text-sm text-gray-600">
-          Total Orders: {{ orders.length }}
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Orders Management</h1>
+          <p class="text-sm text-gray-600 mt-1">Manage and track customer orders</p>
+        </div>
+        <div class="flex items-center gap-[6px]">
+          <div class="text-[1rem] text-gray-600">
+            Total Orders: {{ totalItems }}
+          </div>
+          <button
+            @click="refreshOrders"
+            class="refresh-btn"
+            :disabled="loading"
+          >
+            <font-awesome-icon 
+              :icon="['fas', 'rotate']" 
+              class="w-4 h-4" 
+              :class="{ 'animate-spin': loading }" 
+            />
+            <span>Refresh</span>
+          </button>
         </div>
       </div>
 
-      <!-- Orders Table -->
-      <div class="table-container">
-        <table class="orders-table">
-          <thead class="table-header">
-            <tr>
-              <th scope="col" class="table-head rounded-tl-2xl">
-                Order ID
-              </th>
-              <th scope="col" class="table-head">
-                Customer
-              </th>
-              <th scope="col" class="table-head">
-                Total Amount
-              </th>
-              <th scope="col" class="table-head">
-                Shipping Address
-              </th>
-              <th scope="col" class="table-head">
-                Payment Method
-              </th>
-              <th scope="col" class="table-head">
-                Status
-              </th>
-              <th scope="col" class="table-head">
-                Date
-              </th>
-              <th scope="col" class="table-head rounded-tr-2xl">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-              v-for="order in orders" 
-              :key="order._id" 
-              class="table-row"
-            >
-              <td class="table-cell font-mono text-sm text-gray-600">
-                #{{ order._id.slice(-6).toUpperCase() }}
-              </td>
-              <td class="table-cell">
-                <div class="customer-info">
-                  <p class="font-semibold text-gray-900">{{ order.user.name }}</p>
-                  <p class="text-sm text-gray-500">{{ order.user.email }}</p>
-                </div>
-              </td>
-              <td class="table-cell font-bold text-green-600">
-                {{ formatCurrency(order.total_amount) }}
-              </td>
-              <td class="table-cell">
-                <div class="address-info">
-                  <p class="text-sm font-medium text-gray-900">{{ order.shipping_address.city }}, {{ order.shipping_address.state }}</p>
-                  <p class="text-xs text-gray-500 truncate max-w-[150px]">{{ order.shipping_address.street }}</p>
-                </div>
-              </td>
-              <td class="table-cell">
-                <div class="payment-info">
-                  <p class="text-sm font-medium text-gray-900">{{ order.payment_details.method }}</p>
-                  <p v-if="order.payment_details.last4" class="text-xs text-gray-500">
-                    **** {{ order.payment_details.last4 }}
-                  </p>
-                </div>
-              </td>
-              <td class="table-cell">
-                <span :class="getStatusClass(order.status)">
-                  {{ order.status }}
-                </span>
-              </td>
-              <td class="table-cell text-sm text-gray-600">
-                {{ formatDate(order.createdAt) }}
-              </td>
-              <td class="table-cell">
-                <div class="action-buttons">
-                  <!-- View -->
-                  <button
-                    @click="openViewModal(order)"
-                    class="action-btn view-btn"
-                  >
-                    <font-awesome-icon :icon="['fas', 'eye']" class="w-4 h-4" />
-                    <span>View</span>
-                  </button>
+      <!-- Error Message -->
+      <div v-if="error" class="error-message">
+        <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="w-5 h-5" />
+        <span>{{ error }}</span>
+        <button @click="fetchOrders" class="retry-btn">Retry</button>
+      </div>
 
-                  <!-- Edit -->
-                  <button
-                    @click="openEditModal(order)"
-                    class="action-btn edit-btn"
-                  >
-                    <font-awesome-icon :icon="['fas', 'edit']" class="w-4 h-4" />
-                    <span>Edit</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Loading State -->
+      <div v-if="loading" class="loading-state">
+        <font-awesome-icon :icon="['fas', 'spinner']" class="w-8 h-8 animate-spin" />
+        <p>Loading orders...</p>
+      </div>
+
+      <!-- Orders Table -->
+      <div v-else class="table-section">
+        <!-- Page Info -->
+        <div class="page-info">
+          {{ pageInfo }}
+        </div>
+
+        <div class="table-container">
+          <table class="orders-table">
+            <thead class="table-header">
+              <tr>
+                <th scope="col" class="table-head rounded-tl-2xl">
+                  Order ID
+                </th>
+                <th scope="col" class="table-head">
+                  Customer
+                </th>
+                <th scope="col" class="table-head">
+                  Total Amount
+                </th>
+                <th scope="col" class="table-head">
+                  Shipping Address
+                </th>
+                <th scope="col" class="table-head">
+                  Payment Method
+                </th>
+                <th scope="col" class="table-head">
+                  Status
+                </th>
+                <th scope="col" class="table-head">
+                  Date
+                </th>
+                <th scope="col" class="table-head rounded-tr-2xl">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr 
+                v-for="order in paginatedOrders" 
+                :key="order._id" 
+                class="table-row"
+              >
+                <td class="table-cell font-mono text-sm text-gray-600">
+                  #{{ order._id ? order._id.slice(-6).toUpperCase() : 'N/A' }}
+                </td>
+                <td class="table-cell">
+                  <div class="customer-info">
+                    <p class="font-semibold text-gray-900">{{ safeGet(order, 'user.username') }}</p>
+                    <p class="text-sm text-gray-500">{{ safeGet(order, 'user.email') }}</p>
+                  </div>
+                </td>
+                <td class="table-cell font-bold text-green-600">
+                  {{ formatCurrency(getTotalAmount(order)) }}
+                </td>
+                <td class="table-cell">
+                  <div class="address-info">
+                    <p class="text-sm font-medium text-gray-900">
+                      {{ safeGet(order, 'shipping_address.city') }}, {{ safeGet(order, 'shipping_address.state_region') }}
+                    </p>
+                    <p class="text-xs text-gray-500 truncate max-w-[150px]">
+                      {{ safeGet(order, 'shipping_address.address_line_1') }}
+                    </p>
+                  </div>
+                </td>
+                <td class="table-cell">
+                  <div class="payment-info">
+                    <p class="text-sm font-medium text-gray-900">{{ safeGet(order, 'payment_details.type') }}</p>
+                    <p v-if="safeGet(order, 'payment_details.last4') !== 'N/A'" class="text-xs text-gray-500">
+                      **** {{ safeGet(order, 'payment_details.last4') }}
+                    </p>
+                  </div>
+                </td>
+                <td class="table-cell">
+                  <span :class="getStatusClass(order.status)">
+                    {{ order.status || 'Pending' }}
+                  </span>
+                </td>
+                <td class="table-cell text-sm text-gray-600">
+                  {{ order.createdAt ? formatDate(order.createdAt) : 'N/A' }}
+                </td>
+                <td class="table-cell">
+                  <div class="action-buttons">
+                    <!-- View -->
+                    <button
+                      @click="openViewModal(order)"
+                      class="action-btn view-btn"
+                      :disabled="loading"
+                    >
+                      <font-awesome-icon :icon="['fas', 'eye']" class="w-4 h-4" />
+                      <span>View</span>
+                    </button>
+
+                    <!-- Edit -->
+                    <button
+                      @click="openEditModal(order)"
+                      class="action-btn edit-btn"
+                      :disabled="loading"
+                    >
+                      <font-awesome-icon :icon="['fas', 'edit']" class="w-4 h-4" />
+                      <span>Edit</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Empty State -->
+          <div v-if="orders.length === 0 && !loading" class="empty-state">
+            <font-awesome-icon :icon="['fas', 'box-open']" class="w-16 h-16 text-gray-400" />
+            <h3 class="empty-title">No Orders Found</h3>
+            <p class="empty-description">There are no orders to display at the moment.</p>
+          </div>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div v-if="orders.length > 0" class="pagination-controls">
+          <div class="pagination-info">
+            {{ pageInfo }}
+          </div>
+          
+          <div class="pagination-buttons">
+            <!-- Previous Button -->
+            <button
+              @click="previousPage"
+              :disabled="currentPage === 1"
+              class="pagination-btn pagination-prev"
+            >
+              <font-awesome-icon :icon="['fas', 'chevron-left']" class="w-4 h-4" />
+              <span>Previous</span>
+            </button>
+
+            <!-- Page Numbers -->
+            <div class="page-numbers">
+              <button
+                v-for="page in pageNumbers"
+                :key="page"
+                @click="goToPage(page)"
+                :class="['page-btn', { active: currentPage === page }]"
+              >
+                {{ page }}
+              </button>
+              
+              <!-- Ellipsis for many pages -->
+              <span v-if="pageNumbers[pageNumbers.length - 1] < totalPages" class="page-ellipsis">
+                ...
+              </span>
+            </div>
+
+            <!-- Next Button -->
+            <button
+              @click="nextPage"
+              :disabled="currentPage === totalPages"
+              class="pagination-btn pagination-next"
+            >
+              <span>Next</span>
+              <font-awesome-icon :icon="['fas', 'chevron-right']" class="w-4 h-4" />
+            </button>
+          </div>
+
+          <!-- Items Per Page Selector -->
+          <div class="items-per-page">
+            <label for="itemsPerPage" class="items-per-page-label">Show:</label>
+            <select
+              id="itemsPerPage"
+              v-model="itemsPerPage"
+              class="items-per-page-select"
+              @change="currentPage = 1"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <!-- Order Details Modal -->
@@ -312,7 +460,7 @@ function formatCurrency(amount) {
         <div class="modal-container view-modal">
           <!-- Header -->
           <div class="modal-header">
-            <h2 class="modal-title">Order Details - #{{ selectedOrder._id.slice(-6).toUpperCase() }}</h2>
+            <h2 class="modal-title">Order Details - #{{ selectedOrder._id ? selectedOrder._id.slice(-6).toUpperCase() : 'N/A' }}</h2>
             <button
               @click="closeModals"
               class="close-btn"
@@ -328,21 +476,21 @@ function formatCurrency(amount) {
               <div class="summary-grid">
                 <div class="summary-item">
                   <p class="summary-label">Customer</p>
-                  <p class="summary-value">{{ selectedOrder.user.name }}</p>
-                  <p class="summary-subtext">{{ selectedOrder.user.email }}</p>
+                  <p class="summary-value">{{ safeGet(selectedOrder, 'user.username') }}</p>
+                  <p class="summary-subtext">{{ safeGet(selectedOrder, 'user.email') }}</p>
                 </div>
                 <div class="summary-item">
                   <p class="summary-label">Order Date</p>
-                  <p class="summary-value">{{ formatDate(selectedOrder.createdAt) }}</p>
+                  <p class="summary-value">{{ selectedOrder.createdAt ? formatDate(selectedOrder.createdAt) : 'N/A' }}</p>
                 </div>
                 <div class="summary-item">
                   <p class="summary-label">Total Amount</p>
-                  <p class="summary-value price">{{ formatCurrency(selectedOrder.total_amount) }}</p>
+                  <p class="summary-value price">{{ formatCurrency(getTotalAmount(selectedOrder)) }}</p>
                 </div>
                 <div class="summary-item">
                   <p class="summary-label">Status</p>
                   <span :class="getStatusClass(selectedOrder.status)" class="text-sm">
-                    {{ selectedOrder.status }}
+                    {{ selectedOrder.status || 'Pending' }}
                   </span>
                 </div>
               </div>
@@ -353,21 +501,29 @@ function formatCurrency(amount) {
               <div class="detail-section">
                 <h3 class="section-title">Shipping Address</h3>
                 <div class="address-card">
-                  <p class="address-line">{{ selectedOrder.shipping_address.street }}</p>
-                  <p class="address-line">{{ selectedOrder.shipping_address.city }}, {{ selectedOrder.shipping_address.state }} {{ selectedOrder.shipping_address.zipCode }}</p>
-                  <p class="address-line">{{ selectedOrder.shipping_address.country }}</p>
+                  <p class="address-line">{{ safeGet(selectedOrder, 'shipping_address.address_line_1') }}</p>
+                  <p v-if="safeGet(selectedOrder, 'shipping_address.address_line_2') !== 'N/A'" class="address-line">
+                    {{ safeGet(selectedOrder, 'shipping_address.address_line_2') }}
+                  </p>
+                  <p class="address-line">
+                    {{ safeGet(selectedOrder, 'shipping_address.city') }}, 
+                    {{ safeGet(selectedOrder, 'shipping_address.state_region') }} 
+                    {{ safeGet(selectedOrder, 'shipping_address.postal_code') }}
+                  </p>
+                  <p class="address-line">{{ safeGet(selectedOrder, 'shipping_address.country') }}</p>
                 </div>
               </div>
 
               <div class="detail-section">
                 <h3 class="section-title">Payment Information</h3>
                 <div class="payment-card">
-                  <p class="payment-method">{{ selectedOrder.payment_details.method }}</p>
-                  <p v-if="selectedOrder.payment_details.last4" class="payment-details">
-                    **** {{ selectedOrder.payment_details.last4 }} ({{ selectedOrder.payment_details.brand }})
+                  <p class="payment-method">{{ safeGet(selectedOrder, 'payment_details.type') }}</p>
+                  <p v-if="safeGet(selectedOrder, 'payment_details.last4') !== 'N/A'" class="payment-details">
+                    **** {{ safeGet(selectedOrder, 'payment_details.last4') }} 
+                    ({{ safeGet(selectedOrder, 'payment_details.brand') }})
                   </p>
-                  <p v-if="selectedOrder.payment_details.email" class="payment-details">
-                    {{ selectedOrder.payment_details.email }}
+                  <p v-if="safeGet(selectedOrder, 'payment_details.email') !== 'N/A'" class="payment-details">
+                    {{ safeGet(selectedOrder, 'payment_details.email') }}
                   </p>
                 </div>
               </div>
@@ -375,25 +531,25 @@ function formatCurrency(amount) {
 
             <!-- Order Items -->
             <div class="order-items-section">
-              <h3 class="section-title">Order Items ({{ selectedOrder.items.length }})</h3>
+              <h3 class="section-title">Order Items ({{ selectedOrder.items ? selectedOrder.items.length : 0 }})</h3>
               <div class="items-container">
                 <div 
                   v-for="item in selectedOrder.items" 
-                  :key="item.product._id"
+                  :key="item.product?._id || item._id"
                   class="order-item"
                 >
                   <img 
-                    :src="item.product.product_image_url" 
-                    :alt="item.product.name"
+                    :src="safeGet(item, 'product.product_image_url', 'https://via.placeholder.com/60x60?text=No+Image')" 
+                    :alt="safeGet(item, 'product.name')"
                     class="item-image"
                   >
                   <div class="item-details">
-                    <p class="item-name">{{ item.product.name }}</p>
+                    <p class="item-name">{{ safeGet(item, 'product.name') }}</p>
                     <p class="item-quantity">Quantity: {{ item.quantity }}</p>
                   </div>
                   <div class="item-price">
-                    <p class="price">{{ formatCurrency(item.price_at_purchase) }}</p>
-                    <p class="subtotal">Subtotal: {{ formatCurrency(item.price_at_purchase * item.quantity) }}</p>
+                    <p class="price">{{ formatCurrency(formatPrice(item.price_at_purchase)) }}</p>
+                    <p class="subtotal">Subtotal: {{ formatCurrency(calculateSubtotal(item)) }}</p>
                   </div>
                 </div>
               </div>
@@ -436,6 +592,7 @@ function formatCurrency(amount) {
                 v-model="statusForm.status" 
                 class="form-input" 
                 required
+                :disabled="loading"
               >
                 <option value="Pending">Pending</option>
                 <option value="Processing">Processing</option>
@@ -444,7 +601,7 @@ function formatCurrency(amount) {
                 <option value="Cancelled">Cancelled</option>
               </select>
               <p class="text-sm text-gray-500 mt-2">
-                Current status: <span :class="getStatusClass(selectedOrder.status)" class="text-sm">{{ selectedOrder.status }}</span>
+                Current status: <span :class="getStatusClass(selectedOrder.status)" class="text-sm">{{ selectedOrder.status || 'Pending' }}</span>
               </p>
             </div>
 
@@ -454,15 +611,21 @@ function formatCurrency(amount) {
                 type="button" 
                 @click="closeModals" 
                 class="cancel-btn"
+                :disabled="loading"
               >
                 Cancel
               </button>
               <button 
                 type="submit" 
                 class="submit-btn"
+                :disabled="loading"
               >
-                <font-awesome-icon :icon="['fas', 'check']" class="w-4 h-4" />
-                <span>Update Status</span>
+                <font-awesome-icon 
+                  :icon="['fas', 'check']" 
+                  class="w-4 h-4" 
+                  :class="{ 'animate-spin': loading }" 
+                />
+                <span>{{ loading ? 'Updating...' : 'Update Status' }}</span>
               </button>
             </div>
           </form>
@@ -476,6 +639,96 @@ function formatCurrency(amount) {
 .order-container {
   width: 90%;
   margin: 0 auto;
+}
+
+/* Refresh Button */
+.refresh-btn {
+  background: #5d3471;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: #4a2960;
+  transform: scale(1.05);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Error Message */
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.retry-btn {
+  background: #dc2626;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  margin-left: auto;
+  border: none;
+  cursor: pointer;
+}
+
+.retry-btn:hover {
+  background: #b91c1c;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.loading-state p {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-description {
+  color: #6b7280;
 }
 
 /* Table Styles */
@@ -575,12 +828,18 @@ function formatCurrency(amount) {
   cursor: pointer;
 }
 
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
 .view-btn {
   background: #4b5563;
   color: white;
 }
 
-.view-btn:hover {
+.view-btn:hover:not(:disabled) {
   background: #374151;
   transform: scale(1.05);
 }
@@ -590,7 +849,7 @@ function formatCurrency(amount) {
   color: white;
 }
 
-.edit-btn:hover {
+.edit-btn:hover:not(:disabled) {
   background: #2563eb;
   transform: scale(1.05);
 }
@@ -644,6 +903,9 @@ function formatCurrency(amount) {
   padding: 8px;
   border-radius: 8px;
   transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  background: none;
 }
 
 .close-btn:hover {
@@ -864,6 +1126,11 @@ function formatCurrency(amount) {
   box-shadow: 0 0 0 3px rgba(93, 52, 113, 0.1);
 }
 
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .form-buttons {
   display: flex;
   gap: 16px;
@@ -883,10 +1150,15 @@ function formatCurrency(amount) {
   transition: all 0.3s ease;
 }
 
-.cancel-btn:hover {
+.cancel-btn:hover:not(:disabled) {
   background: #f9fafb;
   border-color: #9ca3af;
   transform: scale(1.05);
+}
+
+.cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .submit-btn {
@@ -903,9 +1175,15 @@ function formatCurrency(amount) {
   transition: all 0.3s ease;
 }
 
-.submit-btn:hover {
+.submit-btn:hover:not(:disabled) {
   background: #4a2960;
   transform: scale(1.05);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Custom scrollbar */
@@ -927,10 +1205,186 @@ function formatCurrency(amount) {
   background: #a8a8a8;
 }
 
+
+/* pagination */
+.order-container {
+  width: 90%;
+  margin: 0 auto;
+}
+
+/* Table Section */
+.table-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.page-info {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Pagination Controls */
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  margin-top: 1rem;
+}
+
+.pagination-info {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.page-btn {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 2.5rem;
+}
+
+.page-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.page-btn.active {
+  background: #5d3471;
+  color: white;
+  border-color: #5d3471;
+}
+
+.page-ellipsis {
+  padding: 0.5rem 0.25rem;
+  color: #6b7280;
+}
+
+.items-per-page {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.items-per-page-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.items-per-page-select {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+}
+
+.items-per-page-select:focus {
+  outline: none;
+  border-color: #5d3471;
+  box-shadow: 0 0 0 2px rgba(93, 52, 113, 0.1);
+}
+
 /* Smooth transitions */
 * {
   transition-property: color, background-color, border-color, transform, box-shadow;
   transition-duration: 200ms;
   transition-timing-function: ease-in-out;
+}
+
+/* Animation for spinner */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .pagination-controls {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .pagination-buttons {
+    justify-content: center;
+  }
+  
+  .items-per-page {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-numbers {
+    display: none;
+  }
+  
+  .pagination-btn span {
+    display: none;
+  }
+  
+  .pagination-btn {
+    padding: 0.5rem;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

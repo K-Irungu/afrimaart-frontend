@@ -43,6 +43,14 @@ import {
   faChevronDown,
   faUsers,
   faUserPlus,
+  faTimes,
+  faCheck,
+  faEye,
+  faRotate,
+  faBoxOpen,
+  faSpinner,
+  faChartLine,
+  faChartBar,
 } from '@fortawesome/free-solid-svg-icons'
 import { faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons'
 import { faPaypal } from '@fortawesome/free-brands-svg-icons'
@@ -88,7 +96,15 @@ library.add(
   faBox,
   faChevronDown,
   faUsers,
-  faUserPlus
+  faUserPlus,
+  faTimes,
+  faCheck,
+  faEye,
+  faRotate,
+  faBoxOpen,
+  faSpinner,
+  faChartLine,
+  faChartBar
 )
 
 const app = createApp(App)
