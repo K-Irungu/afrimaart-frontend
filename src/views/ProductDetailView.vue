@@ -11,7 +11,7 @@ const router = useRouter()
 const { addToCart, showSuccessMessage, successMessage } = useCart()
 
 // Base URL for your products API
-const API_BASE_URL = 'http://localhost:5000/products'
+const API_BASE_URL = 'http://localhost:5050/products'
 
 // Reactive product data
 const product = ref({})
@@ -57,19 +57,19 @@ const fetchProduct = async () => {
     isLoading.value = true
     error.value = null
     const productId = route.params.id
-    
+
     const response = await axios.get(`${API_BASE_URL}/${productId}`)
-    
+
     if (response.data) {
       product.value = transformProductData(response.data)
-      
+
       // Set default selections
       if (product.value.colors && product.value.colors.length > 0) {
-        selectedColor.value = typeof product.value.colors[0] === 'string' 
-          ? product.value.colors[0] 
+        selectedColor.value = typeof product.value.colors[0] === 'string'
+          ? product.value.colors[0]
           : product.value.colors[0]?.name || ''
       }
-      
+
       if (product.value.warranties && product.value.warranties.length > 0) {
         selectedWarranty.value = typeof product.value.warranties[0] === 'string'
           ? product.value.warranties[0]
@@ -183,7 +183,7 @@ const originalPrice = computed(() => {
       <div v-else-if="error" class="text-center py-12">
         <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
           <p class="text-red-700 mb-4">Error: {{ error }}</p>
-          <button 
+          <button
             @click="fetchProduct"
             class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
           >

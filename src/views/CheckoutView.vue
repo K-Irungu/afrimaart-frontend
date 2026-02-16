@@ -9,7 +9,7 @@ const router = useRouter()
 const route = useRoute()
 
 // API endpoints
-const API_BASE = 'http://localhost:5000'
+const API_BASE = 'http://localhost:5050'
 const ADDRESSES_API = `${API_BASE}/addresses`
 const PAYMENT_METHODS_API = `${API_BASE}/payment-methods`
 const ORDERS_API = `${API_BASE}/orders`
@@ -69,12 +69,12 @@ const loadCartData = () => {
     try {
       const cartData = JSON.parse(route.query.cartData)
       console.log('Cart data received:', cartData)
-      
+
       orderData.value.subtotal = cartData.subtotal || 0
       orderData.value.shipping = cartData.shipping || 0
       orderData.value.tax = cartData.tax || 0
       orderData.value.discount = cartData.discount || 0
-      
+
       console.log('Updated order data:', orderData.value)
     } catch (error) {
       console.error('Error parsing cart data:', error)
@@ -92,27 +92,27 @@ const loadCartDataFromStorage = () => {
     const checkoutDataStr = localStorage.getItem('checkoutCartData')
     if (checkoutDataStr) {
       const cartData = JSON.parse(checkoutDataStr)
-      
+
       orderData.value.subtotal = cartData.subtotal || cartData.total || 0
       orderData.value.shipping = cartData.shipping || 0
       orderData.value.tax = cartData.tax || 0
       orderData.value.discount = cartData.discount || 0
-      
+
       console.log('Cart data loaded from checkout storage:', orderData.value)
       return
     }
-    
+
     // Fallback to regular cart data
     const cartStr = localStorage.getItem('cart')
     if (cartStr) {
       const cartItems = JSON.parse(cartStr)
       const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)
-      
+
       orderData.value.subtotal = subtotal
       orderData.value.shipping = 0 // You might want to calculate this
       orderData.value.tax = subtotal * 0.14 // Example: 14% tax
       orderData.value.discount = 0
-      
+
       console.log('Cart data calculated from cart storage:', orderData.value)
     }
   } catch (error) {
@@ -122,9 +122,9 @@ const loadCartDataFromStorage = () => {
 
 // Computed total
 const orderTotal = computed(() => {
-  return orderData.value.subtotal + 
-         orderData.value.shipping + 
-         orderData.value.tax - 
+  return orderData.value.subtotal +
+         orderData.value.shipping +
+         orderData.value.tax -
          orderData.value.discount
 })
 
@@ -187,10 +187,10 @@ const getCurrentUserId = () => {
   return user?.id || user?._id || null
 }
 
-// Helper function to get cart items for order 
+// Helper function to get cart items for order
 const getCartItemsForOrder = () => {
   let cartItems = []
-  
+
   // Try to get from route first
   if (route.query.cartData) {
     try {
@@ -201,7 +201,7 @@ const getCartItemsForOrder = () => {
       console.error('Error parsing cart data from route:', error)
     }
   }
-  
+
   // Fallback to localStorage checkout data
   if (cartItems.length === 0) {
     try {
@@ -215,7 +215,7 @@ const getCartItemsForOrder = () => {
       console.error('Error getting cart items from checkout storage:', error)
     }
   }
-  
+
   // Fallback to regular cart storage (useCart structure)
   if (cartItems.length === 0) {
     try {
@@ -228,28 +228,28 @@ const getCartItemsForOrder = () => {
       console.error('Error getting cart items from cart storage:', error)
     }
   }
-  
+
   console.log('Final cart items for order:', cartItems)
-  
+
   // Transform items to match order schema - UPDATED FOR useCart STRUCTURE
   const transformedItems = cartItems.map(item => {
     // Extract product ID from useCart structure
     const productId = item.productId || item._id || item.id || item.product?._id || item.product?.id
-    
+
     if (!productId) {
       console.error('Missing product ID for item:', item)
       return null
     }
-    
+
     return {
       product: productId,
       quantity: item.quantity || 1,
       price_at_purchase: item.price || item.product?.price || 0
     }
   }).filter(item => item !== null) // Remove any items that failed transformation
-  
+
   console.log('Transformed order items:', transformedItems)
-  
+
   return transformedItems
 }
 
@@ -259,7 +259,7 @@ const clearCartAfterOrder = () => {
     // Clear localStorage cart data
     localStorage.removeItem('checkoutCartData')
     localStorage.removeItem('cart') // if you store cart in localStorage
-    
+
     console.log('Cart cleared after order')
   } catch (error) {
     console.error('Error clearing cart:', error)
@@ -269,24 +269,24 @@ const clearCartAfterOrder = () => {
 // Validation function for order data
 const validateOrderData = () => {
   const errors = []
-  
+
   if (!getCurrentUserId()) {
     errors.push('User not authenticated')
   }
-  
+
   if (!checkoutState.value.selectedAddress) {
     errors.push('Shipping address not selected')
   }
-  
+
   if (!checkoutState.value.selectedPaymentMethod) {
     errors.push('Payment method not selected')
   }
-  
+
   const cartItems = getCartItemsForOrder()
   if (cartItems.length === 0) {
     errors.push('Cart is empty')
   }
-  
+
   return errors
 }
 
@@ -299,7 +299,7 @@ const fetchAddresses = async () => {
   try {
     const response = await fetch(`${ADDRESSES_API}?userId=${userId}`)
     if (!response.ok) throw new Error('Failed to fetch addresses')
-    
+
     const data = await response.json()
     if (data.success) {
       userData.value.addresses = data.addresses || []
@@ -322,7 +322,7 @@ const fetchPaymentMethods = async () => {
   try {
     const response = await fetch(`${PAYMENT_METHODS_API}?userId=${userId}`)
     if (!response.ok) throw new Error('Failed to fetch payment methods')
-    
+
     const data = await response.json()
     userData.value.paymentMethods = data || []
   } catch (error) {
@@ -367,7 +367,7 @@ const saveNewAddress = async () => {
     }
 
     const data = await response.json()
-    
+
     if (data.success) {
       // Add new address to local state and select it
       userData.value.addresses.push(data.address)
@@ -375,7 +375,7 @@ const saveNewAddress = async () => {
       checkoutState.value.useNewAddress = false
       resetNewAddressForm()
       alert('Address saved successfully!')
-      
+
       // Refresh addresses list
       fetchAddresses()
     } else {
@@ -421,14 +421,14 @@ const saveNewPayment = async () => {
     }
 
     const data = await response.json()
-    
+
     // Add new payment method to local state and select it
     userData.value.paymentMethods.push(data)
     checkoutState.value.selectedPaymentMethod = data._id
     checkoutState.value.useNewPayment = false
     resetNewPaymentForm()
     alert('Payment method saved successfully!')
-    
+
     // Refresh payment methods list
     fetchPaymentMethods()
   } catch (error) {
@@ -447,10 +447,10 @@ onMounted(() => {
     userData.value.userId = getCurrentUserId()
     fetchAddresses()
     fetchPaymentMethods()
-    
+
     // Load cart data from route
     loadCartData()
-    
+
     // Pre-fill contact form with user data
     newContactForm.value.email = user.email || ''
     newContactForm.value.phone = user.phone || ''
@@ -540,7 +540,7 @@ const canProceedToPayment = computed(() => {
   if (checkoutState.value.selectedAddress !== null) {
     return true
   }
-  
+
   if (checkoutState.value.useNewAddress) {
     return (
       newAddressForm.value.address_line_1.trim() &&
@@ -548,7 +548,7 @@ const canProceedToPayment = computed(() => {
       newAddressForm.value.postal_code.trim()
     )
   }
-  
+
   return false
 })
 
@@ -598,7 +598,7 @@ const handleSubmit = async (event) => {
   // Handle payment processing and order creation
   try {
     loading.value.creatingOrder = true
-    
+
     // 1. Prepare order data
     const orderDataToSubmit = {
       user: getCurrentUserId(),
@@ -634,7 +634,7 @@ const handleSubmit = async (event) => {
     // 4. Redirect to order confirmation page
     alert('Order placed successfully!')
     router.push(`/order-confirmation?orderId=${createdOrder._id}`)
-    
+
   } catch (error) {
     console.error('Payment/Order creation failed:', error)
     alert(`Order failed: ${error.message}`)
@@ -783,7 +783,7 @@ const returnToCart = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div class="mt-4 text-center">
                     <button
                       type="button"
@@ -820,7 +820,7 @@ const returnToCart = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div class="mt-4 text-center">
                     <button
                       type="button"
@@ -865,15 +865,15 @@ const returnToCart = () => {
                 <h3 class="text-lg font-[500] text-gray-800 mb-4">Select Shipping Address</h3>
 
                 <!-- No selection message -->
-                <div 
-                  v-if="!checkoutState.selectedAddress" 
+                <div
+                  v-if="!checkoutState.selectedAddress"
                   class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg"
                 >
                   <p class="text-yellow-700 text-sm flex items-center">
                     Please select a shipping address to continue
                   </p>
                 </div>
-              
+
                 <!-- Display all addresses in a grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-[10px]">
                   <div
@@ -984,7 +984,7 @@ const returnToCart = () => {
                       required
                     />
                   </div>
-                  
+
                   <div class="form-group">
                     <label class="block text-sm font-medium text-gray-700 mb-2">State/Region</label>
                     <input

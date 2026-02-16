@@ -13,7 +13,7 @@ const isFetchingUser = ref(false)
 const formErrors = ref({})
 
 // Base URL
-const BASE_URL = 'http://localhost:5000/users'
+const BASE_URL = 'http://localhost:5050/users'
 
 // Use local reactive state for editing
 const editingUser = ref({
@@ -33,7 +33,7 @@ const getCurrentUserId = () => {
   // Try props first
   if (props.user?._id) return props.user._id
   if (props.user?.id) return props.user.id
-  
+
   // Check localStorage/sessionStorage for user data
   const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user')
   if (storedUser) {
@@ -46,7 +46,7 @@ const getCurrentUserId = () => {
       console.error('Error parsing stored user data:', e)
     }
   }
-  
+
   console.error('No user ID found in storage')
   return null
 }
@@ -70,7 +70,7 @@ const getCurrentUserFromStorage = () => {
 const fetchCurrentUser = async () => {
   const userId = getCurrentUserId()
   console.log('Fetching user with ID:', userId) // Debug log
-  
+
   if (!userId) {
     console.error('No user ID found')
     // Try to use stored user data directly
@@ -117,7 +117,7 @@ const fetchCurrentUser = async () => {
 // Initialize user data - IMPROVED
 const initializeUserData = (userData) => {
   console.log('Initializing user data with:', userData) // Debug log
-  
+
   // Handle different user data structures
   const data = {
     firstname: userData.firstname || userData.firstName || '',
@@ -129,9 +129,9 @@ const initializeUserData = (userData) => {
     // Include the ID for reference
     _id: userData._id || userData.id
   }
-  
+
   console.log('Processed user data:', data) // Debug log
-  
+
   editingUser.value = { ...data }
   originalUser.value = { ...data }
 }
@@ -158,32 +158,32 @@ onMounted(() => {
 // Form validation
 const validateForm = () => {
   const errors = {}
-  
+
   if (!editingUser.value.firstname?.trim()) {
     errors.firstname = 'First name is required'
   }
-  
+
   if (!editingUser.value.lastname?.trim()) {
     errors.lastname = 'Last name is required'
   }
-  
+
   if (!editingUser.value.username?.trim()) {
     errors.username = 'Username is required'
   } else if (!/^[a-zA-Z0-9._]{3,20}$/.test(editingUser.value.username)) {
     errors.username = 'Username must be 3-20 characters (letters, numbers, dots, underscores)'
   }
-  
+
   if (!editingUser.value.email?.trim()) {
     errors.email = 'Email is required'
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingUser.value.email)) {
     errors.email = 'Please enter a valid email address'
   }
-  
+
   // Phone validation (optional)
   if (editingUser.value.phone && !/^[\+]?[1-9][\d\s\-\(\)]{8,}$/.test(editingUser.value.phone)) {
     errors.phone = 'Please enter a valid phone number'
   }
-  
+
   formErrors.value = errors
   return Object.keys(errors).length === 0
 }
@@ -199,7 +199,7 @@ const saveChanges = async () => {
   }
 
   isLoading.value = true
-  
+
   try {
     const userId = getCurrentUserId()
     if (!userId) {
@@ -215,7 +215,7 @@ const saveChanges = async () => {
       phone: editingUser.value.phone || null,
       profile_img: editingUser.value.profile_img
     }
-    
+
     // Call the update API
     const response = await fetch(`${BASE_URL}/${userId}`, {
       method: 'PUT',
@@ -231,27 +231,27 @@ const saveChanges = async () => {
     }
 
     const updatedUser = await response.json()
-    
+
     // Update local state
     initializeUserData(updatedUser.user || updatedUser)
-    
+
     // Update stored user data
     const currentStoredUser = getCurrentUserFromStorage()
     if (currentStoredUser) {
-      const updatedStoredUser = { 
-        ...currentStoredUser, 
+      const updatedStoredUser = {
+        ...currentStoredUser,
         ...userData
       }
       localStorage.setItem('user', JSON.stringify(updatedStoredUser))
       sessionStorage.setItem('user', JSON.stringify(updatedStoredUser))
     }
-    
+
     // Emit event to parent component with the updated user data
     emit('save-changes', updatedUser.user || updatedUser) // Make sure this line is present
     isEditing.value = false
-    
+
     alert('Profile updated successfully!')
-    
+
   } catch (error) {
     console.error('Error saving changes:', error)
     alert(`Error updating profile: ${error.message}`)
@@ -319,21 +319,21 @@ const cancelChanges = () => {
 //     }
 
 //     const result = await response.json()
-    
+
 //     // Update local state
 //     editingUser.value.profile_img = 'default-avatar.png'
-    
+
 //     // Update stored user data
 //     const currentStoredUser = getCurrentUserFromStorage()
 //     if (currentStoredUser) {
-//       const updatedStoredUser = { 
-//         ...currentStoredUser, 
+//       const updatedStoredUser = {
+//         ...currentStoredUser,
 //         profile_img: 'default-avatar.png'
 //       }
 //       localStorage.setItem('user', JSON.stringify(updatedStoredUser))
 //       sessionStorage.setItem('user', JSON.stringify(updatedStoredUser))
 //     }
-    
+
 //     alert('Profile image removed successfully!')
 //   } catch (error) {
 //     console.error('Error removing image:', error)
@@ -365,16 +365,16 @@ const handleDelete = async () => {
     }
 
     const result = await response.json()
-    
+
     // Clear stored user data
     localStorage.removeItem('user')
     sessionStorage.removeItem('user')
     localStorage.removeItem('userId')
     sessionStorage.removeItem('userId')
-    
+
     emit('delete-account', result.deletedUserId || userId)
     alert('Account deleted successfully')
-    
+
   } catch (error) {
     console.error('Error deleting account:', error)
     alert(`Error deleting account: ${error.message}`)
@@ -434,10 +434,10 @@ const debugInfo = computed(() => {
 
         <div class="flex items-center space-x-6 pb-4">
           <div class="h-20 w-20 rounded-full bg-gray-200 overflow-hidden relative">
-            <img 
-              :src="editingUser.profile_img" 
-              :alt="displayName" 
-              class="w-full h-full object-cover" 
+            <img
+              :src="editingUser.profile_img"
+              :alt="displayName"
+              class="w-full h-full object-cover"
             />
           </div>
           <div class="upload-btns flex space-x-3 gap-[5px] px-[6px]">
@@ -476,7 +476,7 @@ const debugInfo = computed(() => {
               <input
                 v-if="isEditing"
                 v-model="editingUser.firstname"
-                :class="['w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]', 
+                :class="['w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
                         formErrors.firstname ? 'border-red-500 bg-[#FEE2E2]' : 'border-gray-300 bg-[#E8B6D5]']"
                 placeholder="Enter first name"
               />
@@ -653,7 +653,7 @@ const debugInfo = computed(() => {
     <div v-else class="text-center py-8">
       <p class="text-gray-600 mb-4">No user data available.</p>
       <div class="space-y-2">
-        <button 
+        <button
           @click="fetchCurrentUser"
           class="edit-btn px-4 py-2 rounded-lg hover:bg-[#AA69AF] transition block mx-auto"
         >
@@ -661,7 +661,7 @@ const debugInfo = computed(() => {
         </button>
         <p class="text-xs text-gray-500">Or make sure you're logged in and user data is stored</p>
       </div>
-      
+
       <!-- Debug info (remove in production) -->
       <div class="mt-6 p-4 bg-gray-100 rounded-lg text-left">
         <p class="text-sm font-medium text-gray-700">Debug Info:</p>
@@ -791,11 +791,11 @@ input {
   .user-name {
     grid-template-columns: 1fr;
   }
-  
+
   .actions-btns {
     flex-direction: column;
   }
-  
+
   .actions-btns button {
     width: 100%;
   }

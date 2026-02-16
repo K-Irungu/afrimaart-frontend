@@ -92,7 +92,7 @@ const fetchUserOrders = async () => {
   try {
     ordersLoading.value = true
     const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-    
+
     if (!user.value._id) {
       console.error('No user ID available')
       orders.value = []
@@ -100,7 +100,7 @@ const fetchUserOrders = async () => {
       return
     }
 
-    const response = await fetch(`http://localhost:5000/orders/user/${user.value._id}`, {
+    const response = await fetch(`http://localhost:5050/orders/user/${user.value._id}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -126,7 +126,7 @@ const fetchUserOrders = async () => {
 // Handle profile updates from child component
 const handleProfileUpdate = (updatedUser) => {
   console.log('Profile updated:', updatedUser)
-  
+
   // Update the reactive user object
   user.value = {
     ...user.value,
@@ -135,7 +135,7 @@ const handleProfileUpdate = (updatedUser) => {
     email: updatedUser.email || '',
     img: updatedUser.profile_img || updatedUser.profileImg || updatedUser.image || user.value.img
   }
-  
+
   // Also update localStorage/sessionStorage
   const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user')
   if (storedUser) {
@@ -154,7 +154,7 @@ const handleProfileUpdate = (updatedUser) => {
       console.error('Error updating stored user:', e)
     }
   }
-  
+
   // Force reload user data for sidebar
   loadUserForSidebar()
 }
@@ -200,7 +200,7 @@ const handleSignOut = () => {
   sessionStorage.removeItem('userId')
   localStorage.removeItem('token')
   sessionStorage.removeItem('token')
-  
+
   // Redirect to login page or home page
   window.location.href = '/'
 }

@@ -8,7 +8,7 @@ import DealsProductGrid from '@/components/DealsComponets/DealsProductGrid.vue'
 import Footer from '@/components/Footer.vue'
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:5000/products'
+const API_BASE_URL = 'http://localhost:5050/products'
 
 // Products from API
 const allProducts = ref([])
@@ -42,13 +42,13 @@ const fetchProducts = async () => {
     error.value = null
 
     const response = await axios.get(API_BASE_URL)
-    
+
     if (response.data && Array.isArray(response.data)) {
       allProducts.value = transformProductData(response.data)
     } else {
       allProducts.value = []
     }
-    
+
   } catch (err) {
     console.error("Error fetching products:", err)
     error.value = err.message
@@ -102,7 +102,7 @@ const filteredProducts = computed(() => {
 
     // Filter by price range
     const productPrice = product.price
-    if (productPrice < currentFilters.value.priceRange[0] || 
+    if (productPrice < currentFilters.value.priceRange[0] ||
         productPrice > currentFilters.value.priceRange[1]) {
       return false
     }
@@ -140,7 +140,7 @@ const sortedProducts = computed(() => {
       sorted.sort((a, b) => b.discount_percentage - a.discount_percentage)
       break
   }
-  
+
   return sorted
 })
 
@@ -168,7 +168,7 @@ const filterStats = computed(() => {
   const filtered = filteredProducts.value.length
   const withDiscounts = allProducts.value.filter(p => p.discount_percentage > 0).length
   const withDealTags = allProducts.value.filter(p => p.deal_tag).length
-  
+
   return { total, filtered, withDiscounts, withDealTags }
 })
 </script>
@@ -184,7 +184,7 @@ const filterStats = computed(() => {
         <div class="">
           <h1 class="banner-ttl text-3xl font-bold mb-1">Save big on top products</h1>
           <p class="text-gray-400">
-            {{ filterStats.withDiscounts }} products with discounts • 
+            {{ filterStats.withDiscounts }} products with discounts •
             {{ filterStats.withDealTags }} special deals available
           </p>
         </div>
@@ -211,7 +211,7 @@ const filterStats = computed(() => {
     <div v-else-if="error" class="text-center py-12">
       <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
         <p class="text-red-700 mb-4">Error loading deals: {{ error }}</p>
-        <button 
+        <button
           @click="fetchProducts"
           class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
         >
@@ -227,8 +227,8 @@ const filterStats = computed(() => {
 
       <!-- Main content -->
       <main class="flex-1 py-8">
-        <DealsProductGrid 
-          :products="paginatedProducts" 
+        <DealsProductGrid
+          :products="paginatedProducts"
           :currentPage="currentPage"
           :totalPages="totalPages"
           :totalProducts="sortedProducts.length"

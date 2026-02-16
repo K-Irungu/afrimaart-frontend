@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
-const BASE_URL = 'http://localhost:5000/addresses';
+const BASE_URL = 'http://localhost:5050/addresses';
 
 const addresses = ref([])
 const loading = ref(false)
@@ -37,7 +37,7 @@ const fetchAddresses = async () => {
   loading.value = true
   try {
     const userId = getCurrentUserId()
-    
+
     if (!userId) {
       throw new Error('No user ID found. Please log in again.')
     }
@@ -55,7 +55,7 @@ const fetchAddresses = async () => {
 
     console.log('Response status:', response.status)
     console.log('Response headers:', response.headers)
-    
+
     if (!response.ok) {
       const errorText = await response.text()
       console.error('Error response text:', errorText)
@@ -67,7 +67,7 @@ const fetchAddresses = async () => {
     console.log('Success:', result.success)
     console.log('Addresses array:', result.addresses)
     console.log('Number of addresses:', result.addresses ? result.addresses.length : 0)
-    
+
     if (result.success) {
       addresses.value = result.addresses || []
       console.log('Final addresses array:', addresses.value)
@@ -76,11 +76,11 @@ const fetchAddresses = async () => {
     }
   } catch (error) {
     console.error('❌ Error fetching addresses:', error)
-    
+
     // Use mock data as fallback
     console.log('🔄 Using mock data as fallback...')
     addresses.value = getMockAddresses()
-    
+
     alert(`Error loading addresses: ${error.message}`)
   } finally {
     loading.value = false
@@ -121,19 +121,19 @@ const getMockAddresses = () => {
 // Form validation
 const validateForm = () => {
   const errors = {}
-  
+
   if (!newAddressForm.value.address_line_1?.trim()) {
     errors.address_line_1 = 'Address line 1 is required'
   }
-  
+
   if (!newAddressForm.value.city?.trim()) {
     errors.city = 'City is required'
   }
-  
+
   if (!newAddressForm.value.postal_code?.trim()) {
     errors.postal_code = 'Postal code is required'
   }
-  
+
   formErrors.value = errors
   return Object.keys(errors).length === 0
 }
@@ -147,7 +147,7 @@ const addAddress = async () => {
   loading.value = true
   try {
     const userId = getCurrentUserId()
-    
+
     if (!userId) {
       throw new Error('No user ID found. Please log in again.')
     }
@@ -167,7 +167,7 @@ const addAddress = async () => {
     })
 
     console.log('Add address response status:', response.status)
-    
+
     if (!response.ok) {
       const errorData = await response.json()
       throw new Error(errorData.message || 'Failed to create address')
@@ -175,7 +175,7 @@ const addAddress = async () => {
 
     const result = await response.json()
     console.log('Add address result:', result)
-    
+
     if (result.success) {
       addresses.value.push(result.address)
       isAddingNewAddress.value = false
@@ -186,7 +186,7 @@ const addAddress = async () => {
     }
   } catch (error) {
     console.error('Error adding address:', error)
-    
+
     // Fallback: add to local state
     const newAddress = {
       _id: Date.now().toString(),
@@ -194,7 +194,7 @@ const addAddress = async () => {
       ...newAddressForm.value,
       isDefault: addresses.value.length === 0
     }
-    
+
     addresses.value.push(newAddress)
     isAddingNewAddress.value = false
     resetNewAddressForm()
@@ -208,7 +208,7 @@ const addAddress = async () => {
 const setAsDefault = async (addressId) => {
   try {
     const userId = getCurrentUserId()
-    
+
     if (!userId) {
       throw new Error('No user ID found. Please log in again.')
     }
@@ -223,7 +223,7 @@ const setAsDefault = async (addressId) => {
     })
 
     console.log('Set default response status:', response.status)
-    
+
     if (!response.ok) {
       const errorText = await response.text()
       console.error('Error response text:', errorText)
@@ -239,7 +239,7 @@ const setAsDefault = async (addressId) => {
 
     const result = await response.json()
     console.log('Set default result:', result)
-    
+
     if (result.success) {
       // Update local state
       addresses.value = addresses.value.map(addr => ({
@@ -264,7 +264,7 @@ const removeAddress = async (addressId, addressType) => {
 
   try {
     const userId = getCurrentUserId()
-    
+
     if (!userId) {
       throw new Error('No user ID found. Please log in again.')
     }
@@ -278,7 +278,7 @@ const removeAddress = async (addressId, addressType) => {
     })
 
     console.log('Delete response status:', response.status)
-    
+
     if (!response.ok) {
       const errorData = await response.json()
       throw new Error(errorData.message || 'Failed to delete address')
@@ -325,7 +325,7 @@ const formatAddress = (address) => {
     address.postal_code,
     address.country
   ].filter(part => part && part.trim())
-  
+
   return parts.join(', ')
 }
 

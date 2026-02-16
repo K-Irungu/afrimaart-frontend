@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import Navbar from '../Navbar.vue';
 
 // API base URL - adjust according to your backend
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'http://localhost:5050';
 
 // Reactive data
 const orders = ref([]);
@@ -82,13 +82,13 @@ async function updateOrderStatus() {
     }
 
     const updatedOrder = await response.json();
-    
+
     // Update the order in the local state
     const index = orders.value.findIndex(o => o._id === selectedOrder.value._id);
     if (index !== -1) {
       orders.value[index] = updatedOrder;
     }
-    
+
     closeModals();
   } catch (err) {
     error.value = err.message;
@@ -117,19 +117,19 @@ function goToPage(page) {
 const pageNumbers = computed(() => {
   const pages = [];
   const maxVisiblePages = 5;
-  
+
   let startPage = Math.max(1, currentPage.value - Math.floor(maxVisiblePages / 2));
   let endPage = Math.min(totalPages.value, startPage + maxVisiblePages - 1);
-  
+
   // Adjust start page if we're near the end
   if (endPage - startPage + 1 < maxVisiblePages) {
     startPage = Math.max(1, endPage - maxVisiblePages + 1);
   }
-  
+
   for (let i = startPage; i <= endPage; i++) {
     pages.push(i);
   }
-  
+
   return pages;
 });
 
@@ -250,10 +250,10 @@ onMounted(() => {
             class="refresh-btn"
             :disabled="loading"
           >
-            <font-awesome-icon 
-              :icon="['fas', 'rotate']" 
-              class="w-4 h-4" 
-              :class="{ 'animate-spin': loading }" 
+            <font-awesome-icon
+              :icon="['fas', 'rotate']"
+              class="w-4 h-4"
+              :class="{ 'animate-spin': loading }"
             />
             <span>Refresh</span>
           </button>
@@ -311,9 +311,9 @@ onMounted(() => {
               </tr>
             </thead>
             <tbody>
-              <tr 
-                v-for="order in paginatedOrders" 
-                :key="order._id" 
+              <tr
+                v-for="order in paginatedOrders"
+                :key="order._id"
                 class="table-row"
               >
                 <td class="table-cell font-mono text-sm text-gray-600">
@@ -394,7 +394,7 @@ onMounted(() => {
           <div class="pagination-info">
             {{ pageInfo }}
           </div>
-          
+
           <div class="pagination-buttons">
             <!-- Previous Button -->
             <button
@@ -416,7 +416,7 @@ onMounted(() => {
               >
                 {{ page }}
               </button>
-              
+
               <!-- Ellipsis for many pages -->
               <span v-if="pageNumbers[pageNumbers.length - 1] < totalPages" class="page-ellipsis">
                 ...
@@ -506,8 +506,8 @@ onMounted(() => {
                     {{ safeGet(selectedOrder, 'shipping_address.address_line_2') }}
                   </p>
                   <p class="address-line">
-                    {{ safeGet(selectedOrder, 'shipping_address.city') }}, 
-                    {{ safeGet(selectedOrder, 'shipping_address.state_region') }} 
+                    {{ safeGet(selectedOrder, 'shipping_address.city') }},
+                    {{ safeGet(selectedOrder, 'shipping_address.state_region') }}
                     {{ safeGet(selectedOrder, 'shipping_address.postal_code') }}
                   </p>
                   <p class="address-line">{{ safeGet(selectedOrder, 'shipping_address.country') }}</p>
@@ -519,7 +519,7 @@ onMounted(() => {
                 <div class="payment-card">
                   <p class="payment-method">{{ safeGet(selectedOrder, 'payment_details.type') }}</p>
                   <p v-if="safeGet(selectedOrder, 'payment_details.last4') !== 'N/A'" class="payment-details">
-                    **** {{ safeGet(selectedOrder, 'payment_details.last4') }} 
+                    **** {{ safeGet(selectedOrder, 'payment_details.last4') }}
                     ({{ safeGet(selectedOrder, 'payment_details.brand') }})
                   </p>
                   <p v-if="safeGet(selectedOrder, 'payment_details.email') !== 'N/A'" class="payment-details">
@@ -533,13 +533,13 @@ onMounted(() => {
             <div class="order-items-section">
               <h3 class="section-title">Order Items ({{ selectedOrder.items ? selectedOrder.items.length : 0 }})</h3>
               <div class="items-container">
-                <div 
-                  v-for="item in selectedOrder.items" 
+                <div
+                  v-for="item in selectedOrder.items"
                   :key="item.product?._id || item._id"
                   class="order-item"
                 >
-                  <img 
-                    :src="safeGet(item, 'product.product_image_url', 'https://via.placeholder.com/60x60?text=No+Image')" 
+                  <img
+                    :src="safeGet(item, 'product.product_image_url', 'https://via.placeholder.com/60x60?text=No+Image')"
                     :alt="safeGet(item, 'product.name')"
                     class="item-image"
                   >
@@ -588,9 +588,9 @@ onMounted(() => {
           <form @submit.prevent="updateOrderStatus" class="form-content">
             <div class="form-group">
               <label class="form-label">Order Status</label>
-              <select 
-                v-model="statusForm.status" 
-                class="form-input" 
+              <select
+                v-model="statusForm.status"
+                class="form-input"
                 required
                 :disabled="loading"
               >
@@ -607,23 +607,23 @@ onMounted(() => {
 
             <!-- Form Buttons -->
             <div class="form-buttons">
-              <button 
-                type="button" 
-                @click="closeModals" 
+              <button
+                type="button"
+                @click="closeModals"
                 class="cancel-btn"
                 :disabled="loading"
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 class="submit-btn"
                 :disabled="loading"
               >
-                <font-awesome-icon 
-                  :icon="['fas', 'check']" 
-                  class="w-4 h-4" 
-                  :class="{ 'animate-spin': loading }" 
+                <font-awesome-icon
+                  :icon="['fas', 'check']"
+                  class="w-4 h-4"
+                  :class="{ 'animate-spin': loading }"
                 />
                 <span>{{ loading ? 'Updating...' : 'Update Status' }}</span>
               </button>
@@ -1355,11 +1355,11 @@ onMounted(() => {
     gap: 1rem;
     align-items: stretch;
   }
-  
+
   .pagination-buttons {
     justify-content: center;
   }
-  
+
   .items-per-page {
     justify-content: center;
   }
@@ -1369,11 +1369,11 @@ onMounted(() => {
   .page-numbers {
     display: none;
   }
-  
+
   .pagination-btn span {
     display: none;
   }
-  
+
   .pagination-btn {
     padding: 0.5rem;
   }

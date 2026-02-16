@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
-const BASE_URL = 'http://localhost:5000/payment-methods';
+const BASE_URL = 'http://localhost:5050/payment-methods';
 
 const paymentMethods = ref([])
 const loading = ref(true)
@@ -45,7 +45,7 @@ const fetchPaymentMethods = async () => {
   loading.value = true
   try {
     const userId = getCurrentUserId()
-    
+
     if (!userId) {
       throw new Error('No user ID found. Please log in again.')
     }
@@ -58,18 +58,18 @@ const fetchPaymentMethods = async () => {
     })
 
     console.log('Payment methods response status:', response.status)
-    
+
     if (!response.ok) {
       throw new Error('Failed to fetch payment methods')
     }
 
     const methods = await response.json()
     console.log('Payment methods result:', methods)
-    
+
     paymentMethods.value = methods
   } catch (error) {
     console.error('Error fetching payment methods:', error)
-    
+
     // Use mock data as fallback
     console.log('Using mock data as fallback...')
     paymentMethods.value = getMockPaymentMethods()
@@ -105,7 +105,7 @@ const getMockPaymentMethods = () => {
 const addNewPayment = async () => {
   try {
     const userId = getCurrentUserId()
-    
+
     if (!userId) {
       throw new Error('No user ID found. Please log in again.')
     }
@@ -153,7 +153,7 @@ const addNewPayment = async () => {
     })
 
     console.log('Add payment response status:', response.status)
-    
+
     if (!response.ok) {
       const errorData = await response.json()
       throw new Error(errorData.message || 'Failed to create payment method')
@@ -161,15 +161,15 @@ const addNewPayment = async () => {
 
     const result = await response.json()
     console.log('Add payment result:', result)
-    
+
     paymentMethods.value.push(result)
     isAddingNewPayment.value = false
     resetNewPaymentForm()
     alert('Payment method added successfully!')
-    
+
   } catch (error) {
     console.error('Error adding payment method:', error)
-    
+
     // Fallback: add to local state
     const newPayment = {
       _id: Date.now().toString(),
@@ -182,7 +182,7 @@ const addNewPayment = async () => {
       paypal_email: newPaymentForm.value.paypalEmail,
       isDefault: newPaymentForm.value.isDefault,
     }
-    
+
     paymentMethods.value.push(newPayment)
     isAddingNewPayment.value = false
     resetNewPaymentForm()
@@ -205,12 +205,12 @@ const setAsDefault = async (paymentId) => {
     }
 
     const result = await response.json()
-    
+
     // Update local state
     paymentMethods.value.forEach((payment) => {
       payment.isDefault = payment._id === paymentId
     })
-    
+
     alert('Default payment method updated successfully!')
   } catch (error) {
     console.error('Error setting default payment method:', error)

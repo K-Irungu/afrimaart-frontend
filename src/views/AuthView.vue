@@ -8,8 +8,8 @@ import defaultProfile from '@/assets/images/default-profile.png'
 const router = useRouter()
 
 // Base URLs for different roles
-const API_BASE_URL = 'http://localhost:5000/users'
-const ADMIN_BASE_URL = 'http://localhost:5000/admin'
+const API_BASE_URL = 'http://localhost:5050/users'
+const ADMIN_BASE_URL = 'http://localhost:5050/admin'
 
 // Toggle between login and signup
 const isLogin = ref(true)
@@ -70,7 +70,7 @@ const validateForm = () => {
     // Signup validation - using correct field names
     if (!signupForm.value.firstname) errors.value.firstname = 'First name is required'
     if (!signupForm.value.lastname) errors.value.lastname = 'Last name is required'
-    
+
     // Only require username for customer role
     if (signupForm.value.role === 'customer' && !signupForm.value.username) {
       errors.value.username = 'Username is required'
@@ -103,11 +103,11 @@ const loginUser = async (userData, isAdmin = false) => {
     const url = isAdmin ? `${ADMIN_BASE_URL}/login` : `${API_BASE_URL}/login`
     console.log('Sending login request to:', url)
     console.log('Login data:', userData)
-    
+
     const response = await axios.post(url, userData)
     console.log('Full login response:', response)
     console.log('Login response data:', response.data)
-    
+
     return response.data
   } catch (error) {
     console.error('Login error details:', {
@@ -124,11 +124,11 @@ const registerUser = async (userData, isAdmin = false) => {
     const url = isAdmin ? `${ADMIN_BASE_URL}/register` : API_BASE_URL
     console.log('Sending registration request to:', url)
     console.log('Registration data:', userData)
-    
+
     const response = await axios.post(url, userData)
     console.log('Full registration response:', response)
     console.log('Registration response data:', response.data)
-    
+
     return response.data
   } catch (error) {
     console.error('Registration error details:', {
@@ -155,11 +155,11 @@ const checkUserExists = async (email, isAdmin = false) => {
 // Helper function to safely extract user data
 const extractUserData = (response, isAdmin = false) => {
   console.log('Extracting user data from:', response)
-  
+
   // Handle different response structures
   let userData = null
   let token = null
-  
+
   if (response.user) {
     userData = response.user
     token = response.token
@@ -175,27 +175,27 @@ const extractUserData = (response, isAdmin = false) => {
     userData = response
     token = response.token
   }
-  
+
   console.log('Extracted user data:', userData)
   console.log('Extracted token:', token)
-  
+
   // Validate that we have the required fields
   if (!userData) {
     throw new Error('No user data found in response')
   }
-  
+
   // Check for required fields with fallbacks
   const userId = userData._id || userData.id
   if (!userId) {
     console.error('User data missing ID:', userData)
     throw new Error('User data is missing required ID field')
   }
-  
+
   if (!userData.email) {
     console.error('User data missing email:', userData)
     throw new Error('User data is missing required email field')
   }
-  
+
   return {
     userData,
     token
@@ -205,12 +205,12 @@ const extractUserData = (response, isAdmin = false) => {
 // Form submission
 const handleSubmit = async () => {
   console.log('Form submitted, isLogin:', isLogin.value)
-  
+
   if (!validateForm()) {
     console.log('Form validation failed')
     return
   }
-  
+
   isLoading.value = true
   errors.value = {} // Clear previous errors
 
@@ -218,18 +218,18 @@ const handleSubmit = async () => {
     if (isLogin.value) {
       // Login - Determine if it's admin login
       const isAdminLogin = loginForm.value.email.includes('admin') || loginForm.value.email.includes('@admin.')
-      
+
       const userData = {
         email: loginForm.value.email,
         password: loginForm.value.password,
       }
-      
+
       console.log('Attempting login...')
       const response = await loginUser(userData, isAdminLogin)
 
       // Extract user data safely
       const { userData: userDataResponse, token } = extractUserData(response, isAdminLogin)
-      
+
       console.log('Login successful, user data:', userDataResponse)
 
       // Create user session
@@ -243,11 +243,11 @@ const handleSubmit = async () => {
         loginTime: new Date().toISOString(),
         token: token
       }
-      
+
       console.log('User session to store:', userSession)
       localStorage.setItem('user', JSON.stringify(userSession))
       console.log('Login successful, redirecting...')
-      
+
       // Redirect based on role
       if (userSession.role === 'admin') {
         router.push('/adminDashboard')
@@ -258,7 +258,7 @@ const handleSubmit = async () => {
       // Signup
       console.log('Starting signup process...')
       const isAdminSignup = signupForm.value.role === 'admin'
-      
+
       const existingUser = await checkUserExists(signupForm.value.email, isAdminSignup)
       if (existingUser) {
         throw new Error('User with this email already exists')
@@ -267,7 +267,7 @@ const handleSubmit = async () => {
       // Generate username only for customers
       let username = ''
       if (signupForm.value.role === 'customer') {
-        username = signupForm.value.username || 
+        username = signupForm.value.username ||
           `${signupForm.value.firstname.toLowerCase()}${signupForm.value.lastname.toLowerCase()}`
       }
 
@@ -286,7 +286,7 @@ const handleSubmit = async () => {
 
       // Extract user data safely
       const { userData: userDataResponse, token } = extractUserData(response, isAdminSignup)
-      
+
       console.log('Registration successful, user data:', userDataResponse)
 
       // Create user session
@@ -300,11 +300,11 @@ const handleSubmit = async () => {
         signupTime: new Date().toISOString(),
         token: token
       }
-      
+
       console.log('User session to store:', userSession)
       localStorage.setItem('user', JSON.stringify(userSession))
       console.log('Registration successful, redirecting...')
-      
+
       // Redirect based on role
       if (userSession.role === 'admin') {
         router.push('/adminDashboard')
@@ -328,15 +328,15 @@ const showConfirmPassword = ref(false)
 const testBackendResponse = async () => {
   try {
     console.log('Testing backend response structure...')
-    
+
     // Test regular user endpoint
     const userResponse = await axios.get(`${API_BASE_URL}/test`).catch(() => null)
     console.log('User endpoint test:', userResponse?.data)
-    
+
     // Test admin endpoint
     const adminResponse = await axios.get(`${ADMIN_BASE_URL}/test`).catch(() => null)
     console.log('Admin endpoint test:', adminResponse?.data)
-    
+
   } catch (error) {
     console.log('Backend test failed (this is normal):', error.message)
   }
@@ -654,8 +654,8 @@ const testBackendResponse = async () => {
                   </div>
                 </div>
                 <p class="mt-2 text-xs text-gray-500">
-                  {{ signupForm.role === 'admin' 
-                    ? 'Admin accounts use separate API endpoints for enhanced security.' 
+                  {{ signupForm.role === 'admin'
+                    ? 'Admin accounts use separate API endpoints for enhanced security.'
                     : 'Customer accounts can access regular user features.' }}
                 </p>
               </div>

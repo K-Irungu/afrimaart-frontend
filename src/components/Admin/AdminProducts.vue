@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import Navbar from '../Navbar.vue';
 
 // API base URL
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'http://localhost:5050';
 
 // Reactive data
 const products = ref([]);
@@ -51,19 +51,19 @@ const pageInfo = computed(() => {
 const pageNumbers = computed(() => {
   const pages = [];
   const maxVisiblePages = 5;
-  
+
   let startPage = Math.max(1, currentPage.value - Math.floor(maxVisiblePages / 2));
   let endPage = Math.min(totalPages.value, startPage + maxVisiblePages - 1);
-  
+
   // Adjust start page if we're near the end
   if (endPage - startPage + 1 < maxVisiblePages) {
     startPage = Math.max(1, endPage - maxVisiblePages + 1);
   }
-  
+
   for (let i = startPage; i <= endPage; i++) {
     pages.push(i);
   }
-  
+
   return pages;
 });
 
@@ -108,7 +108,7 @@ function goToPage(page) {
 async function saveProduct() {
   try {
     let response;
-    
+
     if (editingProduct.value) {
       // Update existing product
       response = await fetch(`${API_BASE}/products/${editingProduct.value._id}`, {
@@ -134,7 +134,7 @@ async function saveProduct() {
     }
 
     const savedProduct = await response.json();
-    
+
     if (editingProduct.value) {
       // Update in local state
       const index = products.value.findIndex(p => p._id === editingProduct.value._id);
@@ -146,7 +146,7 @@ async function saveProduct() {
       products.value.push(savedProduct);
       totalItems.value = products.value.length;
     }
-    
+
     showForm.value = false;
     fetchProducts(); // Refresh to get the latest data
   } catch (err) {
@@ -173,7 +173,7 @@ async function deleteProduct(id) {
     // Remove from local state
     products.value = products.value.filter(p => p._id !== id);
     totalItems.value = products.value.length;
-    
+
     // Adjust current page if we deleted the last item on the page
     if (paginatedProducts.value.length === 0 && currentPage.value > 1) {
       currentPage.value--;
@@ -261,7 +261,7 @@ function removeWarranty(key) {
 function openForm(product = null) {
   if (product) {
     editingProduct.value = product;
-    formData.value = { 
+    formData.value = {
       ...product,
       // Ensure numbers are properly formatted
       price: product.price ? parseFloat(product.price) : '',
@@ -274,11 +274,11 @@ function openForm(product = null) {
       specifications: product.specifications || {},
       warranty: product.warranty || {}
     };
-    
+
     // Initialize input fields
     colorsInput.value = product.color ? product.color.join(', ') : '';
     featuresInput.value = product.features ? product.features.join(', ') : '';
-    
+
   } else {
     formData.value = {
       name: '',
@@ -357,10 +357,10 @@ onMounted(() => {
             class="refresh-btn"
             :disabled="loading"
           >
-            <font-awesome-icon 
-              :icon="['fas', 'rotate']" 
-              class="w-4 h-4" 
-              :class="{ 'animate-spin': loading }" 
+            <font-awesome-icon
+              :icon="['fas', 'rotate']"
+              class="w-4 h-4"
+              :class="{ 'animate-spin': loading }"
             />
             <span>Refresh</span>
           </button>
@@ -425,14 +425,14 @@ onMounted(() => {
               </tr>
             </thead>
             <tbody>
-              <tr 
-                v-for="product in paginatedProducts" 
-                :key="product._id" 
+              <tr
+                v-for="product in paginatedProducts"
+                :key="product._id"
                 class="table-row"
               >
                 <td class="table-cell">
-                  <img 
-                    :src="product.product_image_url" 
+                  <img
+                    :src="product.product_image_url"
                     :alt="product.name"
                     class="product-image"
                   >
@@ -498,7 +498,7 @@ onMounted(() => {
           <div class="pagination-info">
             {{ pageInfo }}
           </div>
-          
+
           <div class="pagination-buttons">
             <!-- Previous Button -->
             <button
@@ -520,7 +520,7 @@ onMounted(() => {
               >
                 {{ page }}
               </button>
-              
+
               <!-- Ellipsis for many pages -->
               <span v-if="pageNumbers[pageNumbers.length - 1] < totalPages" class="page-ellipsis">
                 ...
@@ -667,9 +667,9 @@ onMounted(() => {
               <div class="specs-section">
                 <h4 class="section-title">Specifications</h4>
                 <div class="specs-container">
-                  <div 
-                    v-for="(val, key) in selectedProduct.specifications" 
-                    :key="key" 
+                  <div
+                    v-for="(val, key) in selectedProduct.specifications"
+                    :key="key"
                     class="spec-item"
                   >
                     <span class="spec-key">{{ key }}</span>
@@ -721,11 +721,11 @@ onMounted(() => {
               <!-- Name -->
               <div class="form-group">
                 <label class="form-label">Product Name</label>
-                <input 
-                  v-model="formData.name" 
-                  type="text" 
-                  class="form-input" 
-                  required 
+                <input
+                  v-model="formData.name"
+                  type="text"
+                  class="form-input"
+                  required
                   placeholder="Enter product name"
                 />
               </div>
@@ -733,11 +733,11 @@ onMounted(() => {
               <!-- Brand -->
               <div class="form-group">
                 <label class="form-label">Brand</label>
-                <input 
-                  v-model="formData.brand" 
-                  type="text" 
-                  class="form-input" 
-                  required 
+                <input
+                  v-model="formData.brand"
+                  type="text"
+                  class="form-input"
+                  required
                   placeholder="Enter brand name"
                 />
               </div>
@@ -748,12 +748,12 @@ onMounted(() => {
               <!-- Price -->
               <div class="form-group">
                 <label class="form-label">Price (KES)</label>
-                <input 
-                  v-model="formData.price" 
-                  type="number" 
-                  step="0.01" 
-                  class="form-input" 
-                  required 
+                <input
+                  v-model="formData.price"
+                  type="number"
+                  step="0.01"
+                  class="form-input"
+                  required
                   placeholder="0.00"
                 />
               </div>
@@ -761,12 +761,12 @@ onMounted(() => {
               <!-- Discount -->
               <div class="form-group">
                 <label class="form-label">Discount %</label>
-                <input 
-                  v-model="formData.discount_percentage" 
-                  type="number" 
-                  min="0" 
-                  max="100" 
-                  class="form-input" 
+                <input
+                  v-model="formData.discount_percentage"
+                  type="number"
+                  min="0"
+                  max="100"
+                  class="form-input"
                   placeholder="0"
                 />
               </div>
@@ -774,11 +774,11 @@ onMounted(() => {
               <!-- Quantity -->
               <div class="form-group">
                 <label class="form-label">Quantity</label>
-                <input 
-                  v-model="formData.qty" 
-                  type="number" 
-                  min="0" 
-                  class="form-input" 
+                <input
+                  v-model="formData.qty"
+                  type="number"
+                  min="0"
+                  class="form-input"
                   placeholder="0"
                 />
               </div>
@@ -789,9 +789,9 @@ onMounted(() => {
               <!-- Category -->
               <div class="form-group">
                 <label class="form-label">Category</label>
-                <select 
-                  v-model="formData.category" 
-                  class="form-input" 
+                <select
+                  v-model="formData.category"
+                  class="form-input"
                   required
                 >
                   <option disabled value="">Select Category</option>
@@ -810,8 +810,8 @@ onMounted(() => {
               <!-- Deal Tag -->
               <div class="form-group">
                 <label class="form-label">Deal Tag</label>
-                <select 
-                  v-model="formData.deal_tag" 
+                <select
+                  v-model="formData.deal_tag"
                   class="form-input"
                 >
                   <option :value="null">No Deal Tag</option>
@@ -826,11 +826,11 @@ onMounted(() => {
             <!-- Description -->
             <div class="form-group">
               <label class="form-label">Description</label>
-              <textarea 
-                v-model="formData.description" 
-                rows="3" 
-                class="form-textarea" 
-                required 
+              <textarea
+                v-model="formData.description"
+                rows="3"
+                class="form-textarea"
+                required
                 placeholder="Enter product description"
               ></textarea>
             </div>
@@ -838,10 +838,10 @@ onMounted(() => {
             <!-- Colors - Array of strings -->
             <div class="form-group">
               <label class="form-label">Colors (comma-separated)</label>
-              <input 
-                v-model="colorsInput" 
-                type="text" 
-                class="form-input" 
+              <input
+                v-model="colorsInput"
+                type="text"
+                class="form-input"
                 placeholder="e.g., Red, Blue, Green, Black"
                 @input="updateColors"
               />
@@ -851,10 +851,10 @@ onMounted(() => {
             <!-- Features - Array of strings -->
             <div class="form-group">
               <label class="form-label">Features (comma-separated)</label>
-              <input 
-                v-model="featuresInput" 
-                type="text" 
-                class="form-input" 
+              <input
+                v-model="featuresInput"
+                type="text"
+                class="form-input"
                 placeholder="e.g., Wireless, Bluetooth, Waterproof, Fast Charging"
                 @input="updateFeatures"
               />
@@ -867,19 +867,19 @@ onMounted(() => {
               <div class="form-grid">
                 <div class="form-group">
                   <label class="form-label">Specification Key</label>
-                  <input 
-                    v-model="specKey" 
-                    type="text" 
-                    class="form-input" 
+                  <input
+                    v-model="specKey"
+                    type="text"
+                    class="form-input"
                     placeholder="e.g., Weight, Dimensions, Battery"
                   />
                 </div>
                 <div class="form-group">
                   <label class="form-label">Specification Value</label>
-                  <input 
-                    v-model="specValue" 
-                    type="text" 
-                    class="form-input" 
+                  <input
+                    v-model="specValue"
+                    type="text"
+                    class="form-input"
                     placeholder="e.g., 500g, 10x5x2cm, 4000mAh"
                   />
                 </div>
@@ -908,29 +908,29 @@ onMounted(() => {
               <div class="form-grid">
                 <div class="form-group">
                   <label class="form-label">Warranty Period</label>
-                  <input 
-                    v-model="formData.warranty.period" 
-                    type="text" 
-                    class="form-input" 
+                  <input
+                    v-model="formData.warranty.period"
+                    type="text"
+                    class="form-input"
                     placeholder="e.g., 1 year, 2 years, Lifetime"
                   />
                 </div>
                 <div class="form-group">
                   <label class="form-label">Warranty Type</label>
-                  <input 
-                    v-model="formData.warranty.type" 
-                    type="text" 
-                    class="form-input" 
+                  <input
+                    v-model="formData.warranty.type"
+                    type="text"
+                    class="form-input"
                     placeholder="e.g., Manufacturer, Limited, International"
                   />
                 </div>
               </div>
               <div class="form-group">
                 <label class="form-label">Warranty Details</label>
-                <textarea 
-                  v-model="formData.warranty.details" 
-                  rows="2" 
-                  class="form-textarea" 
+                <textarea
+                  v-model="formData.warranty.details"
+                  rows="2"
+                  class="form-textarea"
                   placeholder="Additional warranty information..."
                 ></textarea>
               </div>
@@ -956,19 +956,19 @@ onMounted(() => {
             <!-- Image URL -->
             <div class="form-group">
               <label class="form-label">Image URL</label>
-              <input 
-                v-model="formData.product_image_url" 
-                type="text" 
-                class="form-input" 
+              <input
+                v-model="formData.product_image_url"
+                type="text"
+                class="form-input"
                 placeholder="https://example.com/image.jpg"
               />
             </div>
 
             <!-- Is New Checkbox -->
             <div class="checkbox-group">
-              <input 
-                v-model="formData.is_new" 
-                type="checkbox" 
+              <input
+                v-model="formData.is_new"
+                type="checkbox"
                 class="checkbox-input"
               />
               <label class="checkbox-label">Mark as New Product</label>
@@ -976,22 +976,22 @@ onMounted(() => {
 
             <!-- Form Buttons -->
             <div class="form-buttons">
-              <button 
-                type="button" 
-                @click="showForm = false" 
+              <button
+                type="button"
+                @click="showForm = false"
                 class="cancel-btn"
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 class="submit-btn"
                 :disabled="loading"
               >
-                <font-awesome-icon 
-                  :icon="['fas', 'check']" 
-                  class="w-4 h-4" 
-                  :class="{ 'animate-spin': loading }" 
+                <font-awesome-icon
+                  :icon="['fas', 'check']"
+                  class="w-4 h-4"
+                  :class="{ 'animate-spin': loading }"
                 />
                 <span>{{ loading ? 'Saving...' : (editingProduct ? 'Update Product' : 'Create Product') }}</span>
               </button>
@@ -1934,11 +1934,11 @@ onMounted(() => {
     gap: 1rem;
     align-items: stretch;
   }
-  
+
   .pagination-buttons {
     justify-content: center;
   }
-  
+
   .items-per-page {
     justify-content: center;
   }
@@ -1948,11 +1948,11 @@ onMounted(() => {
   .page-numbers {
     display: none;
   }
-  
+
   .pagination-btn span {
     display: none;
   }
-  
+
   .pagination-btn {
     padding: 0.5rem;
   }

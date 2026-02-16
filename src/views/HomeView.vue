@@ -10,17 +10,17 @@ import Footer from '@/components/Footer.vue'
 import axios from 'axios'
 
 // Base URL for your products API
-const API_BASE_URL = 'http://localhost:5000/products'
+const API_BASE_URL = 'http://localhost:5050/products'
 
 const categories = ref([
-  "All", 
-  "Shoes", 
-  "Clothes", 
-  "Food", 
-  "Electronics", 
-  "Accessories", 
-  "Furniture", 
-  "Home", 
+  "All",
+  "Shoes",
+  "Clothes",
+  "Food",
+  "Electronics",
+  "Accessories",
+  "Furniture",
+  "Home",
   "Sports & Outdoors"
 ])
 
@@ -72,13 +72,13 @@ const fetchProducts = async () => {
 
     const response = await axios.get(API_BASE_URL)
     console.log('Products received:', response.data)
-    
+
     // Check if we got data
     if (response.data && Array.isArray(response.data)) {
       // Transform the data to extract numeric values
       allProducts.value = transformProductData(response.data)
       console.log('Products loaded successfully:', allProducts.value.length)
-      
+
       // Debug: Log first product to see structure
       if (allProducts.value.length > 0) {
         console.log('First product sample (transformed):', allProducts.value[0])
@@ -87,7 +87,7 @@ const fetchProducts = async () => {
       console.error('Invalid response format:', response.data)
       allProducts.value = []
     }
-    
+
   } catch (err) {
     console.error("Error fetching products:", err)
     error.value = err.message
@@ -129,7 +129,7 @@ const getMinRating = (ratingFilter) => {
     case '3+': return 3
     case '2+': return 2
     case '1+': return 1
-    case 'Any': 
+    case 'Any':
     default: return 0
   }
 }
@@ -139,7 +139,7 @@ const filteredProducts = computed(() => {
   if (!allProducts.value.length) {
     return []
   }
-  
+
   const filtered = allProducts.value.filter((product) => {
     // Using already transformed numeric values
     const productPrice = product.price
@@ -159,7 +159,7 @@ const filteredProducts = computed(() => {
       currentFilters.value.brands.includes(productBrand)
 
     // Price filter
-    const priceMatch = 
+    const priceMatch =
       productPrice >= currentFilters.value.priceRange[0] &&
       productPrice <= currentFilters.value.priceRange[1]
 
@@ -167,7 +167,7 @@ const filteredProducts = computed(() => {
     let ratingMatch = true
     if (currentFilters.value.rating !== 'Any') {
       const minRating = getMinRating(currentFilters.value.rating)
-      
+
       // For exact 5-star rating, show only 5-star products
       if (currentFilters.value.rating === '5') {
         ratingMatch = Math.floor(productRating) === 5
@@ -178,10 +178,10 @@ const filteredProducts = computed(() => {
     }
 
     console.log(`Product: ${product.name}, Rating: ${productRating}, Filter: ${currentFilters.value.rating}, Match: ${ratingMatch}`)
-    
+
     return categoryMatch && brandMatch && priceMatch && ratingMatch
   })
-  
+
   console.log(`Filtered ${filtered.length} products with rating filter: ${currentFilters.value.rating}`)
   return filtered
 })
@@ -223,7 +223,7 @@ const sortedProducts = computed(() => {
       })
       break
   }
-  
+
   return sorted
 })
 
@@ -276,10 +276,10 @@ const clearAllFilters = () => {
 
     <div class="main-content flex gap-[20px] w-full max-w-7xl mx-auto px-4 mt-[20px]">
       <!-- Sidebar Filters -->
-      <Sidebar 
-        :categories="availableCategories" 
+      <Sidebar
+        :categories="availableCategories"
         :brands="availableBrands"
-        @update:filters="handleFilterUpdate" 
+        @update:filters="handleFilterUpdate"
       />
 
       <!-- Main content -->
@@ -299,7 +299,7 @@ const clearAllFilters = () => {
         <div v-else-if="error" class="text-center py-12">
           <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
             <p class="text-red-700 mb-4">Error loading products: {{ error }}</p>
-            <button 
+            <button
               @click="fetchProducts"
               class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
@@ -313,7 +313,7 @@ const clearAllFilters = () => {
           <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-md mx-auto">
             <p class="text-yellow-700 text-lg">No products found in the database.</p>
             <p class="text-yellow-600 text-sm mt-2">Check if your backend is running and has products.</p>
-            <button 
+            <button
               @click="fetchProducts"
               class="mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
@@ -325,8 +325,8 @@ const clearAllFilters = () => {
         <!-- Products Grid -->
         <div v-else>
           <!-- Show filtered products -->
-          <ProductGrid 
-            :products="paginatedProducts" 
+          <ProductGrid
+            :products="paginatedProducts"
             :current-page="currentPage"
             :total-pages="totalPages"
             :total-products="sortedProducts.length"
@@ -337,7 +337,7 @@ const clearAllFilters = () => {
             <div class="bg-gray-50 border border-gray-200 rounded-lg p-8 max-w-md mx-auto">
               <p class="text-gray-500 text-lg mb-2">No products match your filters.</p>
               <p class="text-gray-400 text-sm mb-4">Try adjusting your filter criteria.</p>
-              <button 
+              <button
                 @click="clearAllFilters"
                 class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
               >

@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import Navbar from '@/components/Navbar.vue'
 import VueApexCharts from 'vue3-apexcharts'
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'http://localhost:5050';
 
 // Reactive data
 const recentOrders = ref([])
@@ -124,7 +124,7 @@ async function fetchDashboardData() {
 
     // Calculate statistics
     calculateStats(ordersRes, productsRes, usersRes);
-    
+
     // Set recent orders (last 5 orders)
     recentOrders.value = ordersRes
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -146,14 +146,14 @@ async function fetchDashboardData() {
 
 function calculateStats(orders, products, users) {
   console.log('Calculating stats from orders:', orders);
-  
+
   // Calculate total revenue from orders - handle Decimal128 properly
   const totalRevenue = orders.reduce((sum, order) => {
     let amount = 0;
-    
+
     // Debug the order total_amount
     console.log('Order total_amount:', order.total_amount);
-    
+
     if (order.total_amount) {
       // Handle different possible formats of Decimal128
       if (typeof order.total_amount === 'object') {
@@ -170,13 +170,13 @@ function calculateStats(orders, products, users) {
         amount = Number(order.total_amount);
       }
     }
-    
+
     // Check if amount is valid
     if (isNaN(amount)) {
       console.warn('Invalid amount found:', order.total_amount, 'in order:', order._id);
       amount = 0;
     }
-    
+
     console.log('Parsed amount:', amount);
     return sum + amount;
   }, 0);
@@ -185,7 +185,7 @@ function calculateStats(orders, products, users) {
   const totalCustomers = users.filter(user => user.role === 'customer').length;
 
   console.log('Final totalRevenue:', totalRevenue);
-  
+
   stats.value = {
     totalRevenue: totalRevenue,
     totalOrders: orders.length,
@@ -197,12 +197,12 @@ function calculateStats(orders, products, users) {
 function calculateTopProducts(products, orders) {
   // Calculate product sales from order items
   const productSales = {};
-  
+
   orders.forEach(order => {
     order.items?.forEach(item => {
       const productId = item.product?._id || item.product;
       const quantity = item.quantity || 0;
-      
+
       // Handle price_at_purchase Decimal128
       let price = 0;
       if (item.price_at_purchase) {
@@ -214,19 +214,19 @@ function calculateTopProducts(products, orders) {
           price = Number(item.price_at_purchase);
         }
       }
-      
+
       if (isNaN(price)) {
         console.warn('Invalid price found:', item.price_at_purchase, 'in item:', item);
         price = 0;
       }
-      
+
       if (!productSales[productId]) {
         productSales[productId] = {
           quantity: 0,
           revenue: 0
         };
       }
-      
+
       productSales[productId].quantity += quantity;
       productSales[productId].revenue += quantity * price;
     });
@@ -256,23 +256,23 @@ function generateRevenueChartData(orders) {
   const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
-  
+
   // Initialize data structure
   const revenueByDate = {};
   const currentDate = new Date(startDate);
-  
+
   while (currentDate <= endDate) {
     const dateKey = currentDate.toISOString().split('T')[0];
     revenueByDate[dateKey] = 0;
     currentDate.setDate(currentDate.getDate() + 1);
   }
-  
+
   // Calculate revenue per day
   orders.forEach(order => {
     const orderDate = new Date(order.createdAt);
     if (orderDate >= startDate && orderDate <= endDate) {
       const dateKey = orderDate.toISOString().split('T')[0];
-      
+
       // Handle total_amount Decimal128
       let amount = 0;
       if (order.total_amount) {
@@ -284,16 +284,16 @@ function generateRevenueChartData(orders) {
           amount = Number(order.total_amount);
         }
       }
-      
+
       if (!isNaN(amount)) {
         revenueByDate[dateKey] += amount;
       }
     }
   });
-  
+
   // Prepare chart data for ApexCharts
   const chartData = [];
-  
+
   Object.keys(revenueByDate)
     .sort()
     .forEach(date => {
@@ -306,7 +306,7 @@ function generateRevenueChartData(orders) {
         y: revenueByDate[date]
       });
     });
-  
+
   chartSeries.value = [{
     name: 'Revenue',
     data: chartData
@@ -315,7 +315,7 @@ function generateRevenueChartData(orders) {
 
 function getOrderAmount(order) {
   let amount = 0;
-  
+
   if (order.total_amount) {
     if (typeof order.total_amount === 'object' && order.total_amount.$numberDecimal) {
       amount = parseFloat(order.total_amount.$numberDecimal);
@@ -325,12 +325,12 @@ function getOrderAmount(order) {
       amount = Number(order.total_amount);
     }
   }
-  
+
   if (isNaN(amount)) {
     console.warn('Invalid order amount:', order.total_amount, 'in order:', order._id);
     amount = 0;
   }
-  
+
   return formatCurrency(amount);
 }
 
@@ -341,7 +341,7 @@ function handleTimeRangeChange() {
 function formatCurrency(amount) {
   // Ensure amount is a valid number
   const numAmount = typeof amount === 'number' ? amount : parseFloat(amount) || 0;
-  
+
   return new Intl.NumberFormat('en-KE', {
     style: 'currency',
     currency: 'KEs',
@@ -352,7 +352,7 @@ function formatCurrency(amount) {
 
 function formatCompactCurrency(amount) {
   const numAmount = typeof amount === 'number' ? amount : parseFloat(amount) || 0;
-  
+
   if (numAmount >= 1000) {
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
@@ -367,7 +367,7 @@ function formatCompactCurrency(amount) {
 
 function formatCompactNumber(number) {
   const num = typeof number === 'number' ? number : parseFloat(number) || 0;
-  
+
   return new Intl.NumberFormat('en-KE', {
     notation: 'compact',
     maximumFractionDigits: 1
@@ -423,18 +423,18 @@ onMounted(() => {
       <div class="header-section mb-8">
         <h1 class="page-title">Dashboard Overview</h1>
         <p class="page-subtitle">Welcome back! Here's what's happening with your store today.</p>
-        
+
         <!-- Refresh Button -->
         <div class="flex justify-end mb-4">
-          <button 
-            @click="fetchDashboardData" 
+          <button
+            @click="fetchDashboardData"
             class="refresh-btn"
             :disabled="loading"
           >
-            <font-awesome-icon 
-              :icon="['fas', 'rotate']" 
-              class="w-4 h-4" 
-              :class="{ 'animate-spin': loading }" 
+            <font-awesome-icon
+              :icon="['fas', 'rotate']"
+              class="w-4 h-4"
+              :class="{ 'animate-spin': loading }"
             />
             <span>{{ loading ? 'Refreshing...' : 'Refresh Data' }}</span>
           </button>
@@ -525,8 +525,8 @@ onMounted(() => {
         <div class="chart-section">
           <div class="section-header">
             <h2 class="section-title">Revenue Overview</h2>
-            <select 
-              v-model="selectedTimeRange" 
+            <select
+              v-model="selectedTimeRange"
               @change="handleTimeRangeChange"
               class="chart-select"
               :disabled="loading"
@@ -1231,11 +1231,11 @@ onMounted(() => {
   .content-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .bottom-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1245,12 +1245,12 @@ onMounted(() => {
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .dashboard-container {
     width: 95%;
     padding: 1rem;
   }
-  
+
   .page-title {
     font-size: 2rem;
   }
