@@ -8,8 +8,8 @@ import defaultProfile from '@/assets/images/default-profile.png'
 const router = useRouter()
 
 // Base URLs for different roles
-const API_BASE_URL = 'http://localhost:5050/users'
-const ADMIN_BASE_URL = 'http://localhost:5050/admin'
+const API_BASE_URL = 'https://afrimart-backend-5fxf.onrender.com/users'
+const ADMIN_BASE_URL = 'https://afrimart-backend-5fxf.onrender.com/admin'
 
 // Toggle between login and signup
 const isLogin = ref(true)

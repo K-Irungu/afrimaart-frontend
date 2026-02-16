@@ -3,7 +3,8 @@ import { ref, onMounted, computed } from 'vue';
 import Navbar from '../Navbar.vue';
 
 // API base URL
-const API_BASE = 'http://localhost:5050';
+// const API_BASE = 'http://localhost:5050';
+const API_BASE = 'https://afrimart-backend-5fxf.onrender.com';
 
 // Reactive data
 const products = ref([]);

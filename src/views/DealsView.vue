@@ -8,7 +8,7 @@ import DealsProductGrid from '@/components/DealsComponets/DealsProductGrid.vue'
 import Footer from '@/components/Footer.vue'
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:5050/products'
+const API_BASE_URL = 'https://afrimart-backend-5fxf.onrender.com/products'
 
 // Products from API
 const allProducts = ref([])

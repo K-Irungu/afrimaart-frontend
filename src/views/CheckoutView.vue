@@ -9,7 +9,8 @@ const router = useRouter()
 const route = useRoute()
 
 // API endpoints
-const API_BASE = 'http://localhost:5050'
+// const API_BASE = 'http://localhost:5050'
+const API_BASE = 'https://afrimart-backend-5fxf.onrender.com'
 const ADDRESSES_API = `${API_BASE}/addresses`
 const PAYMENT_METHODS_API = `${API_BASE}/payment-methods`
 const ORDERS_API = `${API_BASE}/orders`

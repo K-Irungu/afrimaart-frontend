@@ -11,7 +11,8 @@ const router = useRouter()
 const { addToCart, showSuccessMessage, successMessage } = useCart()
 
 // Base URL for your products API
-const API_BASE_URL = 'http://localhost:5050/products'
+// const API_BASE_URL = 'http://localhost:5050/products'
+const API_BASE_URL = 'https://afrimart-backend-5fxf.onrender.com/products'
 
 // Reactive product data
 const product = ref({})
