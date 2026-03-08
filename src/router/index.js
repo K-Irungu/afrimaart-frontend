@@ -76,6 +76,17 @@ const router = createRouter({
       name: 'adminOrders',
       component: AdminOrders,
     },
+
+
+    // Start of change made by Kevin Irungu
+    {
+      path: '/order-confirmation',
+      name: 'orderConfirmation',
+      component: () => import('@/views/OrderConfirmationView.vue'),
+    },
+    // End of change made by Kevin Irungu
+
+
     {
       // Redirect any unmatched routes to home
       path: '/:pathMatch(.*)*',

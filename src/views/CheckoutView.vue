@@ -107,7 +107,7 @@ const loadCartDataFromStorage = () => {
     const cartStr = localStorage.getItem('cart')
     if (cartStr) {
       const cartItems = JSON.parse(cartStr)
-      const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)
+      const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
 
       orderData.value.subtotal = subtotal
       orderData.value.shipping = 0 // You might want to calculate this
@@ -121,13 +121,25 @@ const loadCartDataFromStorage = () => {
   }
 }
 
+// Start of change by Kevin Irungu - Added computed property for order total with improved decimal handling
 // Computed total
+// const orderTotal = computed(() => {
+//   return orderData.value.subtotal +
+//          orderData.value.shipping +
+//          orderData.value.tax -
+//          orderData.value.discount
+// })
+const parseDecimal = (val) => parseFloat(val?.$numberDecimal ?? val) || 0
+
 const orderTotal = computed(() => {
-  return orderData.value.subtotal +
-         orderData.value.shipping +
-         orderData.value.tax -
-         orderData.value.discount
+  return (
+    parseDecimal(orderData.value.subtotal) +
+    parseDecimal(orderData.value.shipping) +
+    parseDecimal(orderData.value.tax) -
+    parseDecimal(orderData.value.discount)
+  )
 })
+// End of change by Kevin Irungu
 
 // Loading states
 const loading = ref({
@@ -148,11 +160,11 @@ const hasSavedPaymentMethods = computed(() => {
 })
 
 const defaultAddress = computed(() => {
-  return userData.value.addresses.find(addr => addr.isDefault)
+  return userData.value.addresses.find((addr) => addr.isDefault)
 })
 
 const defaultPaymentMethod = computed(() => {
-  return userData.value.paymentMethods.find(pm => pm.isDefault)
+  return userData.value.paymentMethods.find((pm) => pm.isDefault)
 })
 
 const contactEmail = computed(() => {
@@ -233,21 +245,24 @@ const getCartItemsForOrder = () => {
   console.log('Final cart items for order:', cartItems)
 
   // Transform items to match order schema - UPDATED FOR useCart STRUCTURE
-  const transformedItems = cartItems.map(item => {
-    // Extract product ID from useCart structure
-    const productId = item.productId || item._id || item.id || item.product?._id || item.product?.id
+  const transformedItems = cartItems
+    .map((item) => {
+      // Extract product ID from useCart structure
+      const productId =
+        item.productId || item._id || item.id || item.product?._id || item.product?.id
 
-    if (!productId) {
-      console.error('Missing product ID for item:', item)
-      return null
-    }
+      if (!productId) {
+        console.error('Missing product ID for item:', item)
+        return null
+      }
 
-    return {
-      product: productId,
-      quantity: item.quantity || 1,
-      price_at_purchase: item.price || item.product?.price || 0
-    }
-  }).filter(item => item !== null) // Remove any items that failed transformation
+      return {
+        product: productId,
+        quantity: item.quantity || 1,
+        price_at_purchase: item.price || item.product?.price || 0,
+      }
+    })
+    .filter((item) => item !== null) // Remove any items that failed transformation
 
   console.log('Transformed order items:', transformedItems)
 
@@ -344,7 +359,11 @@ const saveNewAddress = async () => {
   }
 
   // Validate required fields
-  if (!newAddressForm.value.address_line_1.trim() || !newAddressForm.value.city.trim() || !newAddressForm.value.postal_code.trim()) {
+  if (
+    !newAddressForm.value.address_line_1.trim() ||
+    !newAddressForm.value.city.trim() ||
+    !newAddressForm.value.postal_code.trim()
+  ) {
     alert('Please fill in all required fields (Address Line 1, City, and Postal Code)')
     return
   }
@@ -358,8 +377,8 @@ const saveNewAddress = async () => {
       },
       body: JSON.stringify({
         userId,
-        ...newAddressForm.value
-      })
+        ...newAddressForm.value,
+      }),
     })
 
     if (!response.ok) {
@@ -412,8 +431,8 @@ const saveNewPayment = async () => {
       },
       body: JSON.stringify({
         user: userId,
-        ...newPaymentForm.value
-      })
+        ...newPaymentForm.value,
+      }),
     })
 
     if (!response.ok) {
@@ -536,7 +555,6 @@ const canProceedToShipping = computed(() => {
   return true
 })
 
-
 const canProceedToPayment = computed(() => {
   if (checkoutState.value.selectedAddress !== null) {
     return true
@@ -562,12 +580,14 @@ const canPlaceOrder = computed(() => {
 
 // Get selected address object
 const getSelectedAddress = computed(() => {
-  return userData.value.addresses.find(addr => addr._id === checkoutState.value.selectedAddress)
+  return userData.value.addresses.find((addr) => addr._id === checkoutState.value.selectedAddress)
 })
 
 // Get selected payment method object
 const getSelectedPaymentMethod = computed(() => {
-  return userData.value.paymentMethods.find(pm => pm._id === checkoutState.value.selectedPaymentMethod)
+  return userData.value.paymentMethods.find(
+    (pm) => pm._id === checkoutState.value.selectedPaymentMethod,
+  )
 })
 
 // Handle form submission - UPDATED WITH ORDER CREATION
@@ -589,7 +609,7 @@ const handleSubmit = async (event) => {
   console.log('Checkout submitted:', {
     contact: {
       email: contactEmail.value,
-      phone: contactPhone.value
+      phone: contactPhone.value,
     },
     address: getSelectedAddress.value,
     paymentMethod: getSelectedPaymentMethod.value,
@@ -604,10 +624,11 @@ const handleSubmit = async (event) => {
     const orderDataToSubmit = {
       user: getCurrentUserId(),
       items: getCartItemsForOrder(),
-      total_amount: orderTotal.value,
+      // total_amount: orderTotal.value,
+      total_amount: parseFloat(orderTotal.value.toFixed(2)), // Ensure total is a proper decimal with 2 places
       shipping_address: checkoutState.value.selectedAddress,
       payment_details: checkoutState.value.selectedPaymentMethod,
-      status: "Pending"
+      status: 'Pending',
     }
 
     console.log('Submitting order:', orderDataToSubmit)
@@ -618,7 +639,7 @@ const handleSubmit = async (event) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(orderDataToSubmit)
+      body: JSON.stringify(orderDataToSubmit),
     })
 
     if (!response.ok) {
@@ -633,9 +654,11 @@ const handleSubmit = async (event) => {
     clearCartAfterOrder()
 
     // 4. Redirect to order confirmation page
-    alert('Order placed successfully!')
-    router.push(`/order-confirmation?orderId=${createdOrder._id}`)
 
+    // Start of change by Kevin Irungu - Redirect to order confirmation page instead of alert
+    // alert('Order placed successfully!')
+    router.push(`/order-confirmation?orderId=${createdOrder._id}`)
+    // End of change by Kevin Irungu
   } catch (error) {
     console.error('Payment/Order creation failed:', error)
     alert(`Order failed: ${error.message}`)
@@ -772,14 +795,22 @@ const returnToCart = () => {
                   <h3 class="text-lg font-[500] text-gray-800 mb-4">Your Account Information</h3>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="form-group">
-                      <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                      <div class="account-contact-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
+                      <label class="block text-sm font-medium text-gray-700 mb-2"
+                        >Email Address</label
+                      >
+                      <div
+                        class="account-contact-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700"
+                      >
                         {{ currentUser?.email || 'No email provided' }}
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                      <div class="account-contact-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
+                      <label class="block text-sm font-medium text-gray-700 mb-2"
+                        >Phone Number</label
+                      >
+                      <div
+                        class="account-contact-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700"
+                      >
                         {{ currentUser?.phone || 'No phone number provided' }}
                       </div>
                     </div>
@@ -798,10 +829,14 @@ const returnToCart = () => {
 
                 <!-- Different Contact Information Form -->
                 <div v-else class="mb-6">
-                  <h3 class="text-lg font-[500] text-gray-800 mb-4">Different Contact Information</h3>
+                  <h3 class="text-lg font-[500] text-gray-800 mb-4">
+                    Different Contact Information
+                  </h3>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="form-group">
-                      <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                      <label class="block text-sm font-medium text-gray-700 mb-2"
+                        >Email Address *</label
+                      >
                       <input
                         v-model="newContactForm.email"
                         type="email"
@@ -811,7 +846,9 @@ const returnToCart = () => {
                       />
                     </div>
                     <div class="form-group">
-                      <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                      <label class="block text-sm font-medium text-gray-700 mb-2"
+                        >Phone Number *</label
+                      >
                       <input
                         v-model="newContactForm.phone"
                         type="tel"
@@ -854,7 +891,9 @@ const returnToCart = () => {
 
               <!-- Loading State -->
               <div v-if="loading.addresses" class="text-center py-8">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-deep-purple mx-auto"></div>
+                <div
+                  class="animate-spin rounded-full h-8 w-8 border-b-2 border-deep-purple mx-auto"
+                ></div>
                 <p class="text-gray-600 mt-2">Loading addresses...</p>
               </div>
 
@@ -898,9 +937,15 @@ const returnToCart = () => {
                       </span>
                     </div>
                     <p class="text-sm text-gray-600">{{ address.address_line_1 }}</p>
-                    <p v-if="address.address_line_2" class="text-sm text-gray-600">{{ address.address_line_2 }}</p>
-                    <p class="text-sm text-gray-600">{{ address.city }}, {{ address.postal_code }}</p>
-                    <p v-if="address.state_region" class="text-sm text-gray-600">{{ address.state_region }}</p>
+                    <p v-if="address.address_line_2" class="text-sm text-gray-600">
+                      {{ address.address_line_2 }}
+                    </p>
+                    <p class="text-sm text-gray-600">
+                      {{ address.city }}, {{ address.postal_code }}
+                    </p>
+                    <p v-if="address.state_region" class="text-sm text-gray-600">
+                      {{ address.state_region }}
+                    </p>
                     <p class="text-sm text-gray-600">{{ address.country }}</p>
                   </div>
                 </div>
@@ -997,7 +1042,9 @@ const returnToCart = () => {
                   </div>
 
                   <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2"
+                      >Postal Code *</label
+                    >
                     <input
                       v-model="newAddressForm.postal_code"
                       type="text"
@@ -1053,7 +1100,9 @@ const returnToCart = () => {
 
               <!-- Loading State -->
               <div v-if="loading.paymentMethods" class="text-center py-8">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-deep-purple mx-auto"></div>
+                <div
+                  class="animate-spin rounded-full h-8 w-8 border-b-2 border-deep-purple mx-auto"
+                ></div>
                 <p class="text-gray-600 mt-2">Loading payment methods...</p>
               </div>
 
@@ -1199,6 +1248,7 @@ const returnToCart = () => {
                 >
                   ← Back to Shipping
                 </button>
+
                 <!-- UPDATED PAYMENT BUTTON WITH LOADING STATE -->
                 <button
                   type="submit"
@@ -1206,13 +1256,33 @@ const returnToCart = () => {
                   class="btn flex items-center px-8 py-4 rounded-[10px] shadow-lg text-lg font-semibold text-[#ffff] bg-deep-purple hover:from-royal-purple hover:to-medium-orchid focus:outline-none focus:ring-4 focus:ring-soft-pink/50 transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span v-if="loading.creatingOrder" class="mr-3">
-                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      class="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                      ></circle>
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                   </span>
                   <span v-else class="mr-3">🔒</span>
-                  {{ loading.creatingOrder ? 'Processing...' : `Pay Ksh.${orderTotal.toFixed(2)}` }}
+
+                  <!-- Start of change by Kevin Irungu - Improved decimal handling for order total -->
+                  <!-- {{ loading.creatingOrder ? 'Processing...' : `Pay Ksh.${orderTotal.toFixed(2)}` }} -->
+                  {{ loading.creatingOrder ? 'Processing...' : `Pay Ksh.${orderTotal.toFixed(2)}`}}
+                  <!-- end of change -->
                 </button>
               </div>
             </div>

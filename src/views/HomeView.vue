@@ -9,6 +9,8 @@ import Sidebar from '@/components/HomeComponents/Sidebar.vue'
 import Footer from '@/components/Footer.vue'
 import axios from 'axios'
 
+
+
 // Base URL for your products API
 // const API_BASE_URL = 'http://localhost:5050/products'
 const API_BASE_URL = 'https://afrimart-backend-5fxf.onrender.com/products'
