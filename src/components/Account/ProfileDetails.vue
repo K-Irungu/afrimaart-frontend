@@ -22,7 +22,7 @@ const editingUser = ref({
   username: '',
   email: '',
   phone: '',
-  profile_img: ''
+  profile_img: '',
 })
 
 // Original user data for cancel operation
@@ -89,7 +89,7 @@ const fetchCurrentUser = async () => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-      }
+      },
     })
 
     if (!response.ok) {
@@ -125,9 +125,10 @@ const initializeUserData = (userData) => {
     username: userData.username || '',
     email: userData.email || '',
     phone: userData.phone || '',
-    profile_img: userData.profile_img || userData.profileImg || userData.image || '/default-avatar.png',
+    profile_img:
+      userData.profile_img || userData.profileImg || userData.image || '/default-avatar.png',
     // Include the ID for reference
-    _id: userData._id || userData.id
+    _id: userData._id || userData.id,
   }
 
   console.log('Processed user data:', data) // Debug log
@@ -145,7 +146,7 @@ watch(
       initializeUserData(newUser)
     }
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 )
 
 // Fetch user on component mount
@@ -213,7 +214,7 @@ const saveChanges = async () => {
       username: editingUser.value.username,
       email: editingUser.value.email,
       phone: editingUser.value.phone || null,
-      profile_img: editingUser.value.profile_img
+      profile_img: editingUser.value.profile_img,
     }
 
     // Call the update API
@@ -222,7 +223,7 @@ const saveChanges = async () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(userData)
+      body: JSON.stringify(userData),
     })
 
     if (!response.ok) {
@@ -240,7 +241,7 @@ const saveChanges = async () => {
     if (currentStoredUser) {
       const updatedStoredUser = {
         ...currentStoredUser,
-        ...userData
+        ...userData,
       }
       localStorage.setItem('user', JSON.stringify(updatedStoredUser))
       sessionStorage.setItem('user', JSON.stringify(updatedStoredUser))
@@ -251,7 +252,6 @@ const saveChanges = async () => {
     isEditing.value = false
 
     alert('Profile updated successfully!')
-
   } catch (error) {
     console.error('Error saving changes:', error)
     alert(`Error updating profile: ${error.message}`)
@@ -342,7 +342,11 @@ const cancelChanges = () => {
 // }
 
 const handleDelete = async () => {
-  if (!confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')) {
+  if (
+    !confirm(
+      'Are you sure you want to permanently delete your account? This action cannot be undone.',
+    )
+  ) {
     return
   }
 
@@ -356,7 +360,7 @@ const handleDelete = async () => {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-      }
+      },
     })
 
     if (!response.ok) {
@@ -374,7 +378,6 @@ const handleDelete = async () => {
 
     emit('delete-account', result.deletedUserId || userId)
     alert('Account deleted successfully')
-
   } catch (error) {
     console.error('Error deleting account:', error)
     alert(`Error deleting account: ${error.message}`)
@@ -397,10 +400,9 @@ const debugInfo = computed(() => {
     userId: getCurrentUserId(),
     storedUser: getCurrentUserFromStorage(),
     editingUser: editingUser.value,
-    hasProps: !!props.user
+    hasProps: !!props.user,
   }
 })
-
 </script>
 
 <template>
@@ -476,8 +478,12 @@ const debugInfo = computed(() => {
               <input
                 v-if="isEditing"
                 v-model="editingUser.firstname"
-                :class="['w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
-                        formErrors.firstname ? 'border-red-500 bg-[#FEE2E2]' : 'border-gray-300 bg-[#E8B6D5]']"
+                :class="[
+                  'w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
+                  formErrors.firstname
+                    ? 'border-red-500 bg-[#FEE2E2]'
+                    : 'border-gray-300 bg-[#E8B6D5]',
+                ]"
                 placeholder="Enter first name"
               />
               <div v-else class="name-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
@@ -494,8 +500,12 @@ const debugInfo = computed(() => {
               <input
                 v-if="isEditing"
                 v-model="editingUser.lastname"
-                :class="['w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
-                        formErrors.lastname ? 'border-red-500 bg-[#FEE2E2]' : 'border-gray-300 bg-[#E8B6D5]']"
+                :class="[
+                  'w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
+                  formErrors.lastname
+                    ? 'border-red-500 bg-[#FEE2E2]'
+                    : 'border-gray-300 bg-[#E8B6D5]',
+                ]"
                 placeholder="Enter last name"
               />
               <div v-else class="name-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
@@ -513,8 +523,12 @@ const debugInfo = computed(() => {
             <input
               v-if="isEditing"
               v-model="editingUser.username"
-              :class="['w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
-                      formErrors.username ? 'border-red-500 bg-[#FEE2E2]' : 'border-gray-300 bg-[#E8B6D5]']"
+              :class="[
+                'w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
+                formErrors.username
+                  ? 'border-red-500 bg-[#FEE2E2]'
+                  : 'border-gray-300 bg-[#E8B6D5]',
+              ]"
               placeholder="Enter username"
             />
             <div v-else class="username-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
@@ -534,7 +548,9 @@ const debugInfo = computed(() => {
             <div class="show-name p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
               {{ displayName }}
             </div>
-            <p class="text-xs text-gray-500 mt-1">This is automatically generated from your first and last name.</p>
+            <p class="text-xs text-gray-500 mt-1">
+              This is automatically generated from your first and last name.
+            </p>
           </div>
         </div>
       </section>
@@ -549,26 +565,31 @@ const debugInfo = computed(() => {
           <!-- Email -->
           <div class="space-y-1">
             <label class="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <font-awesome-icon
-                :icon="['fas', 'envelope']"
-                class="w-4 h-4 text-gray-400"
-              />
+              <font-awesome-icon :icon="['fas', 'envelope']" class="w-4 h-4 text-gray-400" />
               Email
             </label>
             <input
               v-if="isEditing"
               v-model="editingUser.email"
               type="email"
-              :class="['w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
-                      formErrors.email ? 'border-red-500 bg-[#FEE2E2]' : 'border-gray-300 bg-[#E8B6D5]']"
+              :class="[
+                'w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
+                formErrors.email ? 'border-red-500 bg-[#FEE2E2]' : 'border-gray-300 bg-[#E8B6D5]',
+              ]"
               placeholder="Enter email address"
             />
             <div v-else class="email-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
               {{ editingUser.email }}
             </div>
-            <p v-if="formErrors.email" class="text-xs text-red-500 mt-1">
+
+            <!-- Start of change by Kevin Irungu -->
+            <!-- <p v-if="formErrors.email" class="text-xs text-red-500 mt-1">
+              {{ formErrors.email }}
+            </p> -->
+            <p v-if="formErrors.email" class="error-msg">
               {{ formErrors.email }}
             </p>
+            <!-- End of change by Kevin Irungu -->
             <p class="text-xs text-gray-500 mt-1">Primary email for order updates and receipts.</p>
           </div>
 
@@ -582,16 +603,25 @@ const debugInfo = computed(() => {
               v-if="isEditing"
               v-model="editingUser.phone"
               type="tel"
-              :class="['w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
-                      formErrors.phone ? 'border-red-500 bg-[#FEE2E2]' : 'border-gray-300 bg-[#E8B6D5]']"
+              :class="[
+                'w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
+                formErrors.phone ? 'border-red-500 bg-[#FEE2E2]' : 'border-gray-300 bg-[#E8B6D5]',
+              ]"
               placeholder="Enter phone number"
             />
             <div v-else class="phone-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
               {{ editingUser.phone || 'Not provided' }}
             </div>
-            <p v-if="formErrors.phone" class="text-xs text-red-500 mt-1">
+
+            <!-- Start of change by Kevin Irungu -->
+            <!-- <p v-if="formErrors.phone" class="text-xs text-red mt-1">
+              {{ formErrors.phone }}
+            </p> -->
+            <p v-if="formErrors.phone" class="error-msg">
               {{ formErrors.phone }}
             </p>
+
+            <!-- End of change by Kevin Irungu -->
             <p class="text-xs text-gray-500 mt-1">Used for delivery and account security.</p>
           </div>
         </div>
@@ -799,5 +829,16 @@ input {
   .actions-btns button {
     width: 100%;
   }
+}
+/* Error message styling */
+.error-msg {
+  font-size: 0.75rem;
+  color: #c0392b;
+  background: #fde8e8;
+  border: 1px solid #f5c0c0;
+  border-left: 3px solid #c0392b;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-top: 4px;
 }
 </style>
