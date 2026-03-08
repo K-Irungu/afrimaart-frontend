@@ -11,7 +11,10 @@ const { product } = defineProps({
 })
 
 const router = useRouter()
-const { addToCart, showSuccessMessage, successMessage } = useCart()
+const { addToCart,
+        // showSuccessMessage,
+        // successMessage
+      } = useCart()
 
 // Proper authentication check
 const isAuthenticated = () => {
@@ -45,12 +48,21 @@ const addToCartHandler = async (event) => {
   >
 
     <!-- Success Message -->
-    <div
+
+
+    <!-- Start of change by Kevin Irungu -->
+
+     <!-- Commented this out. The success message should be a toast and not a message on each product card  -->
+    <!-- <div
       v-if="showSuccessMessage"
       class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out"
     >
+
       {{ successMessage }}
-    </div>
+    </div> -->
+
+    <!-- End of change by Kevin Irungu -->
+
 
     <!-- NEW Badge -->
     <span
