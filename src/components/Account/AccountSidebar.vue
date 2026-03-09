@@ -59,23 +59,23 @@ const tabs = [
 
 .nav-btn {
   padding: 15px;
-  border: 1px solid #aa69af; /* Medium Orchid for borders */
+  border: 1px solid #7272E8; /* Medium Orchid for borders */
   border-radius: 10px;
   transition: all 0.3s ease;
 }
 
 .nav-btn.active {
-  background-color: #5d3471; /* Deep Purple */
+  background-color: #5858E0; /* Deep Purple */
   color: white;
-  border-color: #5d3471; /* Deep Purple */
+  border-color: #5858E0; /* Deep Purple */
 }
 
 .nav-btn.inactive {
-  color: #804d91; /* Royal Purple */
-  border-color: #aa69af; /* Medium Orchid */
+  color: #2A2A6B; /* Royal Purple */
+  border-color: #7272E8; /* Medium Orchid */
 }
 
 .nav-btn.inactive:hover {
-  background-color: #ce7f57; /* Warm Brownish Orange */
+  background-color: #FFAC1E; /* Warm Brownish Orange */
 }
 </style>

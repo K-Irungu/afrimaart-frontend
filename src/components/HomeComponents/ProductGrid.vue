@@ -96,7 +96,7 @@ const showingText = computed(() => {
   <div class="lg:col-span-4 md:col-span-3 px-[5px] mb-[20px]">
     <!-- Top Info and Sort -->
     <div class="flex justify-between items-center mb-6 h-[80px]">
-      <p class="text-sm text-[#804D91]">{{ showingText }}</p>
+      <p class="text-sm text-[#2A2A6B]">{{ showingText }}</p>
 
       <!-- Start of change by Kevin Irungu -->
       <!-- Toast Notification -->
@@ -124,12 +124,12 @@ const showingText = computed(() => {
       <!-- End of change by Kevin Irungu -->
 
       <div class="flex items-center space-x-2 select-wrapper">
-        <label for="sort" class="text-sm text-[#5D3471]">Sort by:</label>
+        <label for="sort" class="text-sm text-[#5858E0]">Sort by:</label>
         <select
           id="sort"
           v-model="currentSort"
           @change="handleSortChange"
-          class="p-[6px] border rounded-lg text-sm h-[30px] ml-[5px] select bg-[#E8B6D5] border-[#AA69AF] text-[#5D3471] cursor-pointer"
+          class="p-[6px] border rounded-lg text-sm h-[30px] ml-[5px] select bg-[#E8E7FC] border-[#7272E8] text-[#5858E0] cursor-pointer"
         >
           <option v-for="option in sortOptions" :key="option.value" :value="option.value">
             {{ option.label }}
@@ -149,7 +149,7 @@ const showingText = computed(() => {
       <button
         @click="navigateToPage(currentPage - 1)"
         :disabled="currentPage === 1"
-        class="previous-btn px-4 py-2 mx-[10px] text-sm font-medium text-[#5D3471] bg-[#E8B6D5] border border-[#AA69AF] rounded-lg hover:bg-[#AA69AF] hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="previous-btn px-4 py-2 mx-[10px] text-sm font-medium text-[#5858E0] bg-[#E8E7FC] border border-[#7272E8] rounded-lg hover:bg-[#7272E8] hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Previous
       </button>
@@ -162,8 +162,8 @@ const showingText = computed(() => {
         :class="[
           'page-btn px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 min-w-[44px]',
           currentPage === page
-            ? 'bg-[#5D3471] text-white shadow-md scale-105'
-            : 'text-[#5D3471] bg-[#E8B6D5] border border-[#AA69AF] hover:bg-[#AA69AF] hover:text-white hover:shadow-sm',
+            ? 'bg-[#5858E0] text-white shadow-md scale-105'
+            : 'text-[#5858E0] bg-[#E8E7FC] border border-[#7272E8] hover:bg-[#7272E8] hover:text-white hover:shadow-sm',
         ]"
       >
         {{ page }}
@@ -173,7 +173,7 @@ const showingText = computed(() => {
       <button
         @click="navigateToPage(currentPage + 1)"
         :disabled="currentPage === totalPages"
-        class="next-btn px-4 py-2 mx-[10px] text-sm font-medium text-[#5D3471] bg-[#E8B6D5] border border-[#AA69AF] rounded-lg hover:bg-[#AA69AF] hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="next-btn px-4 py-2 mx-[10px] text-sm font-medium text-[#5858E0] bg-[#E8E7FC] border border-[#7272E8] rounded-lg hover:bg-[#7272E8] hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Next
       </button>
@@ -234,14 +234,14 @@ select {
   align-items: center;
   gap: 10px;
   padding: 10px 18px 10px 12px;
-  background: linear-gradient(135deg, #f9f0fc 0%, #f0dff7 100%);
+  background: #E8E7FC;
   border: 1px solid #c88fd4;
-  border-left: 4px solid #5D3471;
+  border-left: 4px solid #5858E0;
   border-radius: 10px;
   box-shadow:
     0 4px 16px rgba(93, 52, 113, 0.14),
     0 1px 4px rgba(93, 52, 113, 0.08);
-  color: #5D3471;
+  color: #5858E0;
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: 0.01em;
@@ -255,7 +255,7 @@ select {
   justify-content: center;
   width: 22px;
   height: 22px;
-  background-color: #5D3471;
+  background-color: #5858E0;
   border-radius: 50%;
   flex-shrink: 0;
 }

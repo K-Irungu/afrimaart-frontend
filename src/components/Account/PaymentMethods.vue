@@ -639,7 +639,7 @@ onMounted(() => {
   background: #ffffff;
   padding: 25px;
   border-radius: 20px;
-  border: 1px solid #e8b6d5;
+  border: 1px solid #E8E7FC;
 }
 
 .payment-methods-grid {
@@ -652,19 +652,19 @@ onMounted(() => {
   padding: 10px;
   border-radius: 16px;
   transition: all 0.3s ease;
-  border: 2px solid #e8b6d5;
+  border: 2px solid #E8E7FC;
 }
 
 .add-payment-btn {
   border: none;
   color: #ffffff;
   border-radius: 12px;
-  background: #5d3471;
+  background: #5858E0;
   padding: 12px 24px;
 }
 
 .add-payment-btn:hover {
-  background: #804d91;
+  background: #2A2A6B;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(128, 77, 145, 0.3);
 }
@@ -678,7 +678,7 @@ onMounted(() => {
 }
 
 .set-default-btn:hover {
-  background: #e8b6d5;
+  background: #E8E7FC;
   transform: translateY(-2px);
   box-shadow: 0 2px 8px rgba(170, 105, 175, 0.3);
 }
@@ -697,12 +697,12 @@ onMounted(() => {
 }
 
 .payment-dropdown:focus {
-  border-color: #aa69af;
+  border-color: #7272E8;
   box-shadow: 0 0 0 3px rgba(170, 105, 175, 0.2);
 }
 
 .form-input {
-  border: 2px solid #e8b6d5;
+  border: 2px solid #E8E7FC;
   border-radius: 12px;
   background: #fdf7fb;
   transition: all 0.2s ease;
@@ -710,7 +710,7 @@ onMounted(() => {
 }
 
 .form-input:focus {
-  border-color: #5d3471;
+  border-color: #5858E0;
   background: #ffffff;
   box-shadow: 0 0 0 3px rgba(93, 52, 113, 0.15);
   transform: translateY(-2px);
@@ -721,7 +721,7 @@ onMounted(() => {
 }
 
 .cancel-btn {
-  background: #5d3471;
+  background: #5858E0;
   color: #ffffff;
   border-radius: 12px;
   border: none;
@@ -731,18 +731,18 @@ onMounted(() => {
 .save-btn {
   color: #ffffff;
   border-radius: 12px;
-  background: #804d91;
+  background: #2A2A6B;
   border: none;
   padding: 12px 24px;
 }
 
 .save-btn:hover {
-  background: #aa69af;
+  background: #7272E8;
   box-shadow: 0 4px 12px rgba(170, 105, 175, 0.3);
 }
 
 .cancel-btn:hover {
-  background: #aa69af;
+  background: #7272E8;
   box-shadow: 0 4px 12px rgba(170, 105, 175, 0.3);
 }
 
@@ -755,24 +755,24 @@ onMounted(() => {
 .add-payment-form {
   border-radius: 16px;
   box-shadow: 0 8px 25px rgba(128, 77, 145, 0.1);
-  border: 2px solid #e8b6d5;
+  border: 2px solid #E8E7FC;
 }
 
 .empty-state {
   padding: 60px 40px;
   background: #fdf7fb;
-  border-color: #e8b6d5;
+  border-color: #E8E7FC;
 }
 
 .close-btn {
   border-radius: 8px;
   transition: all 0.2s ease;
-  color: #5d3471;
+  color: #5858E0;
 }
 
 .close-btn:hover {
-  background: #e8b6d5;
-  color: #804d91;
+  background: #E8E7FC;
+  color: #2A2A6B;
   transform: rotate(90deg);
 }
 

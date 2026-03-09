@@ -112,12 +112,12 @@ const addToCartHandler = async (event) => {
         <!-- Rating + Brand -->
         <div class="flex items-center gap-[5px] mb-2">
           <div class="flex items-center mr-[2px]">
-            <span class="text-sm text-[#CE7F57]">★</span>
+            <span class="text-sm text-[#FFAC1E]">★</span>
             <span class="text-sm text-gray-600 ml-1">
               {{ typeof product.rating === 'number' ? product.rating.toFixed(1) : Number(product.rating).toFixed(1) }}
             </span>
           </div>
-          <span class="card-brand text-xs text-[#5D3471] bg-[#E8B6D5] px-2 py-0.5 rounded-full ml-2">
+          <span class="card-brand text-xs text-[#5858E0] bg-[#E8E7FC] px-2 py-0.5 rounded-full ml-2">
             {{ product.brand }}
           </span>
         </div>
@@ -127,7 +127,7 @@ const addToCartHandler = async (event) => {
       <div class="flex justify-center">
         <button
           @click="addToCartHandler"
-          class="w-[95%] h-[40px] py-2 bg-[#804D91] text-white font-medium rounded-lg hover:bg-[#AA69AF] transition duration-150"
+          class="w-[95%] h-[40px] py-2 bg-[#2A2A6B] text-white font-medium rounded-lg hover:bg-[#7272E8] transition duration-150"
         >
           Add to Cart
         </button>
@@ -138,13 +138,13 @@ const addToCartHandler = async (event) => {
 
 <style scoped>
 .card {
-  background: #e8b6d5;
+  background: #E8E7FC;
   width: 90%;
   height: 510px;
-  border: 1px solid #aa69af;
+  border: 1px solid #7272E8;
   border-radius: 20px;
   margin-bottom: 2rem;
-  color: #5d3471;
+  color: #5858E0;
   transition: all 0.3s ease;
 }
 
@@ -159,7 +159,7 @@ const addToCartHandler = async (event) => {
 }
 
 .card-content button {
-  background: #804d91;
+  background: #2A2A6B;
   border: none;
   border-radius: 10px;
   margin-top: 5px;
@@ -168,25 +168,25 @@ const addToCartHandler = async (event) => {
 }
 
 .card-content button:hover {
-  background: #aa69af;
+  background: #7272E8;
 }
 
 .card-name,
 .card-price {
   font-size: 1rem;
   font-weight: 700;
-  color: #5d3471;
+  color: #5858E0;
 }
 
 .card-orprice {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #804d91;
+  color: #2A2A6B;
 }
 
 .card-brand {
   font-size: 0.75rem;
-  color: #5d3471;
+  color: #5858E0;
   font-weight: 600;
 }
 
@@ -194,7 +194,7 @@ const addToCartHandler = async (event) => {
   margin-top: 12px;
   margin-left: 6px;
   border-radius: 10px;
-  background: #ce7f57;
+  background: #FFAC1E;
   color: #ffffff;
   font-weight: 700;
   animation: pulse 2s infinite;
@@ -202,7 +202,7 @@ const addToCartHandler = async (event) => {
 
 .tag {
   height: 25px;
-  background: #804d91;
+  background: #2A2A6B;
   color: #ffffff;
   font-weight: 700;
   border-radius: 10px;

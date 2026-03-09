@@ -266,7 +266,7 @@ const goOrders = () => router.push('/account')
 
 .state-text {
   font-size: 1rem;
-  color: #804d91;
+  color: #2A2A6B;
   font-weight: 500;
 }
 
@@ -289,7 +289,7 @@ const goOrders = () => router.push('/account')
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 3px solid #aa69af;
+  border: 3px solid #7272E8;
   border-top-color: transparent;
   animation: spin 0.9s linear infinite;
 }
@@ -312,7 +312,7 @@ const goOrders = () => router.push('/account')
 
 /* ── Header ───────────────────────────────────── */
 .card-header {
-  background: linear-gradient(145deg, #5d3471 0%, #804d91 60%, #aa69af 100%);
+  background: #5858E0;
   padding: 48px 36px 40px;
   text-align: center;
   position: relative;
@@ -323,7 +323,7 @@ const goOrders = () => router.push('/account')
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 70% 20%, rgba(232, 182, 213, 0.18) 0%, transparent 60%);
+  background: transparent;
   pointer-events: none;
 }
 
@@ -430,14 +430,14 @@ const goOrders = () => router.push('/account')
 }
 
 .timeline-step.done .tl-dot {
-  background: #5d3471;
+  background: #5858E0;
   color: #fff;
   box-shadow: 0 0 0 4px rgba(93, 52, 113, 0.15);
 }
 
 .timeline-step.active .tl-dot {
-  background: #e8b6d5;
-  color: #5d3471;
+  background: #E8E7FC;
+  color: #5858E0;
   box-shadow: 0 0 0 4px rgba(232, 182, 213, 0.35);
   animation: activePulse 1.6s ease-in-out infinite;
 }
@@ -456,7 +456,7 @@ const goOrders = () => router.push('/account')
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.03em;
-  color: #804d91;
+  color: #2A2A6B;
   white-space: nowrap;
 }
 
@@ -465,7 +465,7 @@ const goOrders = () => router.push('/account')
 .tl-line {
   flex: 1;
   height: 2px;
-  background: linear-gradient(to right, #5d3471, #e8b6d5);
+  background: #5858E0;
   margin: 0 4px;
   margin-bottom: 20px;
 }
@@ -491,7 +491,7 @@ const goOrders = () => router.push('/account')
 .detail-title {
   font-family: 'DM Serif Display', serif;
   font-size: 1rem;
-  color: #5d3471;
+  color: #5858E0;
   margin: 0 0 16px;
   letter-spacing: -0.01em;
 }
@@ -521,7 +521,7 @@ const goOrders = () => router.push('/account')
 .total-amount {
   font-family: 'DM Serif Display', serif;
   font-size: 1.15rem !important;
-  color: #5d3471 !important;
+  color: #5858E0 !important;
 }
 
 .status-pill {
@@ -545,7 +545,7 @@ const goOrders = () => router.push('/account')
 
 .address-type {
   font-weight: 700;
-  color: #5d3471;
+  color: #5858E0;
   text-transform: capitalize;
   font-size: 0.8rem;
   letter-spacing: 0.05em;
@@ -557,7 +557,7 @@ const goOrders = () => router.push('/account')
   align-items: center;
   gap: 8px;
   font-size: 0.8rem;
-  color: #804d91;
+  color: #2A2A6B;
   font-weight: 500;
 }
 
@@ -565,7 +565,7 @@ const goOrders = () => router.push('/account')
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #aa69af;
+  background: #7272E8;
   animation: etaPulse 1.8s ease-in-out infinite;
   flex-shrink: 0;
 }
@@ -604,7 +604,7 @@ const goOrders = () => router.push('/account')
   height: 48px;
   border-radius: 10px;
   overflow: hidden;
-  background: #e8b6d5;
+  background: #E8E7FC;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -637,7 +637,7 @@ const goOrders = () => router.push('/account')
 .item-price {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #5d3471;
+  color: #5858E0;
   white-space: nowrap;
   margin: 0;
 }
@@ -653,7 +653,7 @@ const goOrders = () => router.push('/account')
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #5d3471, #804d91);
+  background: #5858E0;
   color: #fff;
   border: none;
   padding: 12px 28px;
@@ -673,8 +673,8 @@ const goOrders = () => router.push('/account')
 
 .btn-secondary {
   background: #fff;
-  color: #5d3471;
-  border: 1.5px solid #aa69af;
+  color: #5858E0;
+  border: 1.5px solid #7272E8;
   padding: 12px 28px;
   border-radius: 12px;
   font-family: 'DM Sans', sans-serif;
@@ -686,7 +686,7 @@ const goOrders = () => router.push('/account')
 
 .btn-secondary:hover {
   background: #f9f0fc;
-  border-color: #5d3471;
+  border-color: #5858E0;
   transform: translateY(-2px);
 }
 

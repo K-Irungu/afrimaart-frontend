@@ -14,24 +14,24 @@
           <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
           <ul class="space-y-2 list-none">
             <li>
-              <a
-                href="#"
+              <RouterLink
+                to="/about"
                 class="text-gray-400 hover:text-white transition-colors duration-200 text-sm no-underline"
-                >About</a
+                >About</RouterLink
               >
             </li>
             <li>
-              <a
-                href="#"
+              <RouterLink
+                to="/careers"
                 class="text-gray-400 hover:text-white transition-colors duration-200 text-sm no-underline"
-                >Careers</a
+                >Careers</RouterLink
               >
             </li>
             <li>
-              <a
-                href="#"
+              <RouterLink
+                to="/press"
                 class="text-gray-400 hover:text-white transition-colors duration-200 text-sm no-underline"
-                >Press</a
+                >Press</RouterLink
               >
             </li>
           </ul>
@@ -41,24 +41,24 @@
           <h4 class="text-lg font-semibold text-white mb-4">Support</h4>
           <ul class="space-y-2 list-none">
             <li>
-              <a
-                href="#"
+              <RouterLink
+                to="/contact"
                 class="text-gray-400 hover:text-white transition-colors duration-200 text-sm no-underline"
-                >Contact</a
+                >Contact</RouterLink
               >
             </li>
             <li>
-              <a
-                href="#"
+              <RouterLink
+                to="/help-center"
                 class="text-gray-400 hover:text-white transition-colors duration-200 text-sm no-underline"
-                >Help Center</a
+                >Help Center</RouterLink
               >
             </li>
             <li>
-              <a
-                href="#"
+              <RouterLink
+                to="/returns"
                 class="text-gray-400 hover:text-white transition-colors duration-200 text-sm no-underline"
-                >Returns</a
+                >Returns</RouterLink
               >
             </li>
           </ul>
@@ -68,24 +68,24 @@
           <h4 class="text-lg font-semibold text-white mb-4">Legal</h4>
           <ul class="space-y-2 list-none">
             <li>
-              <a
-                href="#"
+              <RouterLink
+                to="/privacy-policy"
                 class="text-gray-400 hover:text-white transition-colors duration-200 text-sm no-underline"
-                >Privacy Policy</a
+                >Privacy Policy</RouterLink
               >
             </li>
             <li>
-              <a
-                href="#"
+              <RouterLink
+                to="/terms-of-service"
                 class="text-gray-400 hover:text-white transition-colors duration-200 text-sm no-underline"
-                >Terms of Service</a
+                >Terms of Service</RouterLink
               >
             </li>
             <li>
-              <a
-                href="#"
+              <RouterLink
+                to="/cookie-policy"
                 class="text-gray-400 hover:text-white transition-colors duration-200 text-sm no-underline"
-                >Cookie Policy</a
+                >Cookie Policy</RouterLink
               >
             </li>
           </ul>
@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-// No script logic needed for this static footer component
+import { RouterLink } from 'vue-router'
 </script>
 
 <style scoped>

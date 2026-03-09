@@ -129,7 +129,7 @@ const handleContinueShopping = () => {
 
 <style scoped>
 .order-summary {
-  color: #5d3471;
+  color: #5858E0;
   border-radius: 20px;
 }
 
@@ -137,16 +137,16 @@ const handleContinueShopping = () => {
   padding: 8px;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(90deg, #5d3471 0%, #804d91 100%); /* Deep → Royal Purple gradient */
+  background: #5858E0;
   font-size: medium;
   color: white;
 }
 .proceed-btn:hover {
-  background: linear-gradient(90deg, #804d91 0%, #aa69af 100%); /* Royal → Medium Orchid gradient */
+  background: #2A2A6B;
 }
 
 .summary-details {
-  border: 1px solid #ce7f57;
+  border: 1px solid #FFAC1E;
   border-radius: 20px;
 }
 
@@ -154,12 +154,12 @@ const handleContinueShopping = () => {
 .total dd {
   font-weight: 600;
   font-size: medium;
-  color: #5d3471; /* Deep Purple total */
+  color: #5858E0; /* Deep Purple total */
 }
 
 .continue-link {
   text-decoration: none;
-  background: #804d91; /* Royal Purple */
+  background: #2A2A6B; /* Royal Purple */
   width: 100%;
   padding: 8px;
   border: none;
@@ -168,6 +168,6 @@ const handleContinueShopping = () => {
   color: white;
 }
 .continue-link:hover {
-  background: #aa69af; /* Medium Orchid hover */
+  background: #7272E8; /* Medium Orchid hover */
 }
 </style>

@@ -71,9 +71,9 @@ const handleContinueShopping = () => {
         <div class="text-right pt-4" v-if="cartCount > 0">
           <button
             @click="handleClearCart"
-            class="clear-cart inline-flex items-center gap-2 py-[8px] px-[10px] text-sm font-medium text-gray-600 hover:text-red-600 transition-colors duration-200 bg-white border border-gray-300 rounded-lg hover:border-red-300 hover:bg-red-50"
+            class="clear-cart inline-flex items-center gap-2 py-[8px] px-4 text-sm font-semibold text-white bg-[#dc2626] border border-[#b91c1c] rounded-lg hover:bg-[#b91c1c] transition-colors duration-200"
           >
-            <span class="text-base">🗑️</span>
+            <font-awesome-icon :icon="['fas', 'trash']" class="w-4 h-4" />
             Clear Cart
           </button>
         </div>
@@ -101,7 +101,7 @@ const handleContinueShopping = () => {
             <p class="text-gray-600 mb-[6px]">Add some products to your cart to see them here.</p>
             <button
               @click="handleContinueShopping"
-              class="empty-cart bg-[#804D91] hover:bg-[#AA69AF] text-white font-medium py-[8px] px-[10px] rounded-lg transition-colors"
+              class="empty-cart bg-[#2A2A6B] hover:bg-[#7272E8] text-white font-medium py-[8px] px-[10px] rounded-lg transition-colors"
             >
               Continue Shopping
             </button>
@@ -136,7 +136,7 @@ const handleContinueShopping = () => {
 
 .banner {
   margin-top: 10px;
-  background: #5d3471; /* Deep Purple */
+  background: #5858E0; /* Deep Purple */
   border-radius: 20px;
   color: white;
 }
@@ -147,21 +147,21 @@ const handleContinueShopping = () => {
 
 .clear-cart {
   border-radius: 10px;
-  border: none;
-  color: #5d3471; /* Deep Purple text */
-  background: #e8b6d5; /* Soft Pink button bg */
+  color: #ffffff;
+  background: #dc2626;
+  border: 1px solid #b91c1c;
 }
 .clear-cart:hover {
-  color: #ce7f57; /* Warm Brownish Orange hover text */
-  background: #f3d0df; /* lighter soft pink hover */
-  border-color: #ce7f57;
+  color: #ffffff;
+  background: #b91c1c;
+  border-color: #b91c1c;
 }
 
 h2 {
-  color: #5d3471; /* Deep Purple headings */
+  color: #5858E0; /* Deep Purple headings */
 }
 .empty-cart{
-  border: 1.5px solid #e8b6d5;
+  border: 1.5px solid #E8E7FC;
   border-radius: 15px;
 }
 </style>

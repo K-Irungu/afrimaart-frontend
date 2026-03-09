@@ -12,8 +12,8 @@ const isLoading = ref(false)
 const isFetchingUser = ref(false)
 const formErrors = ref({})
 
-// Base URL
-const BASE_URL = 'http://localhost:5050/users'
+// Base URL (match backend used by auth)
+const BASE_URL = 'https://afrimart-backend-5fxf.onrender.com/users'
 
 // Use local reactive state for editing
 const editingUser = ref({
@@ -177,16 +177,33 @@ const validateForm = () => {
   if (!editingUser.value.email?.trim()) {
     errors.email = 'Email is required'
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingUser.value.email)) {
-    errors.email = 'Please enter a valid email address'
+    errors.email = 'Please enter a valid email.'
   }
 
-  // Phone validation (optional)
-  if (editingUser.value.phone && !/^[\+]?[1-9][\d\s\-\(\)]{8,}$/.test(editingUser.value.phone)) {
-    errors.phone = 'Please enter a valid phone number'
+  // Phone validation (optional): 9–15 digits, allow leading 0 (e.g. 0703436795)
+  if (editingUser.value.phone?.trim()) {
+    const digits = editingUser.value.phone.replace(/\D/g, '')
+    if (digits.length < 9 || digits.length > 15) {
+      errors.phone = 'Please enter a valid phone number'
+    }
   }
 
   formErrors.value = errors
   return Object.keys(errors).length === 0
+}
+
+const validateEmailOnBlur = () => {
+  const email = editingUser.value.email?.trim()
+  if (!email) {
+    formErrors.value = { ...formErrors.value, email: 'Email is required' }
+    return
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    formErrors.value = { ...formErrors.value, email: 'Please enter a valid email.' }
+    return
+  }
+  const { email: _, ...rest } = formErrors.value
+  formErrors.value = rest
 }
 
 const enableEditing = () => {
@@ -196,6 +213,8 @@ const enableEditing = () => {
 
 const saveChanges = async () => {
   if (!validateForm()) {
+    const firstError = Object.values(formErrors.value)[0]
+    alert(firstError || 'Please fix the errors before saving.')
     return
   }
 
@@ -251,7 +270,7 @@ const saveChanges = async () => {
     emit('save-changes', updatedUser.user || updatedUser) // Make sure this line is present
     isEditing.value = false
 
-    alert('Profile updated successfully!')
+    alert('Changes saved')
   } catch (error) {
     console.error('Error saving changes:', error)
     alert(`Error updating profile: ${error.message}`)
@@ -409,7 +428,7 @@ const debugInfo = computed(() => {
   <div class="bg-white rounded-lg shadow-sm p-6 space-y-10">
     <!-- Loading State -->
     <div v-if="isFetchingUser" class="text-center py-8">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5D3471] mx-auto"></div>
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5858E0] mx-auto"></div>
       <p class="text-gray-600 mt-4">Loading profile data...</p>
     </div>
 
@@ -421,7 +440,7 @@ const debugInfo = computed(() => {
         <button
           v-if="!isEditing"
           @click="enableEditing"
-          class="edit-btn px-[5px] py-[5px] text-sm rounded-lg hover:bg-[#AA69AF] transition flex items-center gap-2"
+          class="edit-btn px-[5px] py-[5px] text-sm rounded-lg hover:bg-[#7272E8] transition flex items-center gap-2"
         >
           <font-awesome-icon :icon="['fas', 'pen-to-square']" class="w-4 h-4 mr-[5px]" />
           Edit Profile
@@ -454,7 +473,7 @@ const debugInfo = computed(() => {
             <!-- <button
               v-if="isEditing"
               @click="uploadImageToServer"
-              class="upload-btn px-4 py-2 text-sm font-medium rounded-lg text-white border border-gray-300 hover:bg-[#AA69AF] transition flex items-center gap-2"
+              class="upload-btn px-4 py-2 text-sm font-medium rounded-lg text-white border border-gray-300 hover:bg-[#7272E8] transition flex items-center gap-2"
             >
               <font-awesome-icon :icon="['fas', 'upload']" class="w-4 h-4 mr-[5px]" />
               Upload new
@@ -462,7 +481,7 @@ const debugInfo = computed(() => {
             <!-- <button
               v-if="isEditing"
               @click="removeImage"
-              class="remove-btn px-4 py-2 text-sm font-medium rounded-lg text-white border border-[#CE7F57] hover:bg-[#AA69AF] transition flex items-center gap-2"
+              class="remove-btn px-4 py-2 text-sm font-medium rounded-lg text-white border border-[#FFAC1E] hover:bg-[#7272E8] transition flex items-center gap-2"
             >
               <font-awesome-icon :icon="['fas', 'trash']" class="w-4 h-4 mr-[5px]" />
               Remove
@@ -479,14 +498,14 @@ const debugInfo = computed(() => {
                 v-if="isEditing"
                 v-model="editingUser.firstname"
                 :class="[
-                  'w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
+                  'w-full p-3 border rounded-lg focus:ring-[#5858E0] focus:border-[#5858E0]',
                   formErrors.firstname
                     ? 'border-red-500 bg-[#FEE2E2]'
-                    : 'border-gray-300 bg-[#E8B6D5]',
+                    : 'border-gray-300 bg-[#E8E7FC]',
                 ]"
                 placeholder="Enter first name"
               />
-              <div v-else class="name-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
+              <div v-else class="name-display p-3 bg-[#E8E7FC] rounded-lg text-gray-700">
                 {{ editingUser.firstname }}
               </div>
               <p v-if="formErrors.firstname" class="text-xs text-red-500 mt-1">
@@ -501,14 +520,14 @@ const debugInfo = computed(() => {
                 v-if="isEditing"
                 v-model="editingUser.lastname"
                 :class="[
-                  'w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
+                  'w-full p-3 border rounded-lg focus:ring-[#5858E0] focus:border-[#5858E0]',
                   formErrors.lastname
                     ? 'border-red-500 bg-[#FEE2E2]'
-                    : 'border-gray-300 bg-[#E8B6D5]',
+                    : 'border-gray-300 bg-[#E8E7FC]',
                 ]"
                 placeholder="Enter last name"
               />
-              <div v-else class="name-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
+              <div v-else class="name-display p-3 bg-[#E8E7FC] rounded-lg text-gray-700">
                 {{ editingUser.lastname }}
               </div>
               <p v-if="formErrors.lastname" class="text-xs text-red-500 mt-1">
@@ -524,14 +543,14 @@ const debugInfo = computed(() => {
               v-if="isEditing"
               v-model="editingUser.username"
               :class="[
-                'w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
+                'w-full p-3 border rounded-lg focus:ring-[#5858E0] focus:border-[#5858E0]',
                 formErrors.username
                   ? 'border-red-500 bg-[#FEE2E2]'
-                  : 'border-gray-300 bg-[#E8B6D5]',
+                  : 'border-gray-300 bg-[#E8E7FC]',
               ]"
               placeholder="Enter username"
             />
-            <div v-else class="username-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
+            <div v-else class="username-display p-3 bg-[#E8E7FC] rounded-lg text-gray-700">
               {{ editingUser.username }}
             </div>
             <p v-if="isEditing && !formErrors.username" class="text-xs text-gray-500 mt-1">
@@ -545,7 +564,7 @@ const debugInfo = computed(() => {
           <!-- Display Name (Computed) -->
           <div class="space-y-1">
             <label class="text-sm font-medium text-gray-700">Display name</label>
-            <div class="show-name p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
+            <div class="show-name p-3 bg-[#E8E7FC] rounded-lg text-gray-700">
               {{ displayName }}
             </div>
             <p class="text-xs text-gray-500 mt-1">
@@ -573,12 +592,13 @@ const debugInfo = computed(() => {
               v-model="editingUser.email"
               type="email"
               :class="[
-                'w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
-                formErrors.email ? 'border-red-500 bg-[#FEE2E2]' : 'border-gray-300 bg-[#E8B6D5]',
+                'w-full p-3 border rounded-lg focus:ring-[#5858E0] focus:border-[#5858E0]',
+                formErrors.email ? 'border-red-500 bg-[#FEE2E2]' : 'border-gray-300 bg-[#E8E7FC]',
               ]"
               placeholder="Enter email address"
+              @blur="validateEmailOnBlur"
             />
-            <div v-else class="email-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
+            <div v-else class="email-display p-3 bg-[#E8E7FC] rounded-lg text-gray-700">
               {{ editingUser.email }}
             </div>
 
@@ -604,12 +624,12 @@ const debugInfo = computed(() => {
               v-model="editingUser.phone"
               type="tel"
               :class="[
-                'w-full p-3 border rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]',
-                formErrors.phone ? 'border-red-500 bg-[#FEE2E2]' : 'border-gray-300 bg-[#E8B6D5]',
+                'w-full p-3 border rounded-lg focus:ring-[#5858E0] focus:border-[#5858E0]',
+                formErrors.phone ? 'border-red-500 bg-[#FEE2E2]' : 'border-gray-300 bg-[#E8E7FC]',
               ]"
               placeholder="Enter phone number"
             />
-            <div v-else class="phone-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700">
+            <div v-else class="phone-display p-3 bg-[#E8E7FC] rounded-lg text-gray-700">
               {{ editingUser.phone || 'Not provided' }}
             </div>
 
@@ -635,7 +655,7 @@ const debugInfo = computed(() => {
           <button
             @click="cancelChanges"
             :disabled="isLoading"
-            class="cancel-btn px-5 py-3 text-sm font-medium rounded-lg text-white border border-gray-300 hover:bg-[#AA69AF] transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="cancel-btn px-5 py-3 text-sm font-medium rounded-lg text-white border border-gray-300 hover:bg-[#7272E8] transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <font-awesome-icon :icon="['fas', 'circle-xmark']" class="w-4 h-4 mr-[5px]" />
             Cancel
@@ -643,7 +663,7 @@ const debugInfo = computed(() => {
           <button
             @click="saveChanges"
             :disabled="isLoading"
-            class="save-btn px-5 py-3 text-sm font-medium rounded-lg text-white hover:bg-[#AA69AF] transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="save-btn px-5 py-3 text-sm font-medium rounded-lg text-white hover:bg-[#7272E8] transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <font-awesome-icon :icon="['fas', 'circle-check']" class="w-4 h-4 mr-[5px]" />
             {{ isLoading ? 'Saving...' : 'Save changes' }}
@@ -660,7 +680,7 @@ const debugInfo = computed(() => {
             <h2 class="font-medium text-gray-800 flex items-center gap-2">
               <font-awesome-icon
                 :icon="['fas', 'triangle-exclamation']"
-                class="w-4 h-4 text-[#CE7F57]"
+                class="w-4 h-4 text-[#dc2626]"
               />
               Delete account
             </h2>
@@ -670,7 +690,7 @@ const debugInfo = computed(() => {
           </div>
           <button
             @click="handleDelete"
-            class="px-5 py-3 text-sm font-medium rounded-lg text-white hover:bg-[#AA69AF] transition flex items-center gap-2"
+            class="delete-account-btn px-5 py-3 text-sm font-medium rounded-lg text-white transition flex items-center gap-2"
           >
             <font-awesome-icon :icon="['fas', 'trash-can']" class="w-4 h-4" />
             Delete
@@ -685,7 +705,7 @@ const debugInfo = computed(() => {
       <div class="space-y-2">
         <button
           @click="fetchCurrentUser"
-          class="edit-btn px-4 py-2 rounded-lg hover:bg-[#AA69AF] transition block mx-auto"
+          class="edit-btn px-4 py-2 rounded-lg hover:bg-[#7272E8] transition block mx-auto"
         >
           Load Profile Data
         </button>
@@ -737,7 +757,7 @@ label {
   padding: 12px;
   border: 1px solid #e7eaef;
   border-radius: 10px;
-  background: #e8b6d5;
+  background: #E8E7FC;
   margin-bottom: 10px;
 }
 
@@ -746,11 +766,11 @@ input {
   border-radius: 10px;
   border: 1px solid #e7eaef;
   margin-bottom: 10px;
-  background: #e8b6d5;
+  background: #E8E7FC;
 }
 
 .edit-btn {
-  background: #804d91;
+  background: #2A2A6B;
   border: none;
   color: #ffffff;
   border-radius: 8px;
@@ -758,15 +778,18 @@ input {
   transition: 0.3s ease;
 }
 
-.delete-section button {
-  background: #ce7f57;
+.delete-section .delete-account-btn {
+  background: #dc2626;
   padding: 10px;
-  border: 1px solid #e6e9ee;
-  border-radius: 6px;
-  font-weight: 400;
+  border: 1px solid #b91c1c;
+  border-radius: 8px;
+  font-weight: 500;
   font-size: medium;
   color: #ffffff;
-  transition: 0.3s ease;
+  transition: background-color 0.2s ease;
+}
+.delete-section .delete-account-btn:hover {
+  background: #b91c1c;
 }
 
 .upload-btns button {
@@ -785,34 +808,34 @@ input {
 }
 .upload-btn,
 .save-btn {
-  background: #5d3471;
+  background: #5858E0;
 }
 .remove-btn,
 .cancel-btn {
-  background: #804d91;
+  background: #2A2A6B;
   transition: 0.3s ease;
 }
 
 .edit-btn:hover {
-  background: #aa69af;
+  background: #7272E8;
 }
 
 .upload-btn:hover {
-  background: #aa69af;
+  background: #7272E8;
   color: #fff;
 }
 .remove-btn:hover {
-  background: #aa69af;
+  background: #7272E8;
   color: #fff;
 }
 .save-btn:hover {
-  background: #aa69af;
+  background: #7272E8;
 }
 .cancel-btn:hover {
-  background: #aa69af;
+  background: #7272E8;
 }
 .delete-section button:hover {
-  background: #aa69af;
+  background: #7272E8;
   color: #fff;
 }
 
