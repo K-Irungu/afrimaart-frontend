@@ -43,7 +43,7 @@ const addToCartHandler = async (event) => {
 
 <template>
   <div
-    class="card bg-[#E8B6D5] rounded-lg shadow-md overflow-hidden transition-shadow hover:shadow-xl mb-8 cursor-pointer relative"
+    class="card bg-[#E8E7FC] rounded-lg shadow-md overflow-hidden transition-shadow hover:shadow-xl mb-8 cursor-pointer relative"
     @click="navigateToProduct"
   >
 
@@ -83,21 +83,21 @@ const addToCartHandler = async (event) => {
         <h4 class="card-name">{{ product.name }}</h4>
         <div class="flex justify-between items-center mt-1 mb-3">
           <span class="card-price text-lg">Ksh.{{ product.price }}</span>
-          <span class="card-brand text-xs text-[#5D3471] bg-[#E8B6D5] px-2 py-0.5 rounded-full">
+          <span class="card-brand text-xs text-[#5858E0] bg-[#E8E7FC] px-2 py-0.5 rounded-full">
             {{ product.brand }}
           </span>
         </div>
 
         <!-- Add rating display -->
         <div class="flex items-center mb-3">
-          <span class="text-sm text-[#CE7F57]">★</span>
+          <span class="text-sm text-[#FFAC1E]">★</span>
           <span class="text-sm text-gray-600 ml-1">{{ product.rating }}</span>
         </div>
 
         <div class="flex justify-center">
           <button
             @click="addToCartHandler"
-            class="w-[95%] h-[40px] py-2 bg-[#804D91] text-white font-medium rounded-xl hover:bg-[#AA69AF] transition duration-150"
+            class="w-[95%] h-[40px] py-2 bg-[#2A2A6B] text-white font-medium rounded-xl hover:bg-[#7272E8] transition duration-150"
           >
             Add to Cart
           </button>
@@ -109,13 +109,13 @@ const addToCartHandler = async (event) => {
 
 <style scoped>
 .card {
-  background: #e8b6d5;
+  background: #E8E7FC;
   width: 90%;
   height: 400px;
-  border: 1px solid #aa69af;
+  border: 1px solid #7272E8;
   border-radius: 20px;
   margin-bottom: 2rem;
-  color: #5d3471;
+  color: #5858E0;
   transition: all 0.3s ease;
   cursor: pointer;
   opacity: 0;
@@ -128,7 +128,7 @@ const addToCartHandler = async (event) => {
 }
 
 button {
-  background: #804d91; /* Royal Purple button */
+  background: #2A2A6B; /* Royal Purple button */
   border: none;
   border-radius: 10px;
   margin-top: 5px;
@@ -137,14 +137,14 @@ button {
 }
 
 button:hover {
-  background: #aa69af;
+  background: #7272E8;
 }
 
 .card-name,
 .card-price {
   font-size: 1rem;
   font-weight: 700;
-  color: #5d3471;
+  color: #5858E0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -152,7 +152,7 @@ button:hover {
 
 .card-brand {
   font-size: 0.75rem;
-  color: #5d3471;
+  color: #5858E0;
   font-weight: 600;
 }
 
@@ -160,7 +160,7 @@ button:hover {
   margin-top: 12px;
   margin-left: 5px;
   border-radius: 10px;
-  background: #ce7f57; /* Warm Brownish Orange badge */
+  background: #FFAC1E; /* Warm Brownish Orange badge */
   color: #ffffff;
   font-weight: 700;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
@@ -193,7 +193,7 @@ button:hover {
 }
 
 .card:hover {
-  box-shadow: 0 8px 25px #5d34714d;
+  box-shadow: 0 8px 25px #5858E04d;
   transform: translateY(-4px);
 }
 

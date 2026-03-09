@@ -26,7 +26,7 @@ const handleRemove = () => {
     <!-- Product Image -->
     <div class="w-[100px] h-[120px] flex-shrink-0 mr-[5px]">
       <div
-        class="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 overflow-hidden"
+        class="w-full h-full bg-[#E8E7FC] rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 overflow-hidden"
       >
         <!-- Display actual product image if available -->
         <img
@@ -38,7 +38,7 @@ const handleRemove = () => {
         <!-- Fallback placeholder if no image -->
         <div
           v-else
-          class="w-full h-full bg-gradient-to-br from-blue-200 to-indigo-300 rounded-lg flex items-center justify-center"
+          class="w-full h-full bg-[#E8E7FC] rounded-lg flex items-center justify-center"
         >
           <span class="text-xs font-semibold text-blue-800 uppercase text-center px-2">
             {{ item.name.substring(0, 15) }}{{ item.name.length > 15 ? '...' : '' }}
@@ -52,7 +52,7 @@ const handleRemove = () => {
       <div class="flex justify-between items-start mb-[5px]">
         <div class="flex-1">
           <h3
-            class="text-xl font-[500] text-[#5d3471] group-hover:text-blue-700 transition-colors duration-200 mb-2"
+            class="text-xl font-[500] text-[#5858E0] group-hover:text-blue-700 transition-colors duration-200 mb-2"
           >
             {{ item.name }}
           </h3>
@@ -132,11 +132,9 @@ const handleRemove = () => {
           <!-- Remove Button -->
           <button
             @click="handleRemove"
-            class="remove-btn flex items-center gap-2 text-sm font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 px-4 py-2 rounded-lg transition-all duration-200 group/remove"
+            class="remove-btn flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200 bg-[#dc2626] text-white hover:bg-[#b91c1c] border border-[#b91c1c]"
           >
-            <span class="text-lg group-hover/remove:scale-110 transition-transform duration-200">
-              🗑️
-            </span>
+            <font-awesome-icon :icon="['fas', 'trash']" class="w-4 h-4" />
             Remove
           </button>
         </div>
@@ -151,11 +149,11 @@ const handleRemove = () => {
   background: #ffffff;
   padding: 25px;
   border-radius: 20px;
-  border: 1px solid #e8b6d5; /* Soft Pink border */
+  border: 1px solid #E8E7FC; /* Soft Pink border */
 }
 
 .item-details:hover {
-  border-color: #5d3471; /* Deep Purple hover border */
+  border-color: #5858E0; /* Deep Purple hover border */
   box-shadow:
     0 10px 25px -5px rgba(93, 52, 113, 0.2),
     0 10px 10px -5px rgba(128, 77, 145, 0.1);
@@ -171,12 +169,12 @@ const handleRemove = () => {
 
 /* Description badges */
 .item-desc {
-  color: #804d91; /* Royal Purple */
+  color: #2A2A6B; /* Royal Purple */
 }
 
 /* Quantity selector */
 .qty-selector {
-  border: 1px solid #ce7f57; /* Warm Brownish Orange */
+  border: 1px solid #FFAC1E; /* Warm Brownish Orange */
   padding: 3px;
   border-radius: 10px;
 }
@@ -185,12 +183,12 @@ const handleRemove = () => {
   cursor: pointer;
   font-size: 12px;
   font-weight: 500;
-  color: #5d3471; /* Deep Purple */
+  color: #5858E0; /* Deep Purple */
 }
 
 /* Price tag */
 .price-tag {
-  background: #5d3471; /* Deep Purple */
+  background: #5858E0; /* Deep Purple */
   padding: 8px 12px;
   border-radius: 8px;
   color: white;
@@ -199,39 +197,38 @@ const handleRemove = () => {
 
 /* Action buttons */
 .remove-btn {
-  background: #fee8e8; /* Soft Pink variant */
-  color: #ce7f57; /* Warm Brownish Orange */
-  border: 1px solid #fee8e8;
+  background:rgb(223, 22, 22);
+  color: #ffffff;
+  border: 1px solid #b91c1c;
+}
+.remove-btn:hover {
+  background:rgb(74, 7, 7);
+  color: #ffffff;
+  border-color: #b91c1c;
 }
 
 .save-btn {
-  background: #e8b6d5; /* Soft Pink */
-  color: #804d91; /* Royal Purple text */
-  border: 1px solid #e8b6d5;
+  background: #E8E7FC; /* Soft Pink */
+  color: #2A2A6B; /* Royal Purple text */
+  border: 1px solid #E8E7FC;
 }
 
 .wishlist-btn {
-  background: #aa69af; /* Medium Orchid */
+  background: #7272E8; /* Medium Orchid */
   color: #ffffff;
-  border: 1px solid #aa69af;
+  border: 1px solid #7272E8;
 }
 
 /* Button hover effects */
 .save-btn:hover {
-  background: #804d91; /* Royal Purple hover */
+  background: #2A2A6B; /* Royal Purple hover */
   color: #ffffff;
-  border-color: #804d91;
+  border-color: #2A2A6B;
 }
 
 .wishlist-btn:hover {
-  background: #5d3471; /* Deep Purple hover */
-  border-color: #5d3471;
-}
-
-.remove-btn:hover {
-  background: #ce7f57; /* Warm Brownish Orange hover */
-  color: white;
-  border-color: #ce7f57;
+  background: #5858E0; /* Deep Purple hover */
+  border-color: #5858E0;
 }
 
 /* Image container styling */

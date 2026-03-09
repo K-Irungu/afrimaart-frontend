@@ -35,7 +35,7 @@ const notifications = ref([
     title: 'Your order has been shipped!',
     subtitle: 'Order #58421 is on its way to you',
     tagText: 'Order update',
-    tagColor: 'bg-[#E8B6D5] text-[#5D3471]',
+    tagColor: 'bg-[#E8E7FC] text-[#5858E0]',
     time: '2 hours ago',
     isUnread: true,
   },
@@ -44,7 +44,7 @@ const notifications = ref([
     title: 'New deals available',
     subtitle: 'Check out our latest promotions',
     tagText: 'New deals',
-    tagColor: 'bg-[#CE7F57] text-white',
+    tagColor: 'bg-[#FFAC1E] text-white',
     time: '1 day ago',
     isUnread: true,
   },
@@ -53,7 +53,7 @@ const notifications = ref([
     title: 'Security alert',
     subtitle: 'New login from San Francisco, CA',
     tagText: 'Security',
-    tagColor: 'bg-[#AA69AF] text-white',
+    tagColor: 'bg-[#7272E8] text-white',
     time: '2 days ago',
     isUnread: false,
   },
@@ -62,7 +62,7 @@ const notifications = ref([
     title: 'Payment method updated',
     subtitle: 'Your credit card has been updated',
     tagText: 'Payment',
-    tagColor: 'bg-[#804D91] text-white',
+    tagColor: 'bg-[#2A2A6B] text-white',
     time: '3 days ago',
     isUnread: false,
   },
@@ -249,22 +249,22 @@ onMounted(() => {
     <Navbar :user="user"/>
 
     <main class="main max-w-7xl mx-auto px-4 py-8">
-      <div class="text-sm text-[#804D91] mb-6 pb-[10px] my-[10px]">
-        Home / <span class="font-medium text-[#5D3471]">Account</span> /
-        <span class="text-[#AA69AF]">{{ getTabDisplayName(activeTab) }}</span>
+      <div class="text-sm text-[#2A2A6B] mb-6 pb-[10px] my-[10px]">
+        Home / <span class="font-medium text-[#5858E0]">Account</span> /
+        <span class="text-[#7272E8]">{{ getTabDisplayName(activeTab) }}</span>
       </div>
 
       <!-- Banner -->
       <div class="banner text-white p-[20px] rounded-lg flex justify-between items-center mb-6">
         <div>
           <h1 class="banner-ttl text-xl font-semibold mb-1">Your account</h1>
-          <p class="text-sm text-[#E8B6D5]">
+          <p class="text-sm text-[#E8E7FC]">
             Manage your profile, addresses, orders, and security.
           </p>
         </div>
         <button
           @click="handleSignOut"
-          class="signout-btn bg-[#5d3471] text-[#ffff] font-medium py-[8px] px-[10px] rounded-lg transition text-sm flex items-center gap-2 hover:bg-[#AA69AF]"
+          class="signout-btn bg-[#5858E0] text-[#ffff] font-medium py-[8px] px-[10px] rounded-lg transition text-sm flex items-center gap-2 hover:bg-[#7272E8]"
         >
           <font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" class="w-4 h-4 mr-[6px]" />
           Sign out
@@ -311,10 +311,10 @@ onMounted(() => {
           </div>
 
           <div v-else class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-2xl font-bold mb-4 text-[#5D3471]">
+            <h2 class="text-2xl font-bold mb-4 text-[#5858E0]">
               {{ getTabDisplayName(activeTab) }}
             </h2>
-            <p class="text-[#804D91]">Content for this section is coming soon.</p>
+            <p class="text-[#2A2A6B]">Content for this section is coming soon.</p>
           </div>
         </div>
       </div>
@@ -332,7 +332,7 @@ onMounted(() => {
   color: #000000;
 }
 .banner {
-  background: linear-gradient(135deg, #5d3471, #804d91, #aa69af);
+  background:rgb(46, 46, 151);
   color: white;
   border-radius: 20px;
   transition: all 0.3s ease-in-out;
@@ -342,7 +342,7 @@ onMounted(() => {
 }
 .banner:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(93, 52, 113, 0.3);
+  box-shadow: 0 6px 20px rgba(88, 88, 224, 0.3);
 }
 
 .signout-btn {

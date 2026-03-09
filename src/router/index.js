@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import AboutView from '@/views/AboutView.vue'
 import DealsView from '@/views/DealsView.vue'
 import AccountProfileView from '@/views/AccountView.vue'
 import CartView from '@/views/CartView.vue'
@@ -11,6 +10,7 @@ import CheckoutView from '@/views/CheckoutView.vue'
 import Admin from '@/views/Admin.vue'
 import AdminProducts from '@/components/Admin/AdminProducts.vue'
 import AdminOrders from '@/components/Admin/AdminOrders.vue'
+import StaticPageView from '@/views/StaticPageView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,7 +23,7 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      component: AboutView,
+      component: StaticPageView,
     },
     {
       path: '/deals',
@@ -49,6 +49,41 @@ const router = createRouter({
       path: '/contact',
       name: 'contact',
       component: ContactView,
+    },
+    {
+      path: '/careers',
+      name: 'careers',
+      component: StaticPageView,
+    },
+    {
+      path: '/press',
+      name: 'press',
+      component: StaticPageView,
+    },
+    {
+      path: '/help-center',
+      name: 'helpCenter',
+      component: StaticPageView,
+    },
+    {
+      path: '/returns',
+      name: 'returns',
+      component: StaticPageView,
+    },
+    {
+      path: '/privacy-policy',
+      name: 'privacyPolicy',
+      component: StaticPageView,
+    },
+    {
+      path: '/terms-of-service',
+      name: 'termsOfService',
+      component: StaticPageView,
+    },
+    {
+      path: '/cookie-policy',
+      name: 'cookiePolicy',
+      component: StaticPageView,
     },
     {
       path: '/auth',

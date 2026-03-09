@@ -1006,7 +1006,7 @@ onMounted(() => {
 
 <style scoped>
 .refresh-btn {
-  background: #5d3471;
+  background: #5858E0;
   color: white;
   padding: 0.75rem 1rem;
   border-radius: 8px;
@@ -1030,7 +1030,7 @@ onMounted(() => {
 }
 
 .refresh-btn {
-  background: #5d3471;
+  background: #5858E0;
   color: white;
   padding: 0.75rem 1rem;
   border-radius: 8px;
@@ -1113,7 +1113,7 @@ onMounted(() => {
 
 /* Add Product Button */
 .add-product-btn {
-  background: #5d3471;
+  background: #5858E0;
   color: white;
   padding: 12px 24px;
   border-radius: 12px;
@@ -1153,7 +1153,7 @@ onMounted(() => {
   padding: 20px 24px;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #5d3471;
+  color: #5858E0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -1535,7 +1535,7 @@ onMounted(() => {
 
 .close-details-btn {
   width: 100%;
-  background: #5d3471;
+  background: #5858E0;
   color: white;
   padding: 16px;
   border-radius: 12px;
@@ -1610,7 +1610,7 @@ onMounted(() => {
 .form-input:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: #5d3471;
+  border-color: #5858E0;
   box-shadow: 0 0 0 3px rgba(93, 52, 113, 0.1);
 }
 
@@ -1634,7 +1634,7 @@ onMounted(() => {
   height: 20px;
   border: 2px solid #d1d5db;
   border-radius: 6px;
-  accent-color: #5d3471;
+  accent-color: #5858E0;
 }
 
 .checkbox-label {
@@ -1670,7 +1670,7 @@ onMounted(() => {
 
 .submit-btn {
   padding: 16px 24px;
-  background: #5d3471;
+  background: #5858E0;
   color: white;
   border: none;
   border-radius: 12px;
@@ -1712,7 +1712,7 @@ onMounted(() => {
 
 /* Specification Buttons */
 .add-spec-btn {
-  background: #5d3471;
+  background: #5858E0;
   color: white;
   padding: 10px 16px;
   border-radius: 8px;
@@ -1891,9 +1891,9 @@ onMounted(() => {
 }
 
 .page-btn.active {
-  background: #5d3471;
+  background: #5858E0;
   color: white;
-  border-color: #5d3471;
+  border-color: #5858E0;
 }
 
 .page-ellipsis {
@@ -1924,7 +1924,7 @@ onMounted(() => {
 
 .items-per-page-select:focus {
   outline: none;
-  border-color: #5d3471;
+  border-color: #5858E0;
   box-shadow: 0 0 0 2px rgba(93, 52, 113, 0.1);
 }
 

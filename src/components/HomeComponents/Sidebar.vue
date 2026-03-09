@@ -84,7 +84,7 @@ updateFilters()
 
 <template>
   <aside class="sidefilter w-64 bg-white p-6 rounded-lg shadow-md space-y-8 px-[5px]">
-    <h2 class="text-xl font-bold text-[#5D3471] border-b pb-2">Filter Products</h2>
+    <h2 class="text-xl font-bold text-[#5858E0] border-b pb-2">Filter Products</h2>
 
     <!-- Categories -->
     <section class="my-[20px]">
@@ -97,8 +97,8 @@ updateFilters()
           :class="[ 
             's-btn px-3 py-1 text-sm rounded-full transition',
             selectedFilters.category === cat
-              ? 'bg-[#5D3471] text-white'
-              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF]'
+              ? 'bg-[#5858E0] text-white'
+              : 'bg-[#E8E7FC] text-[#5858E0] hover:bg-[#7272E8]'
           ]"
         >
           {{ cat }}
@@ -113,13 +113,13 @@ updateFilters()
         <label
           v-for="brand in props.brands"
           :key="brand"
-          class="flex gap-[10px] items-center space-x-2 text-sm text-[#5D3471]"
+          class="flex gap-[10px] items-center space-x-2 text-sm text-[#5858E0]"
         >
           <input
             type="checkbox"
             :checked="selectedFilters.brands.includes(brand)"
             @change="toggleBrand(brand)"
-            class="accent-[#AA69AF]"
+            class="accent-[#7272E8]"
           />
           <span>{{ brand }}</span>
         </label>
@@ -132,7 +132,7 @@ updateFilters()
       
       <!-- Current Selection Display -->
       <div class="mb-3 p-2 bg-[#F8F0F5] rounded-lg">
-        <p class="text-sm text-[#5D3471] font-medium">
+        <p class="text-sm text-[#5858E0] font-medium">
           {{ selectedFilters.rating === 'Any' ? 'Showing all ratings' : `Showing ${selectedFilters.rating} stars & above` }}
         </p>
       </div>
@@ -146,8 +146,8 @@ updateFilters()
           :class="[
             'rating-btn w-full flex items-center justify-between px-[6px] py-[4px] text-sm rounded-lg transition mb-[6px]',
             selectedFilters.rating === rate.value
-              ? 'bg-[#804D91] text-white'
-              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF] hover:text-white',
+              ? 'bg-[#5858E0] text-white'
+              : 'bg-[#E8E7FC] text-[#5858E0] hover:bg-[#7272E8] hover:text-white',
           ]"
         >
           <span class="flex items-center">
@@ -161,7 +161,7 @@ updateFilters()
 
     <!-- Active Filters Summary -->
     <section v-if="selectedFilters.rating !== 'Any'" class="mb-[20px] p-3 bg-[#F0E6F5] rounded-lg">
-      <h4 class="text-sm font-semibold text-[#5D3471] mb-2">Active Rating Filter:</h4>
+      <h4 class="text-sm font-semibold text-[#5858E0] mb-2">Active Rating Filter:</h4>
       <div class="flex items-center justify-between">
         <span class="inline-flex items-center">
           <span class="text-yellow-400 mr-1">{{ getStarDisplay(selectedFilters.rating) }}</span>
@@ -169,7 +169,7 @@ updateFilters()
         </span>
         <button 
           @click="selectRating('Any')" 
-          class="text-[#804D91] hover:text-[#5D3471] text-sm font-medium"
+          class="text-[#2A2A6B] hover:text-[#5858E0] text-sm font-medium"
           title="Clear rating filter"
         >
           Clear
@@ -190,7 +190,7 @@ updateFilters()
 .price-rage,
 .rating,
 .brand {
-  color: #5d3471;
+  color: #5858E0;
   font-weight: 600;
 }
 

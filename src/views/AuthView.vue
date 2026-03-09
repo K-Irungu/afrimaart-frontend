@@ -61,7 +61,7 @@ const validateForm = () => {
   if (isLogin.value) {
     if (!loginForm.value.email) errors.value.email = 'Email is required'
     else if (!validateEmail(loginForm.value.email))
-      errors.value.email = 'Please enter a valid email address'
+      errors.value.email = 'Please enter a valid email.'
 
     if (!loginForm.value.password) errors.value.password = 'Password is required'
     else if (!validatePassword(loginForm.value.password))
@@ -78,7 +78,7 @@ const validateForm = () => {
 
     if (!signupForm.value.email) errors.value.email = 'Email is required'
     else if (!validateEmail(signupForm.value.email))
-      errors.value.email = 'Please enter a valid email address'
+      errors.value.email = 'Please enter a valid email.'
 
     if (!signupForm.value.password) errors.value.password = 'Password is required'
     else if (!validatePassword(signupForm.value.password))
@@ -348,21 +348,21 @@ const testBackendResponse = async () => {
 
 <template>
   <div
-    class="auth-main min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4"
+    class="auth-main min-h-screen bg-[#F0EFFC] flex items-center justify-center p-4"
   >
     <div class="auth-forms max-w-md w-full">
       <!-- Auth Card -->
       <div class="flex justify-center item-center gap-[20px]">
         <!-- Left side -->
         <div
-          class="left relative w-2/5 bg-indigo-100 flex flex-col items-center justify-center text-center p-10"
+          class="left relative w-2/5 bg-[#E8E7FC] flex flex-col items-center justify-center text-center p-10"
         >
           <img :src="authIllustration" alt="Tasky Illustration" class="w-full h-[600px] mb-6" />
-          <div class="left-text absolute">
-            <h2 class="text-2xl font-semibold text-indigo-800 mb-2">Manage your tasks easily</h2>
-            <p class="text-gray-600">
+          <div class="left-text absolute bottom-4 left-4 right-4 rounded-xl bg-black/50 px-4 py-3 backdrop-blur-sm">
+            <h2 class="text-2xl font-semibold text-white mb-2 drop-shadow-sm">Manage your tasks easily</h2>
+            <p class="text-white/95 text-sm leading-relaxed">
               Manage your task in an easy and more efficient way with
-              <span class="font-semibold text-indigo-700">Tasky</span>.
+              <span class="font-semibold text-white">Tasky</span>.
             </p>
           </div>
         </div>
@@ -371,12 +371,12 @@ const testBackendResponse = async () => {
         <div class="right w-3/5 bg-white rounded-3xl shadow-2xl overflow-hidden">
           <!-- Header with Toggle -->
           <div
-            class="header-toggle bg-gradient-to-r from-blue-600 to-purple-700 p-8 py-[5px] text-center mb-[15px]"
+            class="header-toggle bg-[#5858E0] p-8 py-[5px] text-center mb-[15px]"
           >
             <h1 class="text-3xl font-bold text-white mb-2">
               {{ isLogin ? 'Welcome Back' : 'Join Us Today' }}
             </h1>
-            <p class="text-blue-100">
+            <p class="text-white/90">
               {{ isLogin ? 'Sign in to your account' : 'Create your account in seconds' }}
             </p>
           </div>
@@ -388,8 +388,8 @@ const testBackendResponse = async () => {
               :class="[
                 'flex-1 py-4 font-semibold transition-all duration-300',
                 isLogin
-                  ? 'bg-blue-600 text-white shadow-inner'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
+                  ? 'bg-[#5858E0] text-white shadow-inner'
+                  : 'bg-[#E8E7FC] text-[#2A2A6B] hover:bg-[#7272E8] hover:text-white',
               ]"
             >
               Sign In
@@ -399,8 +399,8 @@ const testBackendResponse = async () => {
               :class="[
                 'flex-1 py-4 font-semibold transition-all duration-300',
                 !isLogin
-                  ? 'bg-blue-600 text-white shadow-inner'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
+                  ? 'bg-[#5858E0] text-white shadow-inner'
+                  : 'bg-[#E8E7FC] text-[#2A2A6B] hover:bg-[#7272E8] hover:text-white',
               ]"
             >
               Sign Up
@@ -438,7 +438,7 @@ const testBackendResponse = async () => {
                     'w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200',
                     errors.email
                       ? 'border-red-500 focus:ring-red-200'
-                      : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
+                      : 'border-gray-300 focus:ring-[#E8E7FC] focus:border-[#5858E0]',
                   ]"
                 />
                 <p v-if="errors.email" class="mt-1 text-sm text-red-600">{{ errors.email }}</p>
@@ -459,7 +459,7 @@ const testBackendResponse = async () => {
                       'w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 pr-12',
                       errors.password
                         ? 'border-red-500 focus:ring-red-200'
-                        : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
+                        : 'border-gray-300 focus:ring-[#E8E7FC] focus:border-[#5858E0]',
                     ]"
                   />
                 </div>
@@ -474,11 +474,11 @@ const testBackendResponse = async () => {
                   <input
                     v-model="loginForm.rememberMe"
                     type="checkbox"
-                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    class="w-4 h-4 text-[#5858E0] border-gray-300 rounded focus:ring-[#5858E0]"
                   />
                   <span class="ml-2 text-sm text-gray-600">Remember me</span>
                 </label>
-                <a href="#" class="text-sm text-blue-600 hover:text-blue-700 no-underline transition-colors">
+                <a href="#" class="text-sm text-[#5858E0] hover:text-[#4545C7] no-underline transition-colors">
                   Forgot password?
                 </a>
               </div>
@@ -488,7 +488,7 @@ const testBackendResponse = async () => {
                 type="submit"
                 :disabled="isLoading"
                 :class="[
-                  'submit-btn w-full p-[10px] bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
+                  'submit-btn w-full p-[10px] bg-[#5858E0] hover:bg-[#4545C7] text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-[#E8E7FC] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
                 ]"
               >
                 <span v-if="isLoading" class="flex items-center justify-center">
@@ -535,7 +535,7 @@ const testBackendResponse = async () => {
                       'w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200',
                       errors.firstname
                         ? 'border-red-500 focus:ring-red-200'
-                        : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
+                        : 'border-gray-300 focus:ring-[#E8E7FC] focus:border-[#5858E0]',
                     ]"
                   />
                   <p v-if="errors.firstname" class="mt-1 text-sm text-red-600">
@@ -555,7 +555,7 @@ const testBackendResponse = async () => {
                       'w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200',
                       errors.lastname
                         ? 'border-red-500 focus:ring-red-200'
-                        : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
+                        : 'border-gray-300 focus:ring-[#E8E7FC] focus:border-[#5858E0]',
                     ]"
                   />
                   <p v-if="errors.lastname" class="mt-1 text-sm text-red-600">
@@ -578,7 +578,7 @@ const testBackendResponse = async () => {
                     'w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200',
                     errors.username
                       ? 'border-red-500 focus:ring-red-200'
-                      : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
+                      : 'border-gray-300 focus:ring-[#E8E7FC] focus:border-[#5858E0]',
                   ]"
                 />
                 <p v-if="errors.username" class="mt-1 text-sm text-red-600">{{ errors.username }}</p>
@@ -598,7 +598,7 @@ const testBackendResponse = async () => {
                     'w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200',
                     errors.email
                       ? 'border-red-500 focus:ring-red-200'
-                      : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
+                      : 'border-gray-300 focus:ring-[#E8E7FC] focus:border-[#5858E0]',
                   ]"
                 />
                 <p v-if="errors.email" class="mt-1 text-sm text-red-600">{{ errors.email }}</p>
@@ -623,12 +623,12 @@ const testBackendResponse = async () => {
                       :class="[
                         'block p-4 border-2 rounded-[10px] text-center cursor-pointer transition-all duration-200',
                         signupForm.role === 'customer'
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-300 bg-gray-50 text-gray-600 hover:bg-gray-100',
+                          ? 'border-[#5858E0] bg-[#5858E0] text-white'
+                          : 'border-gray-300 bg-[#E8E7FC] text-[#2A2A6B] hover:border-[#5858E0] hover:bg-[#E8E7FC]',
                       ]"
                     >
                       <div class="font-medium">Customer</div>
-                      <div class="text-xs mt-1">Regular user account</div>
+                      <div class="text-xs mt-1 opacity-90">Regular user account</div>
                     </label>
                   </div>
                   <div>
@@ -644,12 +644,12 @@ const testBackendResponse = async () => {
                       :class="[
                         'block p-4 border-2 rounded-[10px] text-center cursor-pointer transition-all duration-200',
                         signupForm.role === 'admin'
-                          ? 'border-purple-500 bg-purple-50 text-purple-700'
-                          : 'border-gray-300 bg-gray-50 text-gray-600 hover:bg-gray-100',
+                          ? 'border-[#5858E0] bg-[#5858E0] text-white'
+                          : 'border-gray-300 bg-[#E8E7FC] text-[#2A2A6B] hover:border-[#5858E0] hover:bg-[#E8E7FC]',
                       ]"
                     >
                       <div class="font-medium">Admin</div>
-                      <div class="text-xs mt-1">Administrator account</div>
+                      <div class="text-xs mt-1 opacity-90">Administrator account</div>
                     </label>
                   </div>
                 </div>
@@ -677,7 +677,7 @@ const testBackendResponse = async () => {
                         'w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 pr-12',
                         errors.password
                           ? 'border-red-500 focus:ring-red-200'
-                          : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
+                          : 'border-gray-300 focus:ring-[#E8E7FC] focus:border-[#5858E0]',
                       ]"
                     />
                   </div>
@@ -701,7 +701,7 @@ const testBackendResponse = async () => {
                         'w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 pr-12',
                         errors.confirmPassword
                           ? 'border-red-500 focus:ring-red-200'
-                          : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500',
+                          : 'border-gray-300 focus:ring-[#E8E7FC] focus:border-[#5858E0]',
                       ]"
                     />
                   </div>
@@ -726,11 +726,11 @@ const testBackendResponse = async () => {
                   />
                   <span class="ml-2 text-sm text-gray-600">
                     I agree to the
-                    <a href="#" class="text-blue-600 hover:text-blue-700 transition-colors"
+                    <a href="#" class="text-[#5858E0] hover:text-[#4545C7] transition-colors"
                       >Terms of Service</a
                     >
                     and
-                    <a href="#" class="text-blue-600 hover:text-blue-700 transition-colors"
+                    <a href="#" class="text-[#5858E0] hover:text-[#4545C7] transition-colors"
                       >Privacy Policy</a
                     >
                   </span>
@@ -745,7 +745,7 @@ const testBackendResponse = async () => {
                 type="submit"
                 :disabled="isLoading"
                 :class="[
-                  'submit-btn w-full py-[10px] bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-green-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
+                  'submit-btn w-full py-[10px] bg-[#5858E0] hover:bg-[#4545C7] text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-[#E8E7FC] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
                 ]"
               >
                 <span v-if="isLoading" class="flex items-center justify-center">
@@ -781,7 +781,7 @@ const testBackendResponse = async () => {
                 {{ isLogin ? "Don't have an account?" : 'Already have an account?' }}
                 <button
                   @click="toggleAuthMode"
-                  class="font-semibold text-blue-600 hover:text-blue-700 transition-colors ml-1"
+                  class="font-semibold text-[#5858E0] hover:text-[#4545C7] transition-colors ml-1"
                 >
                   {{ isLogin ? 'Sign up' : 'Sign in' }}
                 </button>
@@ -799,7 +799,7 @@ const testBackendResponse = async () => {
 <style scoped>
 /* Your existing styles remain the same */
 .auth-main {
-  background: #c2d9fc;
+  background: #F0EFFC;
 }
 .auth-forms {
   background: #ffffff;
@@ -820,22 +820,20 @@ const testBackendResponse = async () => {
 .header-toggle h1 {
   font-size: 2.2rem;
   font-weight: 700;
-  color: #5d3471;
+  color: #ffffff;
 }
 .header-toggle p {
   font-size: 1.2rem;
-  color: #804d91;
+  color: rgba(255, 255, 255, 0.9);
 }
 .toggle-btns {
   padding: 5px;
 }
 .toggle-btns button {
   padding: 8px;
-  border: 1.5px solid #804d91;
+  border: 1.5px solid #E8E7FC;
   border-radius: 20px;
   font-size: 1rem;
-  background: #5d3471;
-  color: #ffffff;
 }
 
 .input-group {
@@ -844,34 +842,37 @@ const testBackendResponse = async () => {
 .input-group input {
   padding: 10px;
   border-radius: 10px;
-  background: #eebefe;
+  background: #E8E7FC;
 }
 .input-group label {
-  color: #5d3471;
+  color: #2A2A6B;
   font-weight: 500;
 }
 .password p {
-  color: #2d1638;
+  color: #2A2A6B;
 }
 .submit-btn {
-  border: 1.5px solid #804d91;
-  background: #5d3471;
+  border: 1.5px solid #4545C7;
+  background: #5858E0;
   border-radius: 15px;
   font-size: 1rem;
   color: #ffffff;
+}
+.submit-btn:hover {
+  background: #4545C7;
 }
 form {
   animation: fadeIn 0.3s ease-in-out;
 }
 
 .footer-links p {
-  color: #2d1638;
+  color: #2A2A6B;
   font-weight: 400;
 }
 .footer-links button {
   border: none;
   background: transparent;
-  color: #804d91;
+  color: #5858E0;
 }
 
 @keyframes fadeIn {
@@ -888,7 +889,7 @@ form {
 /* Custom focus styles */
 input:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(88, 88, 224, 0.2);
 }
 
 /* Role selection styles */
@@ -902,25 +903,25 @@ input:focus {
   flex: 1;
   text-align: center;
   padding: 1rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid #E8E7FC;
   border-radius: 0.75rem;
   cursor: pointer;
   transition: all 0.2s;
-  background: #f9fafb;
+  background: #E8E7FC;
 }
 
 .role-option:hover {
-  background: #f3f4f6;
+  background: #F0EFFC;
 }
 
 .role-option.selected {
-  border-color: #3b82f6;
-  background: #eff6ff;
+  border-color: #5858E0;
+  background: #E8E7FC;
 }
 
 .role-option.admin.selected {
-  border-color: #8b5cf6;
-  background: #faf5ff;
+  border-color: #5858E0;
+  background: #E8E7FC;
 }
 
 /* Smooth scrolling */

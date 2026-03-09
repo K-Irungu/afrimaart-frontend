@@ -179,7 +179,7 @@ const filterStats = computed(() => {
     <Navbar />
 
     <!-- Banner  -->
-    <div class="banner bg-gray-800 text-white py-[5px] px-4 my-[20px]">
+    <div class="banner bg-gray-800 text-white py-[5px] px-4 my-[20px] mx-auto">
       <div class="max-w-7xl mx-auto flex justify-between items-center px-[20px] py-[10px]">
         <div class="">
           <h1 class="banner-ttl text-3xl font-bold mb-1">Save big on top products</h1>
@@ -189,26 +189,15 @@ const filterStats = computed(() => {
           </p>
         </div>
         <button
-          class="bg-[#5d3471] hover:bg-[#AA69AF] text-[#ffff] font-medium py-[5px] px-[8px] rounded-lg transition-all duration-200"
+          class="bg-[#5858E0] hover:bg-[#7272E8] text-[#ffff] font-medium py-[5px] px-[8px] rounded-lg transition-all duration-200"
         >
           Hot Deals
         </button>
       </div>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="isLoading" class="text-center py-12">
-      <div class="flex items-center justify-center">
-        <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <span class="ml-3 text-lg text-gray-600">Loading deals...</span>
-      </div>
-    </div>
-
     <!-- Error State -->
-    <div v-else-if="error" class="text-center py-12">
+    <div v-if="error" class="text-center py-12">
       <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
         <p class="text-red-700 mb-4">Error loading deals: {{ error }}</p>
         <button
@@ -232,6 +221,7 @@ const filterStats = computed(() => {
           :currentPage="currentPage"
           :totalPages="totalPages"
           :totalProducts="sortedProducts.length"
+          :isLoading="isLoading"
         />
 
         <!-- Show message if no products -->
@@ -251,7 +241,7 @@ const filterStats = computed(() => {
 
 <style scoped>
 .home {
-  background: #fff7fc;
+  background: #F0EFFC;
   color: #1f2937;
 }
 
@@ -261,8 +251,11 @@ const filterStats = computed(() => {
 }
 
 .banner {
-  background: linear-gradient(135deg, #5d3471, #804d91, #aa69af);
+  background: rgb(58, 58, 191);
   width: 90%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
   color: white;
   border-radius: 20px;
   transition: all 0.3s ease-in-out;
@@ -284,9 +277,9 @@ const filterStats = computed(() => {
 }
 .show-msg{
   border-radius: 20px;
-  border: 1.5px solid #e9bdff;
+  border: 1.5px solid #E8E7FC;
   height: 300px;
-  background: #aa69af;
+  background: #E8E7FC;
 }
 .show-msg p{
   font-size: 2rem;

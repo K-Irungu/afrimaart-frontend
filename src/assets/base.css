@@ -8,19 +8,30 @@
   --vt-c-black-soft: #222222;
   --vt-c-black-mute: #282828;
 
-  /* Your color palette */
-  --color-deep-purple: #5d3471;
-  --color-medium-orchid: #aa69af;
-  --color-royal-purple: #804d91;
-  --color-warm-orange: #ce7f57;
-  --color-soft-pink: #e8b6d5;
+  /* Afrimart logo palette:  */
+  --color-primary: #5858E0;
+  --color-primary-light: #7272E8;
+  --color-primary-dark: #4545C7;
+  --color-secondary: #2A2A6B;
+  --color-secondary-light: #3D3D8B;
+  --color-accent-gold: #FFAC1E;
+  --color-accent-magenta: #A23B7C;
+  --color-accent-purple: #6A2E8D;
+  --color-accent-soft: #E8E7FC;
+
+  /* Legacy names mapped to Afrimart palette */
+  --color-deep-purple: #5858E0;
+  --color-medium-orchid: #7272E8;
+  --color-royal-purple: #2A2A6B;
+  --color-warm-orange: #FFAC1E;
+  --color-soft-pink: #E8E7FC;
 
   /* Additional shades */
-  --color-deep-purple-light: #6d3f83;
-  --color-medium-orchid-light: #b87bbd;
-  --color-royal-purple-light: #8f5a9f;
-  --color-warm-orange-light: #d8916b;
-  --color-soft-pink-light: #ecc6df;
+  --color-deep-purple-light: #7272E8;
+  --color-medium-orchid-light: #8B8BED;
+  --color-royal-purple-light: #3D3D8B;
+  --color-warm-orange-light: #FFC107;
+  --color-soft-pink-light: #F0EFFC;
 }
 
 /* semantic color variables for this project */
@@ -85,4 +96,19 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Visibility & feedback: focus states so users know where they are */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Constraints: prevent broken layout from long words */
+html {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }

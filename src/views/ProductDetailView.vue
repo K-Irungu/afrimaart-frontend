@@ -156,7 +156,7 @@ const originalPrice = computed(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+  <div class="min-h-screen bg-[#F0EFFC]">
     <!-- Navbar -->
     <Navbar />
 
@@ -230,7 +230,7 @@ const originalPrice = computed(() => {
                 <!-- NEW Badge -->
                 <span
                   v-if="product.is_new"
-                  class="new-badge absolute top-[6px] left-[6px] bg-[#CE7F57] text-white text-sm font-semibold px-[8px] py-[4px] rounded-lg z-20"
+                  class="new-badge absolute top-[6px] left-[6px] bg-[#FFAC1E] text-white text-sm font-semibold px-[8px] py-[4px] rounded-lg z-20"
                 >
                   NEW
                 </span>
@@ -242,12 +242,12 @@ const originalPrice = computed(() => {
               <!-- Header with Price -->
               <div class="flex justify-between items-start mb-[15px]">
                 <div class="flex-1">
-                  <h1 class="text-3xl font-[500] text-[#5d3471] leading-tight mb-2">{{ product.name }}</h1>
-                  <p class="text-lg text-[#5d3471] mb-4">{{ product.brand }}</p>
+                  <h1 class="text-3xl font-[500] text-[#5858E0] leading-tight mb-2">{{ product.name }}</h1>
+                  <p class="text-lg text-[#5858E0] mb-4">{{ product.brand }}</p>
                 </div>
                 <div class="text-right">
-                  <p class="text-3xl font-[500] text-[#ce7f57]">Ksh{{ product.price?.toFixed(2) }}</p>
-                  <p v-if="originalPrice" class="text-lg text-[#ce7f57] line-through">
+                  <p class="text-3xl font-[500] text-[#FFAC1E]">Ksh{{ product.price?.toFixed(2) }}</p>
+                  <p v-if="originalPrice" class="text-lg text-[#FFAC1E] line-through">
                     Ksh{{ originalPrice }}
                   </p>
                 </div>
@@ -353,7 +353,7 @@ const originalPrice = computed(() => {
                   <div class="action-btns flex gap-[6px] sm:w-auto">
                     <button
                       @click="addToCartHandler"
-                      class="add-btn flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 transform hover:scale-105"
+                      class="add-btn flex-1 bg-[#5858E0] hover:bg-[#4545C7] text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 transform hover:scale-105"
                     >
                         <font-awesome-icon :icon="['fas', 'shopping-cart']" class="w-4 h-4" />
                         Add to Cart
@@ -397,7 +397,7 @@ const originalPrice = computed(() => {
           <div class="features-specifications my-[20px] p-[20px]">
             <div class="grid lg:grid-cols-2 gap-8">
               <!-- Features -->
-              <div class="features bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl" v-if="product.features && product.features.length > 0">
+              <div class="features bg-[#E8E7FC] p-6 rounded-2xl" v-if="product.features && product.features.length > 0">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Key Features</h2>
                 <ul class="space-y-3">
                   <li
@@ -412,7 +412,7 @@ const originalPrice = computed(() => {
               </div>
 
               <!-- Specifications -->
-              <div class="specifications bg-gradient-to-br from-gray-50 to-blue-50 p-6 rounded-2xl" v-if="product.specifications && Object.keys(product.specifications).length > 0">
+              <div class="specifications bg-[#E8E7FC] p-6 rounded-2xl" v-if="product.specifications && Object.keys(product.specifications).length > 0">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Specifications</h2>
                 <div class="space-y-4">
                   <div
@@ -444,12 +444,12 @@ const originalPrice = computed(() => {
 
 .breadcrumbs ol {
   list-style-type: none;
-  color: #804d91;
+  color: #2A2A6B;
 }
 
 .breadcrumbs a {
   text-decoration: none;
-  color: #804d91;
+  color: #2A2A6B;
 }
 
 .image-gallery {
@@ -467,7 +467,7 @@ const originalPrice = computed(() => {
   margin-top: 12px;
   margin-left: 6px;
   border-radius: 10px;
-  background: #ce7f57;
+  background: #FFAC1E;
   color: #ffffff;
   font-weight: 700;
   animation: pulse 2s infinite;
@@ -482,7 +482,7 @@ const originalPrice = computed(() => {
 }
 
 .rating {
-  background: #aa69af;
+  background: #7272E8;
   width: fit-content;
   padding: 8px 16px;
   margin-bottom: 10px;
@@ -491,28 +491,28 @@ const originalPrice = computed(() => {
 }
 
 .product-desc {
-  color: #5d3471;
+  color: #5858E0;
 }
 
 .color-selection p,
 .warranty p {
-  color: #804d91;
+  color: #2A2A6B;
   font-size: 1.5rem;
   font-weight: 500;
 }
 
 .color-selection button {
-  border: 1.5px solid #aa69af;
+  border: 1.5px solid #7272E8;
   border-radius: 10px;
 }
 
 .waranty-instance{
-  border: 1.5px solid #aa69af;
+  border: 1.5px solid #7272E8;
   border-radius: 10px;
 }
 
 .quantity-selector {
-  border: 1px solid #5d3471;
+  border: 1px solid #5858E0;
   border-radius: 10px;
   padding: 2px 6px;
 }
@@ -528,7 +528,7 @@ const originalPrice = computed(() => {
 
 .add-btn {
   color: white;
-  background: linear-gradient(90deg, #5d3471 0%, #804d91 100%);
+  background: #5858E0;
 }
 
 .wishlist-btn {

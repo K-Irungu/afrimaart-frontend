@@ -616,7 +616,7 @@ onMounted(() => {
 
 .address-item {
   border-radius: 20px;
-  border: 1px solid #aa69af;
+  border: 1px solid #7272E8;
   background: #ffffff;
 }
 
@@ -629,40 +629,40 @@ onMounted(() => {
 }
 
 .edit-btn {
-  background: #e8b6d5;
-  border-color: #aa69af;
-  color: #5d3471;
+  background: #E8E7FC;
+  border-color: #7272E8;
+  color: #5858E0;
 }
 
 .default-btn {
-  background: #e8b6d5;
-  border-color: #804d91;
-  color: #804d91;
+  background: #E8E7FC;
+  border-color: #2A2A6B;
+  color: #2A2A6B;
 }
 
 .remove-btn {
   background: #fef2f2;
-  border-color: #ce7f57;
-  color: #ce7f57;
+  border-color: #FFAC1E;
+  color: #FFAC1E;
 }
 
 .search-form {
   padding: 2px;
   width: 60%;
-  border: 1px solid #aa69af;
+  border: 1px solid #7272E8;
   border-radius: 10px;
-  background: #e8b6d5;
+  background: #E8E7FC;
   transition: all 0.2s ease;
 }
 
 .search-input {
   padding: 10px;
   border: none;
-  background: #e8b6d5;
+  background: #E8E7FC;
 }
 
 .search-input:focus {
-  border-color: #5d3471;
+  border-color: #5858E0;
   background: #ffffff;
   box-shadow: 0 0 0 3px rgba(93, 52, 113, 0.1);
 }
@@ -672,7 +672,7 @@ onMounted(() => {
   padding: 10px;
   border: none;
   background: transparent;
-  color: #5d3471;
+  color: #5858E0;
 }
 
 .form-group {
@@ -681,14 +681,14 @@ onMounted(() => {
 
 .form-input {
   padding: 10px;
-  border: 1px solid #aa69af;
+  border: 1px solid #7272E8;
   border-radius: 10px;
-  background: #e8b6d5;
+  background: #E8E7FC;
   transition: all 0.2s ease;
 }
 
 .form-input:focus {
-  border-color: #5d3471;
+  border-color: #5858E0;
   background: #ffffff;
   box-shadow: 0 0 0 3px rgba(93, 52, 113, 0.1);
   transform: translateY(-1px);
@@ -700,40 +700,40 @@ onMounted(() => {
 
 .form-group label {
   font-weight: 500;
-  color: #5d3471;
+  color: #5858E0;
 }
 
 .add-card {
   border-radius: 20px;
-  border-color: #aa69af;
+  border-color: #7272E8;
   transition: all 0.3s ease;
 }
 
 .add-card:hover {
-  border-color: #804d91;
-  background: #e8b6d5;
+  border-color: #2A2A6B;
+  background: #E8E7FC;
 }
 
 .close-btn {
   padding: 8px;
   border-radius: 8px;
-  background: #5d3471;
+  background: #5858E0;
   transition: all 0.4s ease-in-out;
 }
 
 .close-btn:hover {
-  background: #aa69af;
+  background: #7272E8;
   color: #ffffff;
   transform: rotate(90deg);
 }
 
 .cancel-btn {
   color: #ffffff;
-  background: #5d3471;
+  background: #5858E0;
   padding: 10px;
   margin-top: 20px;
   border-radius: 10px;
-  border: 1px solid #aa69af;
+  border: 1px solid #7272E8;
   transition: all 0.2s ease;
 }
 
@@ -741,18 +741,18 @@ onMounted(() => {
   padding: 10px;
   margin-top: 20px;
   border-radius: 10px;
-  background: #804d91;
+  background: #2A2A6B;
   border: none;
   color: #ffffff;
 }
 
 .cancel-btn:hover {
-  background: #aa69af;
+  background: #7272E8;
   box-shadow: 0 4px 12px rgba(170, 105, 175, 0.3);
 }
 
 .save-btn:hover {
-  background: #ce7f57;
+  background: #FFAC1E;
   box-shadow: 0 4px 12px rgba(206, 127, 87, 0.3);
   transform: translateY(-1px);
 }

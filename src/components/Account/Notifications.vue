@@ -78,7 +78,7 @@ const readNotifications = props.notifications.filter((notification) => !notifica
   padding: 32px;
   border-radius: 20px;
   box-shadow: 0 2px 8px rgba(128, 77, 145, 0.15);
-  border: 1px solid #e8b6d5;
+  border: 1px solid #E8E7FC;
 }
 
 .notification-grid {
@@ -90,25 +90,25 @@ const readNotifications = props.notifications.filter((notification) => !notifica
 h2 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #5d3471;
+  color: #5858E0;
 }
 
 h3 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #804d91;
+  color: #2A2A6B;
   padding-bottom: 8px;
-  border-bottom: 2px solid #e8b6d5;
+  border-bottom: 2px solid #E8E7FC;
 }
 
 .header span {
   border-radius: 5px;
-  background: #5d3471;
+  background: #5858E0;
   color: white;
 }
 
 button {
-  background: #804d91;
+  background: #2A2A6B;
   border-radius: 8px;
   border: none;
   padding: 8px 16px;
@@ -118,7 +118,7 @@ button {
 }
 
 button:hover {
-  background: #aa69af;
+  background: #7272E8;
   color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(170, 105, 175, 0.3);
@@ -130,7 +130,7 @@ section {
 }
 
 section:not(:last-child) {
-  border-bottom: 2px solid #e8b6d5;
+  border-bottom: 2px solid #E8E7FC;
   margin-bottom: 24px;
 }
 
@@ -142,11 +142,11 @@ section:not(:last-child) {
 .text-center h3 {
   border-bottom: none;
   margin-bottom: 12px;
-  color: #5d3471;
+  color: #5858E0;
 }
 
 .text-center p {
-  color: #804d91;
+  color: #2A2A6B;
 }
 
 /* Responsive design */
@@ -163,12 +163,12 @@ section:not(:last-child) {
 
   h2 {
     font-size: 1.5rem;
-    color: #5d3471;
+    color: #5858E0;
   }
 
   h3 {
     font-size: 1.125rem;
-    color: #804d91;
+    color: #2A2A6B;
   }
 }
 </style>

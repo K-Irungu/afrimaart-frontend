@@ -71,17 +71,17 @@ const getProductNames = (order) => {
 const getStatusClass = (status) => {
   switch (status) {
     case 'Shipped':
-      return 'bg-[#CE7F57] text-white border-[#CE7F57]'
+      return 'bg-[#FFAC1E] text-white border-[#FFAC1E]'
     case 'Processing':
-      return 'bg-[#AA69AF] text-white border-[#AA69AF]'
+      return 'bg-[#7272E8] text-white border-[#7272E8]'
     case 'Delivered':
-      return 'bg-[#804D91] text-white border-[#804D91]'
+      return 'bg-[#2A2A6B] text-white border-[#2A2A6B]'
     case 'Cancelled':
-      return 'bg-[#5D3471] text-white border-[#5D3471]'
+      return 'bg-[#5858E0] text-white border-[#5858E0]'
     case 'Pending':
-      return 'bg-[#E8B6D5] text-[#5D3471] border-[#E8B6D5]'
+      return 'bg-[#E8E7FC] text-[#5858E0] border-[#E8E7FC]'
     default:
-      return 'bg-[#E8B6D5] text-[#5D3471] border-[#E8B6D5]'
+      return 'bg-[#E8E7FC] text-[#5858E0] border-[#E8E7FC]'
   }
 }
 
@@ -175,12 +175,12 @@ const closeModal = () => {
           v-model="searchQuery"
           type="text"
           placeholder="Search orders, # or item"
-          class="filter-input p-3 border border-gray-300 rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]"
+          class="filter-input p-3 border border-gray-300 rounded-lg focus:ring-[#5858E0] focus:border-[#5858E0]"
         />
 
         <select
           v-model="statusFilter"
-          class="filter-select p-3 border border-gray-300 rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]"
+          class="filter-select p-3 border border-gray-300 rounded-lg focus:ring-[#5858E0] focus:border-[#5858E0]"
         >
           <option value="All">Status: All</option>
           <option value="Pending">Pending</option>
@@ -192,7 +192,7 @@ const closeModal = () => {
 
         <select
           v-model="dateFilter"
-          class="filter-select p-3 border border-gray-300 rounded-lg focus:ring-[#5D3471] focus:border-[#5D3471]"
+          class="filter-select p-3 border border-gray-300 rounded-lg focus:ring-[#5858E0] focus:border-[#5858E0]"
         >
           <option value="Last 12 months">Placed: Last 12 months</option>
           <option value="Last 6 months">Last 6 months</option>
@@ -287,26 +287,26 @@ const closeModal = () => {
               <!-- Order Details Modal - Inline below the row -->
               <tr v-if="selectedOrder && selectedOrder._id === order._id && showOrderModal">
                 <td colspan="6" class="p-0">
-                  <div class="order-details-modal bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-[20px] m-4 shadow-lg animate-slide-down">
+                  <div class="order-details-modal bg-white border border-gray-200 rounded-[20px] m-4 shadow-lg animate-slide-down">
                     <!-- Modal Header -->
-                    <div class="bg-[#804D91] text-white p-[10px] rounded-t-lg">
+                    <div class="bg-[#2A2A6B] text-white p-[10px] rounded-t-lg">
                       <div class="flex justify-between items-start">
                         <div class="flex-1">
                           <div class="flex items-center space-x-3 mb-3">
                             <div class="flex justify-between items-center gap-[10px] w-full">
                               <h2 class="text-[2rem] font-[500]">Order Details</h2>
-                              <p class="text-[#ffff] text-[1rem] bg-[#E8B6D5] p-[6px] rounded-[10px]">Order #{{ selectedOrder._id?.slice(-8).toUpperCase() }}</p>
+                              <p class="text-[#ffff] text-[1rem] bg-[#E8E7FC] p-[6px] rounded-[10px]">Order #{{ selectedOrder._id?.slice(-8).toUpperCase() }}</p>
                             </div> 
                           </div>
                           
                           <!-- Order Summary in Header -->
                           <div class="grid grid-cols-2 gap-3">
                             <div class="bg-white bg-opacity-10 rounded-[20px] p-2">
-                              <p class="text-[#E8B6D5] text-xs">Order Date</p>
+                              <p class="text-[#E8E7FC] text-xs">Order Date</p>
                               <p class="font-semibold text-sm">{{ formatDate(selectedOrder.createdAt) }}</p>
                             </div>
                             <div class="bg-white bg-opacity-10 rounded-lg p-2">
-                              <p class="text-[#E8B6D5] text-xs">Total Amount</p>
+                              <p class="text-[#E8E7FC] text-xs">Total Amount</p>
                               <p class="font-semibold text-sm">${{ getTotalAmount(selectedOrder).toFixed(2) }}</p>
                             </div>
                           </div>
@@ -337,16 +337,16 @@ const closeModal = () => {
                     <div class="p-[10px] space-y-6">
                       <!-- Order Items -->
                       <div>
-                        <h3 class="text-[1.5rem] font-[500] text-[#5D3471] mb-[10px] flex items-center">
+                        <h3 class="text-[1.5rem] font-[500] text-[#5858E0] mb-[10px] flex items-center">
                           Order Items ({{ getTotalItems(selectedOrder) }})
                         </h3>
                         <div class="space-y-3">
                           <div 
                             v-for="(item, index) in selectedOrder.items" 
                             :key="index"
-                            class="flex items-center gap-[10px] space-x-3 p-[6px] bg-white rounded-[10px] border border-gray-100 hover:border-[#E8B6D5] transition-all duration-200"
+                            class="flex items-center gap-[10px] space-x-3 p-[6px] bg-white rounded-[10px] border border-gray-100 hover:border-[#E8E7FC] transition-all duration-200"
                           >
-                            <div class="flex-shrink-0 w-12 h-12 bg-[#E8B6D5] rounded-[6px] flex items-center justify-center shadow p-[6px]">
+                            <div class="flex-shrink-0 w-12 h-12 bg-[#E8E7FC] rounded-[6px] flex items-center justify-center shadow p-[6px]">
                               <span class="text-white font-bold text-xs">{{ item.quantity || 1 }}x</span>
                             </div>
                             <div class="flex-1 min-w-0">
@@ -356,7 +356,7 @@ const closeModal = () => {
                               <p class="text-xs text-gray-600">Quantity: {{ item.quantity || 1 }}</p>
                             </div>
                             <div class="text-right flex-shrink-0">
-                              <p class="font-bold text-[#5D3471] text-md">
+                              <p class="font-bold text-[#5858E0] text-md">
                                 ${{ getItemPrice(item).toFixed(2) }}
                               </p>
                               <p class="text-xs text-gray-500">
@@ -369,7 +369,7 @@ const closeModal = () => {
 
                       <!-- Payment Summary -->
                       <div>
-                        <h3 class="text-[1.5rem] font-[500] text-[#5D3471] my-[6px] flex items-center">
+                        <h3 class="text-[1.5rem] font-[500] text-[#5858E0] my-[6px] flex items-center">
                           Payment Summary
                         </h3>
                         <div class="bg-white rounded-[20px] p-[10px] border border-gray-100">
@@ -387,8 +387,8 @@ const closeModal = () => {
                               <span class="font-semibold text-sm">$0.00</span>
                             </div>
                             <div class="flex justify-between items-center pt-3 border-t border-gray-200">
-                              <span class="font-[500] text-[#5D3471]">Total</span>
-                              <span class="font-[500] text-[#5D3471] text-lg">${{ getTotalAmount(selectedOrder).toFixed(2) }}</span>
+                              <span class="font-[500] text-[#5858E0]">Total</span>
+                              <span class="font-[500] text-[#5858E0] text-lg">${{ getTotalAmount(selectedOrder).toFixed(2) }}</span>
                             </div>
                           </div>
                         </div>
@@ -396,7 +396,7 @@ const closeModal = () => {
 
                       <!-- Shipping Information -->
                       <div v-if="selectedOrder.shipping_address">
-                        <h3 class="text-[1.5rem] font-[500] text-[#5D3471] my-[6px] flex items-center">
+                        <h3 class="text-[1.5rem] font-[500] text-[#5858E0] my-[6px] flex items-center">
                           Shipping Information
                         </h3>
                         <div class="bg-white rounded-[20px] p-[10px] border border-gray-100">
@@ -414,7 +414,7 @@ const closeModal = () => {
                       <div class="flex justify-end space-x-3">
                         <button
                           @click="closeModal"
-                          class="px-[12px] py-[8px] bg-[#ce7f57] border border-[#5D3471] text-[#5D3471] rounded-[10px] hover:bg-[#5D3471] hover:text-[#ffff] transition-all duration-200 text-sm font-medium"
+                          class="px-[12px] py-[8px] bg-[#FFAC1E] border border-[#5858E0] text-[#5858E0] rounded-[10px] hover:bg-[#5858E0] hover:text-[#ffff] transition-all duration-200 text-sm font-medium"
                         >
                           Close
                         </button>
@@ -433,7 +433,7 @@ const closeModal = () => {
         <div class="text-gray-500">No orders match your filters</div>
         <button 
           @click="searchQuery = ''; statusFilter = 'All'; dateFilter = 'Last 12 months'"
-          class="text-[#5D3471] hover:text-[#804D91] mt-2"
+          class="text-[#5858E0] hover:text-[#2A2A6B] mt-2"
         >
           Clear filters
         </button>
@@ -478,12 +478,12 @@ const closeModal = () => {
 }
 
 .view-details-btn {
-  background: linear-gradient(135deg, #5D3471, #804D91);
+  background: #5858E0;
   box-shadow: 0 2px 4px rgba(93, 52, 113, 0.2);
 }
 
 .view-details-btn:hover {
-  background: linear-gradient(135deg, #804D91, #AA69AF);
+  background: #2A2A6B;
   box-shadow: 0 4px 8px rgba(93, 52, 113, 0.3);
 }
 
@@ -496,29 +496,29 @@ const closeModal = () => {
 }
 
 /* Status colors */
-.status-badge.bg-\[\#CE7F57\] {
-  background-color: #ce7f57 !important;
-  border-color: #ce7f57 !important;
+.status-badge.bg-\[\#FFAC1E\] {
+  background-color: #FFAC1E !important;
+  border-color: #FFAC1E !important;
 }
 
-.status-badge.bg-\[\#AA69AF\] {
-  background-color: #aa69af !important;
-  border-color: #aa69af !important;
+.status-badge.bg-\[\#7272E8\] {
+  background-color: #7272E8 !important;
+  border-color: #7272E8 !important;
 }
 
-.status-badge.bg-\[\#804D91\] {
-  background-color: #804d91 !important;
-  border-color: #804d91 !important;
+.status-badge.bg-\[\#2A2A6B\] {
+  background-color: #2A2A6B !important;
+  border-color: #2A2A6B !important;
 }
 
-.status-badge.bg-\[\#5D3471\] {
-  background-color: #5d3471 !important;
-  border-color: #5d3471 !important;
+.status-badge.bg-\[\#5858E0\] {
+  background-color: #5858E0 !important;
+  border-color: #5858E0 !important;
 }
 
-.status-badge.bg-\[\#E8B6D5\] {
-  background-color: #e8b6d5 !important;
-  border-color: #e8b6d5 !important;
+.status-badge.bg-\[\#E8E7FC\] {
+  background-color: #E8E7FC !important;
+  border-color: #E8E7FC !important;
 }
 
 .order-history tr:last-child td {

@@ -56,6 +56,30 @@ const newPaymentForm = ref({
   isDefault: false,
 })
 
+// Phone validation: 9–15 digits (optional + and spaces/dashes)
+const isValidPhone = (phone) => {
+  if (!phone || typeof phone !== 'string') return false
+  const digits = phone.replace(/\D/g, '')
+  return digits.length >= 9 && digits.length <= 15
+}
+
+const contactPhoneError = ref('')
+const mpesaPhoneError = ref('')
+
+const validateContactPhoneOnBlur = () => {
+  const phone = newContactForm.value.phone?.trim()
+  contactPhoneError.value = !phone ? 'Please enter a phone number' : !isValidPhone(phone) ? 'Please enter a valid phone number (9–15 digits)' : ''
+}
+
+const validateMpesaPhoneOnBlur = () => {
+  if (newPaymentForm.value.type !== 'mpesa') {
+    mpesaPhoneError.value = ''
+    return
+  }
+  const phone = newPaymentForm.value.phone_number?.trim()
+  mpesaPhoneError.value = !phone ? 'Please enter your M-Pesa phone number' : !isValidPhone(phone) ? 'Please enter a valid phone number (9–15 digits)' : ''
+}
+
 // Order data
 const orderData = ref({
   subtotal: 0,
@@ -290,12 +314,29 @@ const validateOrderData = () => {
     errors.push('User not authenticated')
   }
 
+  const phone = contactPhone.value
+  if (!phone || !phone.trim()) {
+    errors.push('Please enter a valid phone number')
+  } else if (!isValidPhone(phone)) {
+    errors.push('Please enter a valid phone number (9–15 digits)')
+  }
+
   if (!checkoutState.value.selectedAddress) {
     errors.push('Shipping address not selected')
   }
 
   if (!checkoutState.value.selectedPaymentMethod) {
     errors.push('Payment method not selected')
+  }
+
+  const paymentMethod = userData.value.paymentMethods.find(
+    (pm) => pm._id === checkoutState.value.selectedPaymentMethod,
+  )
+  if (paymentMethod?.type === 'mpesa') {
+    const mpesaPhone = paymentMethod.phone_number?.trim()
+    if (!mpesaPhone || !isValidPhone(mpesaPhone)) {
+      errors.push('Please enter a valid M-Pesa phone number (9–15 digits)')
+    }
   }
 
   const cartItems = getCartItemsForOrder()
@@ -417,9 +458,16 @@ const saveNewPayment = async () => {
   }
 
   // Validate required fields
-  if (newPaymentForm.value.type === 'mpesa' && !newPaymentForm.value.phone_number.trim()) {
-    alert('Please enter your M-Pesa phone number')
-    return
+  if (newPaymentForm.value.type === 'mpesa') {
+    const mpesaPhone = newPaymentForm.value.phone_number?.trim()
+    if (!mpesaPhone) {
+      alert('Please enter your M-Pesa phone number')
+      return
+    }
+    if (!isValidPhone(mpesaPhone)) {
+      alert('Please enter a valid phone number (9–15 digits)')
+      return
+    }
   }
 
   loading.value.savingPayment = true
@@ -519,6 +567,7 @@ const useDifferentContact = () => {
 
 const useAccountContact = () => {
   checkoutState.value.useDifferentContact = false
+  contactPhoneError.value = ''
   resetNewContactForm()
 }
 
@@ -695,7 +744,7 @@ const returnToCart = () => {
           <h1 class="banner-tt text-3xl font-bold">Checkout</h1>
           <button
             @click="returnToCart"
-            class="bg-[#5d3471] hover:bg-[#AA69AF] text-[#ffff] text-sm font-medium hover:text-royal-purple transition-colors"
+            class="bg-[#5858E0] hover:bg-[#7272E8] text-[#ffff] text-sm font-medium hover:text-royal-purple transition-colors"
           >
             Return to cart
           </button>
@@ -726,7 +775,7 @@ const returnToCart = () => {
             class="flex-1 h-1"
             :class="
               checkoutState.currentStep >= 2
-                ? 'bg-gradient-to-r from-deep-purple to-royal-purple'
+                ? 'bg-[#5858E0]'
                 : 'bg-gray-200'
             "
           ></div>
@@ -754,7 +803,7 @@ const returnToCart = () => {
             class="flex-1 h-1"
             :class="
               checkoutState.currentStep >= 3
-                ? 'bg-gradient-to-r from-deep-purple to-royal-purple'
+                ? 'bg-[#5858E0]'
                 : 'bg-gray-200'
             "
           ></div>
@@ -799,7 +848,7 @@ const returnToCart = () => {
                         >Email Address</label
                       >
                       <div
-                        class="account-contact-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700"
+                        class="account-contact-display p-3 bg-[#E8E7FC] rounded-lg text-gray-700"
                       >
                         {{ currentUser?.email || 'No email provided' }}
                       </div>
@@ -809,7 +858,7 @@ const returnToCart = () => {
                         >Phone Number</label
                       >
                       <div
-                        class="account-contact-display p-3 bg-[#E8B6D5] rounded-lg text-gray-700"
+                        class="account-contact-display p-3 bg-[#E8E7FC] rounded-lg text-gray-700"
                       >
                         {{ currentUser?.phone || 'No phone number provided' }}
                       </div>
@@ -852,10 +901,13 @@ const returnToCart = () => {
                       <input
                         v-model="newContactForm.phone"
                         type="tel"
-                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-purple focus:border-deep-purple"
+                        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-deep-purple focus:border-deep-purple"
+                        :class="contactPhoneError ? 'border-red-500' : 'border-gray-300'"
                         placeholder="+254 712 345 678"
                         required
+                        @blur="validateContactPhoneOnBlur"
                       />
+                      <p v-if="contactPhoneError" class="text-sm mt-1 text-[#dc2626]">{{ contactPhoneError }}</p>
                     </div>
                   </div>
 
@@ -907,9 +959,9 @@ const returnToCart = () => {
                 <!-- No selection message -->
                 <div
                   v-if="!checkoutState.selectedAddress"
-                  class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg"
+                  class="mb-4 p-4 rounded-lg border-2 border-[#5858E0] bg-[#E8E7FC]"
                 >
-                  <p class="text-yellow-700 text-sm flex items-center">
+                  <p class="text-sm flex items-center font-medium text-[#2A2A6B]">
                     Please select a shipping address to continue
                   </p>
                 </div>
@@ -1060,7 +1112,7 @@ const returnToCart = () => {
                     type="button"
                     @click="checkoutState.useNewAddress = false"
                     v-if="hasSavedAddresses"
-                    class="form-btn text-gray-600 bg-[#804d91] hover:text-gray-800 font-medium"
+                    class="form-btn text-gray-600 bg-[#2A2A6B] hover:text-gray-800 font-medium"
                   >
                     ← Back to saved addresses
                   </button>
@@ -1079,7 +1131,7 @@ const returnToCart = () => {
                 <button
                   type="button"
                   @click="prevStep"
-                  class="btn text-[#ffff] hover:text-gray-800 font-medium px-[8px] py-[6px] rounded-[10px] bg-[#ce7f57]"
+                  class="btn text-[#ffff] hover:text-gray-800 font-medium px-[8px] py-[6px] rounded-[10px] bg-[#FFAC1E]"
                 >
                   ← Back to Information
                 </button>
@@ -1087,7 +1139,7 @@ const returnToCart = () => {
                   type="button"
                   @click="nextStep"
                   :disabled="!canProceedToPayment"
-                  class="btn text-[#ffff] px-[8px] py-[6px] rounded-lg bg-[#5d3471] hover:bg-royal-purple transition-colors rounded-[10px] disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="btn text-[#ffff] px-[8px] py-[6px] rounded-lg bg-[#5858E0] hover:bg-royal-purple transition-colors rounded-[10px] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Continue to Payment
                 </button>
@@ -1198,10 +1250,13 @@ const returnToCart = () => {
                     <input
                       v-model="newPaymentForm.phone_number"
                       type="tel"
-                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-purple focus:border-deep-purple"
+                      class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-deep-purple focus:border-deep-purple"
+                      :class="mpesaPhoneError ? 'border-red-500' : 'border-gray-300'"
                       placeholder="+254 712 345 678"
                       required
+                      @blur="validateMpesaPhoneOnBlur"
                     />
+                    <p v-if="mpesaPhoneError" class="text-sm mt-1 text-[#dc2626]">{{ mpesaPhoneError }}</p>
                     <p class="text-sm text-gray-500 mt-2">
                       Enter your M-Pesa registered phone number. We'll send a confirmation code.
                     </p>
@@ -1244,7 +1299,7 @@ const returnToCart = () => {
                 <button
                   type="button"
                   @click="prevStep"
-                  class="btn text-gray-600 hover:text-gray-800 font-medium py-[8px] px-[10px] rounded-[10px] bg-[#ce7f57]"
+                  class="btn text-gray-600 hover:text-gray-800 font-medium py-[8px] px-[10px] rounded-[10px] bg-[#FFAC1E]"
                 >
                   ← Back to Shipping
                 </button>
@@ -1277,7 +1332,6 @@ const returnToCart = () => {
                       ></path>
                     </svg>
                   </span>
-                  <span v-else class="mr-3">🔒</span>
 
                   <!-- Start of change by Kevin Irungu - Improved decimal handling for order total -->
                   <!-- {{ loading.creatingOrder ? 'Processing...' : `Pay Ksh.${orderTotal.toFixed(2)}` }} -->
@@ -1311,14 +1365,14 @@ const returnToCart = () => {
 <style scoped>
 /* Your existing styles remain the same */
 .breadcrumb {
-  color: #5d3471;
+  color: #5858E0;
 }
 .breadcrumb ul {
   list-style-type: none;
 }
 .breadcrumb ul li a {
   text-decoration: none;
-  color: #5d3471;
+  color: #5858E0;
   margin-right: 10px;
 }
 .progress-steps {
@@ -1341,12 +1395,12 @@ const returnToCart = () => {
 .new-address,
 .saved-pm,
 .new-pm {
-  border: 1px solid #ce7f57;
+  border: 1px solid #FFAC1E;
   border-radius: 20px;
 }
 
 .banner {
-  background: linear-gradient(135deg, #5d3471, #804d91, #aa69af);
+  background: #5858E0;
   color: white;
   border-radius: 20px;
   transition: all 0.3s ease-in-out;
@@ -1374,7 +1428,7 @@ const returnToCart = () => {
 .form-group input {
   padding: 10px;
   border: none;
-  background: #e8b6d5;
+  background: #E8E7FC;
   border-radius: 10px;
 }
 
@@ -1382,24 +1436,24 @@ const returnToCart = () => {
   padding: 12px;
   border: 1px solid #e7eaef;
   border-radius: 10px;
-  background: #e8b6d5;
+  background: #E8E7FC;
   margin-bottom: 10px;
 }
 
 .form-btn {
   padding: 8px 10px;
-  border: 1px solid #ce7f57;
+  border: 1px solid #FFAC1E;
   border-radius: 20px;
   color: #ffffff;
   transition: all 0.3s ease-in-out;
 }
 
 .form-btn:hover {
-  background: #aa69af;
+  background: #7272E8;
 }
 
 .btn {
-  border: 1px solid #ce7f57;
+  border: 1px solid #FFAC1E;
 }
 
 .payment-dropdown {
@@ -1410,45 +1464,45 @@ const returnToCart = () => {
 }
 
 .payment-dropdown:focus {
-  border-color: #aa69af;
+  border-color: #7272E8;
   box-shadow: 0 0 0 3px rgba(170, 105, 175, 0.2);
 }
 
 .text-deep-purple {
-  color: #5d3471;
+  color: #5858E0;
 }
 
 .text-medium-orchid {
-  color: #aa69af;
+  color: #7272E8;
 }
 
 .text-royal-purple {
-  color: #804d91;
+  color: #2A2A6B;
 }
 
 .bg-deep-purple {
-  background-color: #5d3471;
+  background-color: #5858E0;
 }
 
 .bg-royal-purple {
-  background-color: #804d91;
+  background-color: #2A2A6B;
 }
 
 .from-deep-purple {
-  --tw-gradient-from: #5d3471;
+  --tw-gradient-from: #5858E0;
 }
 
 .to-royal-purple {
-  --tw-gradient-to: #804d91;
+  --tw-gradient-to: #2A2A6B;
 }
 
 .to-medium-orchid {
-  --tw-gradient-to: #aa69af;
+  --tw-gradient-to: #7272E8;
 }
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #5d3471;
+  border-color: #5858E0;
   box-shadow: 0 0 0 3px rgba(93, 52, 113, 0.1);
 }
 </style>

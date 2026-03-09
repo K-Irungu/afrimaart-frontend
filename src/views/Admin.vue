@@ -36,7 +36,7 @@ const chartOptions = ref({
       speed: 800
     }
   },
-  colors: ['#5d3471'],
+  colors: ['#5858E0'],
   dataLabels: {
     enabled: false
   },
@@ -45,13 +45,8 @@ const chartOptions = ref({
     width: 3
   },
   fill: {
-    type: 'gradient',
-    gradient: {
-      shadeIntensity: 1,
-      opacityFrom: 0.7,
-      opacityTo: 0.1,
-      stops: [0, 90, 100]
-    }
+    type: 'solid',
+    opacity: 0.85
   },
   grid: {
     borderColor: '#e5e7eb',
@@ -698,7 +693,7 @@ onMounted(() => {
 
 <style scoped>
 .refresh-btn {
-  background: #5d3471;
+  background: #5858E0;
   color: white;
   padding: 0.75rem 1rem;
   border-radius: 8px;
@@ -794,7 +789,7 @@ onMounted(() => {
 
 .stat-card {
   background: #ba9ff9;
-  border: 1.5px solid #5d3471;
+  border: 1.5px solid #5858E0;
   border-radius: 20px;
   padding: 1.5rem;
   position: relative;
@@ -814,7 +809,7 @@ onMounted(() => {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: rgba(255,255,255,0.2);
   transition: left 0.5s ease;
 }
 
@@ -836,21 +831,21 @@ onMounted(() => {
 .stat-label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #5d3471;
+  color: #5858E0;
   margin-bottom: 0.5rem;
 }
 
 .stat-value {
   font-size: 2rem;
   font-weight: 700;
-  color: #5d3471;
+  color: #5858E0;
 }
 
 .stat-icon {
   background: rgba(255, 255, 255, 0.2);
   padding: 0.75rem;
   border-radius: 12px;
-  color: #5d3471;
+  color: #5858E0;
   font-size: 1.5rem;
 }
 
@@ -919,7 +914,7 @@ onMounted(() => {
 .chart-select {
   padding: 0.5rem 1rem;
   border-radius: 10px;
-  background: #5d3471;
+  background: #5858E0;
   color: white;
   border: none;
   font-size: 0.875rem;
@@ -1091,7 +1086,7 @@ onMounted(() => {
   padding: 1rem 1.5rem;
   font-size: 1rem;
   font-weight: 600;
-  color: #5d3471;
+  color: #5858E0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -1214,7 +1209,7 @@ onMounted(() => {
 /* View Link */
 .view-link {
   background: #ba9ff9;
-  color: #5d3471;
+  color: #5858E0;
   padding: 0.5rem 1rem;
   border-radius: 10px;
   font-weight: 600;

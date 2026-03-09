@@ -158,18 +158,10 @@ const isActive = (path) => {
       class="header shadow-sm bg-white p-5 flex justify-between items-center w-[90%] max-w-7xl"
       :class="{ 'admin-header': isAdmin }"
     >
-      <div class="logo flex items-center gap-2 my-[10px]">
+      <RouterLink to="/" class="logo-link flex items-center gap-2 my-[10px] no-underline text-inherit hover:opacity-90">
         <img :src="logo" alt="Afrimart" class="logo" />
         <h2 class="text-2xl font-bold" :class="{ 'admin-text': isAdmin }">Afrimart</h2>
-        <!-- Role indicator -->
-        <span 
-          v-if="isAuthenticated" 
-          class="text-xs px-2 py-1 rounded-full"
-          :class="isAdmin ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'"
-        >
-          {{ isAdmin ? 'ADMIN' : 'USER' }}
-        </span>
-      </div>
+      </RouterLink>
 
       <!-- Search form - Different placeholder for admin -->
       <form class="search-form flex items-center gap-[5px] max-w-lg mx-auto" :class="{ 'admin-search': isAdmin }">
@@ -177,15 +169,16 @@ const isActive = (path) => {
           <input
             type="text"
             id="voice-search"
-            class="search-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5"
+            class="search-input text-sm rounded-lg block w-full ps-10 p-2.5 placeholder:text-[#3D3D8B]/70"
             :placeholder="isAdmin ? 'Search orders, products...' : 'Search products...'"
             required
+            aria-label="Search"
           />
         </div>
         <button
           type="submit"
-          class="search-btn inline-flex items-center py-2.5 px-3 ms-2 text-sm font-medium text-white rounded-lg"
-          :class="isAdmin ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-700 hover:bg-blue-800'"
+          class="search-btn inline-flex items-center py-2.5 px-4 text-sm font-medium text-white rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          aria-label="Search"
         >
           <font-awesome-icon :icon="['fas', 'search']" class="w-[20px] h-[20px] mr-[6px]" />
         </button>
@@ -196,8 +189,11 @@ const isActive = (path) => {
         <div class="relative" v-if="isAuthenticated">
           <button
             @click="toggleDropdown"
-            class="user-dropdown-btn flex items-center gap-2 no-underline space-x-2 cursor-pointer transition-colors outline outline-offset-2 rounded-[5px] p-2"
+            type="button"
+            class="user-dropdown-btn flex items-center gap-2 no-underline space-x-2 cursor-pointer transition-colors rounded-lg p-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#5858E0]"
             :class="isAdmin ? 'admin-dropdown-btn' : 'customer-dropdown-btn'"
+            :aria-expanded="showDropdown"
+            aria-haspopup="true"
           >
             <font-awesome-icon :icon="['fa', 'user']" class="h-[20px] w-[20px]" />
             <span class="text-lg font-[400]">{{ userDisplayName }}</span>
@@ -216,33 +212,35 @@ const isActive = (path) => {
             :class="{ 'admin-dropdown': isAdmin }"
           >
             <button
+              type="button"
               @click="navigateToAccount"
-              class="dropdown-item w-full text-left px-4 py-3 text-sm hover:bg-gray-100 transition-colors flex items-center gap-2"
-              :class="isAdmin ? 'text-purple-700' : 'text-gray-700'"
+              class="dropdown-item w-full text-left px-4 py-3 text-sm text-[#2A2A6B] transition-colors flex items-center gap-2 rounded-none focus:outline-none focus-visible:bg-[#E8E7FC]"
             >
-              <font-awesome-icon :icon="['fas', 'user-circle']" class="w-4 h-4" />
+              <font-awesome-icon :icon="['fas', 'user-circle']" class="w-4 h-4 text-[#5858E0]" />
               {{ isAdmin ? 'Admin Dashboard' : 'My Account' }}
             </button>
 
             <!-- Admin-specific dropdown items -->
-            <div v-if="isAdmin" class="border-t border-gray-200 my-1"></div>
+            <div v-if="isAdmin" class="border-t border-[#E8E7FC] my-1"></div>
 
             <button
               v-if="isAdmin"
+              type="button"
               @click="navigateToAdminDashboard"
-              class="dropdown-item w-full text-left px-4 py-3 text-sm text-purple-600 hover:bg-purple-50 transition-colors flex items-center gap-2"
+              class="dropdown-item w-full text-left px-4 py-3 text-sm text-[#2A2A6B] transition-colors flex items-center gap-2 rounded-none focus:outline-none focus-visible:bg-[#E8E7FC]"
             >
-              <font-awesome-icon :icon="['fas', 'cog']" class="w-4 h-4" />
+              <font-awesome-icon :icon="['fas', 'cog']" class="w-4 h-4 text-[#5858E0]" />
               Admin Settings
             </button>
 
-            <div class="border-t border-gray-200 my-1"></div>
+            <div class="border-t border-[#E8E7FC] my-1"></div>
 
             <button
+              type="button"
               @click="handleLogout"
-              class="dropdown-item w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+              class="dropdown-item dropdown-item-danger w-full text-left px-4 py-3 text-sm transition-colors flex items-center gap-2 rounded-none focus:outline-none focus-visible:bg-[#FEE2E2]"
             >
-              <font-awesome-icon :icon="['fas', 'sign-out-alt']" class="w-4 h-4" />
+              <font-awesome-icon :icon="['fas', 'sign-out-alt']" class="w-4 h-4 text-[#dc2626]" />
               Sign Out
             </button>
           </div>
@@ -274,7 +272,7 @@ const isActive = (path) => {
     </header>
 
     <!-- NAV LINKS -->
-    <nav class="bg-white border-gray-500 w-[90%]" :class="{ 'admin-nav': isAdmin && isAuthenticated }">
+    <nav class="nav-links bg-white w-[90%] max-w-7xl mx-auto" :class="{ 'admin-nav': isAdmin && isAuthenticated }">
       <div class="max-w-7xl mx-auto px-4 py-3 place my-[5px] w-full">
         <div class="flex justify-start space-x-6 text-sm">
           <!-- ADMIN NAVIGATION (Only when admin is authenticated) -->
@@ -327,7 +325,7 @@ const isActive = (path) => {
 
             <RouterLink
               to="/contact"
-              class="link px-2 py-1 flex justify-center items-center rounded no-underline w-[90px] mr-[0px] flex items-center gap-1"
+              class="link px-2 py-1 flex justify-center items-center rounded no-underline min-w-[100px] whitespace-nowrap mr-[0px] flex items-center gap-1"
               :class="isActive('/contact')"
             >
               <span>Contact us</span>
@@ -340,144 +338,189 @@ const isActive = (path) => {
 </template>
 
 <style scoped>
-/* Your existing styles remain exactly the same */
 .navbar {
-  height: 150px;
+  min-height: 140px;
   background: #ffffff;
-  color: black;
+  color: #2A2A6B;
 }
 .header {
-  border-bottom: 1px solid #e6e9ee;
+  border-bottom: 1px solid #E8E7FC;
+  box-shadow: 0 1px 0 rgba(42, 42, 107, 0.06);
 }
 .admin-header {
-  border-bottom: 1px solid #8b5cf6;
-  background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+  border-bottom: 1px solid #5858E0;
+  background: #ffffff;
 }
 .logo {
   height: 40px;
   width: 40px;
   object-fit: contain;
-  border-radius: 20px;
+  border-radius: 12px;
 }
+.logo-link h2,
 .logo h2 {
-  color: #5d3471;
+  color: #5858E0;
   font-weight: 600;
-  font-size: 2rem;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
 }
 .admin-text {
-  color: #8b5cf6 !important;
-}
-.input {
-  height: 36px;
-  border: 1px solid #e6e9ee;
+  color: #5858E0 !important;
 }
 .link {
   height: 100%;
   font-weight: 500;
-  color: black;
+  color: #2A2A6B;
 }
 .cart-span {
-  background: #0f1724;
-  width: 15px;
-  height: 16.5px;
+  background: #5858E0;
+  min-width: 18px;
+  height: 18px;
   color: white;
   text-align: center;
-  border-radius: 10px;
-  font-size: 0.65rem;
+  border-radius: 9px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
 }
 
 .search-form {
-  padding: 2px;
+  padding: 3px;
   width: 60%;
-  border: 1px solid #e6e9ee;
-  border-radius: 15px;
-  background: #eebefe;
-  transition: all 0.2s ease;
+  max-width: 420px;
+  border: 1px solid #E8E7FC;
+  border-radius: 12px;
+  background: #E8E7FC;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.search-form:focus-within {
+  border-color: #5858E0;
+  box-shadow: 0 0 0 3px rgba(88, 88, 224, 0.15);
 }
 
 .admin-search {
-  background: #e9d5ff;
-  border: 1px solid #8b5cf6;
+  background: #E8E7FC;
+  border: 1px solid #5858E0;
 }
 
 .search-input {
-  padding: 8px;
+  padding: 8px 12px;
   border: none;
-  border-radius: 15px;
+  border-radius: 10px;
   background: transparent;
+  color: #2A2A6B;
+}
+.search-input::placeholder {
+  color: #3D3D8B;
+  opacity: 0.8;
+}
+.search-input:focus {
+  outline: none;
 }
 
 .search-btn {
-  margin-right: 5px;
-  padding: 6px;
+  margin-right: 4px;
+  padding: 6px 12px;
   border: none;
-  background: transparent;
+  border-radius: 10px;
+  background: #5858E0;
+  color: #ffffff;
+  transition: background-color 0.2s ease;
+}
+.search-btn:hover {
+  background: #4545C7;
+}
+.search-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #5858E0;
 }
 
 .account {
-  padding: 4px 10px;
-  font-size: 0.75rem;
+  padding: 8px 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   color: #ffffff;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+.account:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #5858E0;
 }
 
 .customer-account {
-  background: #5d3471;
+  background: #5858E0;
+}
+.customer-account:hover {
+  background: #4545C7;
 }
 
 .admin-account {
-  background: #8b5cf6;
+  background: #2A2A6B;
+}
+.admin-account:hover {
+  background: #1a1a4a;
 }
 
 .cart {
-  background: #5d3471;
-  padding: 4px 10px;
-  font-size: 0.75rem;
+  background: #5858E0;
+  padding: 8px 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   color: #ffffff;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+.cart:hover {
+  background: #4545C7;
 }
 
 .active-link {
-  padding: 6px;
-  background-color: #eebefe;
-  color: #804d91 !important;
-  border-radius: 6px;
+  padding: 8px 14px;
+  background-color: #5858E0;
+  color: #ffffff !important;
+  border-radius: 10px;
   font-weight: 600;
 }
 
 .inactive-link {
-  padding: 6px;
-  color: #5d3471;
-  transition:
-    color 0.3s ease,
-    background-color 0.3s ease;
+  padding: 8px 14px;
+  color: #2A2A6B;
+  border-radius: 10px;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .inactive-link:hover {
-  color: #804d91;
-  background-color: #5d3471;
-  border-radius: 6px;
+  color: #ffffff;
+  background-color: #5858E0;
 }
 
 /* Admin Navigation Styles */
 .admin-nav {
-  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
-  border-bottom: 2px solid #8b5cf6;
+  background: #F0EFFC;
+  border-bottom: 1px solid #E8E7FC;
 }
 
 .admin-nav-link {
-  color: #7c3aed !important;
+  color: #2A2A6B !important;
   font-weight: 600;
 }
 
 .admin-nav-link.active-link {
-  background-color: #8b5cf6 !important;
-  color: white !important;
+  background-color: #5858E0 !important;
+  color: #ffffff !important;
 }
 
 .admin-nav-link.inactive-link:hover {
-  background-color: #ddd6fe !important;
-  color: #7c3aed !important;
+  background-color: #E8E7FC !important;
+  color: #5858E0 !important;
+}
+
+.nav-links {
+  border-bottom: 1px solid #E8E7FC;
 }
 
 /* Dropdown Styles */
@@ -490,65 +533,61 @@ const isActive = (path) => {
 }
 
 .customer-dropdown-btn {
-  background-color: #5d3471;
+  background-color: #5858E0;
   color: #ffffff;
 }
 
 .customer-dropdown-btn:hover {
-  background-color: #804d91;
-  box-shadow: 0 2px 6px rgba(128, 77, 145, 0.3);
+  background-color: #4545C7;
 }
 
 .admin-dropdown-btn {
-  background-color: #8b5cf6;
+  background-color: #2A2A6B;
   color: #ffffff;
 }
 
 .admin-dropdown-btn:hover {
-  background-color: #7c3aed;
-  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+  background-color: #1a1a4a;
 }
 
 /* Dropdown Container */
 .dropdown-menu {
   border-radius: 12px;
-  border: 1px solid #e8d7ef;
-  box-shadow: 0px 8px 20px rgba(93, 52, 113, 0.18);
+  border: 1px solid #E8E7FC;
+  box-shadow: 0 10px 40px rgba(42, 42, 107, 0.12);
   overflow: hidden;
+  min-width: 200px;
 }
 
 .admin-dropdown {
-  border: 1px solid #ddd6fe;
-  box-shadow: 0px 8px 20px rgba(139, 92, 246, 0.15);
+  border: 1px solid #E8E7FC;
+  box-shadow: 0 10px 40px rgba(42, 42, 107, 0.12);
 }
 
 /* Dropdown items */
 .dropdown-item {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   padding: 12px 16px;
-  transition: background-color 0.25s ease, padding-left 0.2s ease;
+  transition: background-color 0.15s ease;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
-/* Hover effect */
 .dropdown-item:hover {
-  background-color: #f3e2fa;
-  padding-left: 22px;
+  background-color: #E8E7FC;
 }
 
-.admin-dropdown .dropdown-item:hover {
-  background-color: #f3e8ff;
+.dropdown-item-danger {
+  color: #dc2626 !important;
+}
+.dropdown-item-danger:hover {
+  background-color: #FEE2E2 !important;
 }
 
 /* Divider */
 .dropdown-menu .border-t {
-  border-color: #e6d2ef;
-}
-
-.admin-dropdown .border-t {
-  border-color: #ddd6fe;
+  border-color: #E8E7FC;
 }
 
 /* Animation */

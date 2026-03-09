@@ -20,6 +20,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  isLoading: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const route = useRoute()
@@ -73,8 +77,9 @@ const handleSortChange = (event) => {
 
 // Showing text
 const showingText = computed(() => {
+  if (props.isLoading && props.totalProducts === 0) return 'Loading...'
   if (props.totalProducts === 0) return 'No deals found'
-  
+
   const itemsPerPage = 9
   const start = (props.currentPage - 1) * itemsPerPage + 1
   const end = Math.min(props.currentPage * itemsPerPage, props.totalProducts)
@@ -85,14 +90,14 @@ const showingText = computed(() => {
 <template>
   <div class="lg:col-span-4 md:col-span-3 px-[5px] mb-[20px]">
     <div class="flex justify-between items-center mb-6 h-[80px]">
-      <p class="text-sm text-[#804D91]">{{ showingText }}</p>
+      <p class="text-sm text-[#2A2A6B]">{{ showingText }}</p>
       <div class="flex items-center space-x-2 select-wrapper">
-        <label for="sort" class="text-sm text-[#5D3471]">Sort by:</label>
+        <label for="sort" class="text-sm text-[#5858E0]">Sort by:</label>
         <select
           id="sort"
           v-model="currentSort"
           @change="handleSortChange"
-          class="p-[6px] border rounded-lg text-sm h-[30px] ml-[5px] select bg-[#E8B6D5] border-[#AA69AF] text-[#5D3471] cursor-pointer"
+          class="p-[6px] border rounded-lg text-sm h-[30px] ml-[5px] select bg-[#E8E7FC] border-[#7272E8] text-[#5858E0] cursor-pointer"
         >
           <option 
             v-for="option in sortOptions"
@@ -118,7 +123,7 @@ const showingText = computed(() => {
       <button
         @click="navigateToPage(currentPage - 1)"
         :disabled="currentPage === 1"
-        class="previous-btn px-4 py-2 mx-[10px] text-sm font-medium text-[#5D3471] bg-[#E8B6D5] border border-[#AA69AF] rounded-lg hover:bg-[#AA69AF] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
+        class="previous-btn px-4 py-2 mx-[10px] text-sm font-medium text-[#5858E0] bg-[#E8E7FC] border border-[#7272E8] rounded-lg hover:bg-[#7272E8] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
       >
         Previous
       </button>
@@ -131,8 +136,8 @@ const showingText = computed(() => {
         :class="[
           'page-btn px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 min-w-[44px]',
           currentPage === page
-            ? 'bg-[#5D3471] text-white shadow-md scale-105'
-            : 'text-[#5D3471] bg-[#E8B6D5] border border-[#AA69AF] hover:bg-[#AA69AF] hover:text-white hover:shadow-sm',
+            ? 'bg-[#5858E0] text-white shadow-md scale-105'
+            : 'text-[#5858E0] bg-[#E8E7FC] border border-[#7272E8] hover:bg-[#7272E8] hover:text-white hover:shadow-sm',
         ]"
       >
         {{ page }}
@@ -142,7 +147,7 @@ const showingText = computed(() => {
       <button
         @click="navigateToPage(currentPage + 1)"
         :disabled="currentPage === totalPages"
-        class="next-btn px-4 py-2 mx-[10px] text-sm font-medium text-[#5D3471] bg-[#E8B6D5] border border-[#AA69AF] rounded-lg hover:bg-[#AA69AF] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
+        class="next-btn px-4 py-2 mx-[10px] text-sm font-medium text-[#5858E0] bg-[#E8E7FC] border border-[#7272E8] rounded-lg hover:bg-[#7272E8] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
       >
         Next
       </button>

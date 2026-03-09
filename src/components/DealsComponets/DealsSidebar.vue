@@ -73,8 +73,8 @@ updateFilters()
           :class="[
             's-btn px-3 py-1 text-sm rounded-full transition duration-150',
             selectedFilters.dealType === type
-              ? 'bg-[#5D3471] text-white'
-              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF]',
+              ? 'bg-[#5858E0] text-white'
+              : 'bg-[#E8E7FC] text-[#5858E0] hover:bg-[#7272E8]',
           ]"
         >
           {{ type }}
@@ -93,8 +93,8 @@ updateFilters()
           :class="[
             's-btn px-3 py-1 text-sm rounded-full transition duration-150',
             selectedFilters.category === cat
-              ? 'bg-[#5D3471] text-white'
-              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF]',
+              ? 'bg-[#5858E0] text-white'
+              : 'bg-[#E8E7FC] text-[#5858E0] hover:bg-[#7272E8]',
           ]"
         >
           {{ cat }}
@@ -113,8 +113,8 @@ updateFilters()
           :class="[
             's-btn px-3 py-1 text-sm rounded transition duration-150 text-left',
             selectedFilters.discount === discount
-              ? 'bg-[#5D3471] text-white'
-              : 'bg-[#E8B6D5] text-[#5D3471] hover:bg-[#AA69AF]',
+              ? 'bg-[#5858E0] text-white'
+              : 'bg-[#E8E7FC] text-[#5858E0] hover:bg-[#7272E8]',
           ]"
         >
           {{ discount }} off
@@ -131,19 +131,19 @@ updateFilters()
             type="number"
             v-model.number="selectedFilters.priceRange[0]"
             @change="updateFilters"
-            class="w-20 p-1 border border-[#AA69AF] rounded text-sm text-center"
+            class="w-20 p-1 border border-[#7272E8] rounded text-sm text-center"
             placeholder="Min"
           />
-          <span class="self-center text-[#5D3471]">to</span>
+          <span class="self-center text-[#5858E0]">to</span>
           <input
             type="number"
             v-model.number="selectedFilters.priceRange[1]"
             @change="updateFilters"
-            class="w-20 p-1 border border-[#AA69AF] rounded text-sm text-center"
+            class="w-20 p-1 border border-[#7272E8] rounded text-sm text-center"
             placeholder="Max"
           />
         </div>
-        <div class="text-xs text-[#5D3471] text-center">
+        <div class="text-xs text-[#5858E0] text-center">
           Ksh.{{ selectedFilters.priceRange[0] }} - Ksh.{{ selectedFilters.priceRange[1] }}
         </div>
       </div>
@@ -180,7 +180,7 @@ updateFilters()
 .categories,
 .discount,
 .price-range {
-  color: #5d3471;
+  color: #5858E0;
   font-weight: 600;
   margin-bottom: 10px;
 }
@@ -204,11 +204,11 @@ updateFilters()
 }
 
 .max-h-40::-webkit-scrollbar-thumb {
-  background: #E8B6D5;
+  background: #E8E7FC;
   border-radius: 10px;
 }
 
 .max-h-40::-webkit-scrollbar-thumb:hover {
-  background: #AA69AF;
+  background: #7272E8;
 }
 </style>
