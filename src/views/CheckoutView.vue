@@ -1,12 +1,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useCart } from '@/composables/useCart'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import OrderSummary from '@/components/OrderSummary.vue'
 
 const router = useRouter()
 const route = useRoute()
+const { clearCart } = useCart()
 
 // API endpoints
 // const API_BASE = 'http://localhost:5050'
@@ -296,10 +298,8 @@ const getCartItemsForOrder = () => {
 // Helper function to clear cart after successful order
 const clearCartAfterOrder = () => {
   try {
-    // Clear localStorage cart data
+    clearCart() // Clear in-memory cart state and localStorage 'cart'
     localStorage.removeItem('checkoutCartData')
-    localStorage.removeItem('cart') // if you store cart in localStorage
-
     console.log('Cart cleared after order')
   } catch (error) {
     console.error('Error clearing cart:', error)
