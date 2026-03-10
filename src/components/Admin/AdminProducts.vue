@@ -796,15 +796,14 @@ onMounted(() => {
                   required
                 >
                   <option disabled value="">Select Category</option>
-                  <option>Electronics</option>
-                  <option>Clothing</option>
+                  <option>Shoes</option>
+                  <option>Clothes</option>
                   <option>Food</option>
-                  <option>Home & Garden</option>
-                  <option>Sports & Outdoors</option>
-                  <option>Beauty</option>
-                  <option>Toys</option>
-                  <option>Books</option>
+                  <option>Electronics</option>
+                  <option>Accessories</option>
                   <option>Furniture</option>
+                  <option>Home</option>
+                  <option>Sports & Outdoors</option>
                 </select>
               </div>
 
